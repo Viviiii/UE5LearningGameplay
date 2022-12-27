@@ -53,7 +53,7 @@ ALearningGameplayCharacter::ALearningGameplayCharacter()
 	strength = 5.f;
 	speed = 500.f;
 	sprintSpeed = 900.f;
-	XP = 1.f;
+	currentXP = 0.f;
 	level = 1;
 	nextLevel = false;
 	basicAttack = false;
@@ -178,11 +178,26 @@ void ALearningGameplayCharacter::healing(float amount) {
 
 }
 
+void ALearningGameplayCharacter::gainXP(float amount) {
+
+	currentXP += amount;
+	if (getXPPercent(currentXP) >= 1) {
+		levelUP();
+	}
+}
+
 
 float ALearningGameplayCharacter::getHealthPercent(float hp) {
 	float percent;
 	percent = hp / 1.0f;
 
+	return percent;
+}
+
+float ALearningGameplayCharacter::getXPPercent(float xp) {
+	float percent;
+	//percent = currentXP / 1.0f;
+	percent = xp / 1.0f;
 	return percent;
 }
 
@@ -194,11 +209,11 @@ float ALearningGameplayCharacter::getEndurancePercent(float end) {
 
 }
 
-void ALearningGameplayCharacter::levelUP(float experience) {
-	if (XP > experience) {
-		nextLevel = true;
-	}
-	nextLevel = false;
+void ALearningGameplayCharacter::levelUP() {
+	
+	nextLevel = true;
+	level++;
+	currentXP = 0.f;
 }
 
 void ALearningGameplayCharacter::startBasicAttack() {
@@ -220,8 +235,9 @@ void ALearningGameplayCharacter::takeDamageEnemy(float strengh) {
 }
 
 bool ALearningGameplayCharacter::enemyDead(float strengh) {
-	if (enemyHealth < 0) {
-		enemyHealth = 0.f;
+	if (enemyHealth <= 0) {
+		enemyHealth = 1.f;
+		currentXP += 0.6f;
 		return true;
 	}
 	return false;

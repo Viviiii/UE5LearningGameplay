@@ -69,7 +69,8 @@ protected:
 
 	/** XP of the player */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Stats)
-		int XP;
+		float currentXP;
+
 
 	/** Speed of the player */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Stats)
@@ -118,13 +119,19 @@ protected:
 		void takeDamage(float amount);
 
 	UFUNCTION(BlueprintCallable)
+		void gainXP(float amount);
+
+	UFUNCTION(BlueprintCallable)
 		float getHealthPercent(float hp);
+
+	UFUNCTION(BlueprintCallable)
+		float getXPPercent(float xp);
 
 	UFUNCTION(BlueprintCallable)
 		float getEndurancePercent(float end);
 
 	UFUNCTION(BlueprintCallable)
-		void levelUP(float experience);
+		void levelUP();
 
 
 
