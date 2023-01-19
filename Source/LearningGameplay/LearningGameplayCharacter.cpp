@@ -102,6 +102,9 @@ void ALearningGameplayCharacter::SetupPlayerInputComponent(class UInputComponent
 		//Attacking
 		EnhancedInputComponent->BindAction(BasicAttackAction, ETriggerEvent::Triggered, this, &ALearningGameplayCharacter::startBasicAttack);
 		EnhancedInputComponent->BindAction(BasicAttackAction, ETriggerEvent::Completed, this, &ALearningGameplayCharacter::endBasicAttack);
+
+		//Teleporting
+		EnhancedInputComponent->BindAction(Ability1Action, ETriggerEvent::Triggered, this, &ALearningGameplayCharacter::startAbility1);
 	}
 
 }
@@ -158,6 +161,16 @@ void ALearningGameplayCharacter::StopSprinting()
 	UE_LOG(LogTemp, Warning, TEXT("We are now not sprinting"));
 
 	isSprinting = false;
+}
+
+void ALearningGameplayCharacter::startAbility1()
+{
+	// Ability 1 : Teleporting
+	UE_LOG(LogTemp, Warning, TEXT("We are now not sprinting"));
+	FVector Location = GetActorLocation();
+	FVector LocForward = GetActorForwardVector();
+	Location = Location + LocForward * 100.f;
+	SetActorLocation(Location);
 }
 
 void ALearningGameplayCharacter::takeDamage(float amount) {

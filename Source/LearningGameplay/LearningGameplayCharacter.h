@@ -29,6 +29,10 @@ class ALearningGameplayCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* JumpAction;
 
+	/** Ability Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+		class UInputAction* Ability1Action;
+
 	/** Move Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* MoveAction;
@@ -113,7 +117,10 @@ protected:
 	void startBasicAttack();
 
 	// Called to stop BasicAttack
-		void endBasicAttack();
+	void endBasicAttack();
+
+	// Called Ability 1
+	void startAbility1();
 
 	UFUNCTION(BlueprintCallable)
 		void takeDamage(float amount);
