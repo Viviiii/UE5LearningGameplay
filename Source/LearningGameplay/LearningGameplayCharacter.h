@@ -8,7 +8,6 @@
 #include "LearningGameplayCharacter.generated.h"
 
 
-class USkeletalMeshComponent;
 UCLASS(config=Game)
 class ALearningGameplayCharacter : public ACharacter
 {
@@ -52,13 +51,6 @@ class ALearningGameplayCharacter : public ACharacter
 
 public:
 	ALearningGameplayCharacter();
-	/** Returns CameraBoom subobject **/
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-	/** Returns FollowCamera subobject **/
-	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
-
-private :
-	USkeletalMeshComponent* MainCharacter;
 	
 
 protected:
@@ -159,12 +151,19 @@ protected:
 	UFUNCTION(BlueprintCallable)
 		bool enemyDead(float enemy);
 
+
+protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
 	// To add mapping context
 	virtual void BeginPlay();
 
+public:
+	/** Returns CameraBoom subobject **/
+	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+	/** Returns FollowCamera subobject **/
+	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 };
 
 
