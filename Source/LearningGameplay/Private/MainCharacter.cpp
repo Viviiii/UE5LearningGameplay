@@ -74,7 +74,7 @@ void AMainCharacter::Move(const FInputActionValue& Value)
 	}
 }
 
-void AMainCharacter::Look(const FInputActionValue& Value)
+/*void AMainCharacter::Look(const FInputActionValue& Value)
 {
 	// input is a Vector2D
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
@@ -85,4 +85,4 @@ void AMainCharacter::Look(const FInputActionValue& Value)
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
-}
+}*/

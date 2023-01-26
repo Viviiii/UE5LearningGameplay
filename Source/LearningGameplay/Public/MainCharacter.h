@@ -4,8 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
-#include "MainCharacter.generated.h"
 #include "InputActionValue.h"
+#include "MainCharacter.generated.h"
+
 
 class USkeletalMeshComponent;
 class UCapsuleComponent;
@@ -35,8 +36,8 @@ protected:
 		class UInputAction* MoveAction;
 
 	/** Look Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-		class UInputAction* LookAction;
+	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+		//class UInputAction* LookAction;
 
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
