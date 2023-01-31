@@ -10,6 +10,9 @@
 
 class USkeletalMeshComponent;
 class UCapsuleComponent;
+class USpringArmComponent;
+class UCameraComponent;
+
 UCLASS()
 class LEARNINGGAMEPLAY_API AMainCharacter : public APawn
 {
@@ -26,6 +29,14 @@ private :
 
 	UPROPERTY(VisibleAnywhere)
 	UCapsuleComponent* Capsule;
+
+	//Allow better follow of camera
+	UPROPERTY(VisibleAnywhere)
+		class USpringArmComponent* SpringArm;
+
+	/** Follow camera */
+	UPROPERTY(VisibleAnywhere)
+		class UCameraComponent* FollowCamera;
 
 protected:
 	// Called when the game starts or when spawned

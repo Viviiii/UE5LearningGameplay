@@ -4,6 +4,8 @@
 #include "MainCharacter.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "Camera/CameraComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 
@@ -13,12 +15,21 @@ AMainCharacter::AMainCharacter()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	Capsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule"));
-	Capsule->SetCapsuleHalfHeight(20.f);
-	Capsule->SetCapsuleRadius(5.f);
+	Capsule->SetCapsuleHalfHeight(150.f);
+	Capsule->SetCapsuleRadius(30.f);
 	SetRootComponent(Capsule);
 
 	MainCharacter = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MainChara"));
 	MainCharacter->SetupAttachment(GetRootComponent());
+
+	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
+	SpringArm->SetupAttachment(Capsule);
+	SpringArm->TargetArmLength = 300.f;
+
+	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+	FollowCamera->SetupAttachment(SpringArm);
+
+
 
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 
