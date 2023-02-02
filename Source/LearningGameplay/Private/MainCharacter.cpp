@@ -86,6 +86,7 @@ void AMainCharacter::MoveForward(const FInputActionValue& Value)
 		FVector Forward = GetActorForwardVector();
 		// add movement 
 		AddMovementInput(Forward, MovementVector.Y);
+		AddMovementInput(Forward, MovementVector.X);
 	}
 }
 
