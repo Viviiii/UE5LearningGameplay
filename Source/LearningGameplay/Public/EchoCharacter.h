@@ -37,7 +37,10 @@ protected:
 		class UInputAction* LookAction;
 
 	/** Called for movement input */
-	void MoveForward(const FInputActionValue& Value);
+	void Move(const FInputActionValue& Value);
+
+	/* Called for movement input*/
+	void MoveRight(const FInputActionValue& Value);
 
 	/*Called for looking up*/
 	void Look(const FInputActionValue& Value);
