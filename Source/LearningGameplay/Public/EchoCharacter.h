@@ -4,10 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "InputActionValue.h"
 #include "EchoCharacter.generated.h"
 
 class USkeletalMeshComponent;
 class UCapsuleComponent;
+class USpringArmComponent;
+class UCameraComponent;
 
 UCLASS()
 class LEARNINGGAMEPLAY_API AEchoCharacter : public ACharacter
@@ -21,13 +24,31 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	/** MappingContext */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+		class UInputMappingContext* DefaultMappingContext;
+
+	/** Move Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+		class UInputAction* MoveAction;
+
+	/** Move Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+		class UInputAction* LookAction;
+
+	/** Called for movement input */
+	void MoveForward(const FInputActionValue& Value);
+
+	/*Called for looking up*/
+	void Look(const FInputActionValue& Value);
 
 private :
 	UPROPERTY(VisibleAnywhere)
-		USkeletalMeshComponent* MainCharacter;
+		class USpringArmComponent* SpringArm;
 
+	/** Follow camera */
 	UPROPERTY(VisibleAnywhere)
-		UCapsuleComponent* Capsule;
+		class UCameraComponent* FollowCamera;
 
 public:	
 	// Called every frame
