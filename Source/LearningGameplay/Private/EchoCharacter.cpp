@@ -1,14 +1,15 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "EchoCharacter.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "GroomComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/Pawn.h"
-#include "EchoCharacter.h"
 
 // Sets default values
 AEchoCharacter::AEchoCharacter()
@@ -30,6 +31,16 @@ AEchoCharacter::AEchoCharacter()
 
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	FollowCamera->SetupAttachment(SpringArm);
+
+	Hair = CreateDefaultSubobject<UGroomComponent>(TEXT("Hair"));
+	Hair->SetupAttachment(GetMesh());
+	Hair->AttachmentName = FString("head");
+
+	Eyesbrows = CreateDefaultSubobject<UGroomComponent>(TEXT("Eyesbrows"));
+	Eyesbrows->SetupAttachment(GetMesh());
+	Eyesbrows->AttachmentName = FString("head");
+
+
 
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 

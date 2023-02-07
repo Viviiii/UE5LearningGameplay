@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "DrawDebugHelpers.h"
 #include "Door.h"
+#include "DrawDebugHelpers.h"
 
 #define DRAW_SPHERE(Location) if (GetWorld()) DrawDebugSphere(World, Location, 30.f, 24, FColor::Blue, false, 30.f);
 // Sets default values

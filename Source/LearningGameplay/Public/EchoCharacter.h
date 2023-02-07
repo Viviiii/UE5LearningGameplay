@@ -11,6 +11,7 @@ class USkeletalMeshComponent;
 class UCapsuleComponent;
 class USpringArmComponent;
 class UCameraComponent;
+class UGroomComponent;
 
 UCLASS()
 class LEARNINGGAMEPLAY_API AEchoCharacter : public ACharacter
@@ -47,11 +48,18 @@ protected:
 
 private :
 	UPROPERTY(VisibleAnywhere)
-		class USpringArmComponent* SpringArm;
+		USpringArmComponent* SpringArm;
 
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere)
-		class UCameraComponent* FollowCamera;
+		UCameraComponent* FollowCamera;
+
+	UPROPERTY(VisibleAnywhere, Category = "Hair")
+		class UGroomComponent* Hair;
+
+	/** Follow camera */
+	UPROPERTY(VisibleAnywhere, Category = "Hair")
+		class UGroomComponent* Eyesbrows;
 
 public:	
 	// Called every frame
