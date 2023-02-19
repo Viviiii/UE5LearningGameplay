@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+#include "CharacterStateEnum.h"
 #include "EchoCharacter.generated.h"
 
 class USkeletalMeshComponent;
@@ -12,6 +13,8 @@ class UCapsuleComponent;
 class USpringArmComponent;
 class UCameraComponent;
 class UGroomComponent;
+class AObjects;
+class UAnimMontage;
 
 UCLASS()
 class LEARNINGGAMEPLAY_API AEchoCharacter : public ACharacter
@@ -21,6 +24,13 @@ class LEARNINGGAMEPLAY_API AEchoCharacter : public ACharacter
 public:
 	// Sets default values for this character's properties
 	AEchoCharacter();
+
+	FORCEINLINE void setOverlappingObject(AObjects* object) {
+		overlappedObjects = object;
+	}
+	FORCEINLINE ECharacterState getCharacterState() {
+		return characterState;
+	}
 
 protected:
 	// Called when the game starts or when spawned
@@ -44,6 +54,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 		class UInputAction* JumpAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+		class UInputAction* AttackAction;
+
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
 
@@ -55,6 +68,9 @@ protected:
 
 	/*Called for interacting*/
 	void Interact();
+
+	/*Called for attacking (with montage)*/
+	void Attack();
 
 private :
 	UPROPERTY(VisibleAnywhere)
@@ -71,6 +87,16 @@ private :
 	UPROPERTY(VisibleAnywhere, Category = "Hair")
 		class UGroomComponent* Eyesbrows;
 
+	UPROPERTY(VisibleInstanceOnly)
+		AObjects* overlappedObjects;
+
+	ECharacterState characterState = ECharacterState::ECS_Unequipped;
+
+	/* Animation montages*/
+
+	UPROPERTY(EditDefaultsOnly, Category = "Montages | Attack")
+	UAnimMontage* attackMontage;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -79,5 +105,6 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	bool interact;
+	
 
 };

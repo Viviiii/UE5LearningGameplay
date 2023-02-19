@@ -24,5 +24,7 @@ protected :
 
 		virtual void OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+public :
+	void equip(USceneComponent* weap, FName socketName);
 	
 };

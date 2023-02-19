@@ -7,6 +7,10 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Objects.h"
+#include "Weapon.h"
+#include "Door.h"
+#include "Animation/AnimMontage.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/Pawn.h"
@@ -33,13 +37,13 @@ AEchoCharacter::AEchoCharacter()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	FollowCamera->SetupAttachment(SpringArm);
 
-	/*Hair = CreateDefaultSubobject<UGroomComponent>(TEXT("Hair"));
+	Hair = CreateDefaultSubobject<UGroomComponent>(TEXT("Hair"));
 	Hair->SetupAttachment(GetMesh());
 	Hair->AttachmentName = FString("head");
 
 	Eyesbrows = CreateDefaultSubobject<UGroomComponent>(TEXT("Eyesbrows"));
 	Eyesbrows->SetupAttachment(GetMesh());
-	Eyesbrows->AttachmentName = FString("head");*/
+	Eyesbrows->AttachmentName = FString("head");
 
 
 
@@ -85,6 +89,9 @@ void AEchoCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 		//Interacting
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &AEchoCharacter::Interact);
+
+		//Attacking
+		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AEchoCharacter::Attack);
 	}
 }
 
@@ -122,5 +129,41 @@ void AEchoCharacter::Look(const FInputActionValue& Value)
 
 void AEchoCharacter::Interact()
 {
+	AWeapon* overlappedWeapon = Cast<AWeapon>(overlappedObjects);
+	if (overlappedWeapon) {
+		overlappedWeapon->equip(GetMesh(), FName("WeaponSocket"));
+		characterState = ECharacterState::ECS_equippedWeapon;
+	}
+
+	ADoor* door = Cast<ADoor>(overlappedObjects);
+	if (door) {
+		door->doorOpening();
+	}
+
+}
+
+void AEchoCharacter::Attack()
+{
+	UAnimInstance* montageAttack = GetMesh()->GetAnimInstance();
+	if (montageAttack) {
+		GEngine->AddOnScreenDebugMessage(2, 1.f, FColor::Blue, FString("Attacking!"));
+		montageAttack->Montage_Play(attackMontage);
+		int32 random = FMath::RandRange(0, 1);
+		FName selection = FName();
+		switch (random) {
+		case 0 :
+			selection = FName("Attack1");
+			break;
+
+		case 1:
+			selection = FName("Attack2");
+			break;
+
+		default :
+			break;
+		}
+		montageAttack->Montage_JumpToSection(selection, attackMontage);
+	}
 	
+
 }

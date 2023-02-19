@@ -2,6 +2,7 @@
 
 
 #include "Objects.h"
+#include "EchoCharacter.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
 
@@ -11,7 +12,9 @@ AObjects::AObjects()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	ItemMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
-	ItemMesh->SetupAttachment(GetRootComponent());
+
+	RootComponent = ItemMesh;
+	//ItemMesh->SetupAttachment(GetRootComponent());
 	Sphere = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere"));
 	Sphere->SetupAttachment(GetRootComponent());
 
@@ -48,11 +51,18 @@ void AObjects::Tick(float DeltaTime)
 
 void AObjects::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	GEngine->AddOnScreenDebugMessage(2, 1.f, FColor::Blue, FString("La porte s'ouvre"));
+	GEngine->AddOnScreenDebugMessage(2, 1.f, FColor::Blue, FString(GetName()));
+	AEchoCharacter* echoCharacter = Cast<AEchoCharacter>(OtherActor);
+	if (echoCharacter) {
+		echoCharacter->setOverlappingObject(this);
+	}
 }
 
 void AObjects::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	GEngine->AddOnScreenDebugMessage(2, 1.f, FColor::Blue, FString("La porte se ferme"));
+	AEchoCharacter* echoCharacter = Cast<AEchoCharacter>(OtherActor);
+	if (echoCharacter) {
+		echoCharacter->setOverlappingObject(nullptr);
+	}
 }
 

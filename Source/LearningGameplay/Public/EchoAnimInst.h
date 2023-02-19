@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "EchoCharacter.h"
 #include "EchoAnimInst.generated.h"
 
 /**
@@ -23,14 +24,17 @@ public :
 	class AEchoCharacter* echoCharacter;
 
 
-	UPROPERTY(BlueprintReadOnly, category = "Moves")
+	UPROPERTY(BlueprintReadOnly, category = "Character | CharacterMovement")
 	class UCharacterMovementComponent* echoCharacterMove;
 
-	UPROPERTY(BlueprintReadOnly, category = "Moves")
+	UPROPERTY(BlueprintReadOnly, category = "Character | CharacterMovement")
 		float speed;
 
-	UPROPERTY(BlueprintReadOnly, category = "Moves")
+	UPROPERTY(BlueprintReadOnly, category = "Character | CharacterMovement")
 		bool isFalling;
+
+	UPROPERTY(BlueprintReadOnly, category = "Character | CharacterState")
+	ECharacterState characterState;
 
 	virtual void NativeInitializeAnimation() override;
 
