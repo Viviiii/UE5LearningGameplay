@@ -69,8 +69,14 @@ protected:
 	/*Called for interacting*/
 	void Interact();
 
+	void PlayAttackMontage();
+
 	/*Called for attacking (with montage)*/
 	void Attack();
+
+	/*Anim notify functions*/
+	UFUNCTION(BlueprintCallable)
+		void attackEnd();
 
 private :
 	UPROPERTY(VisibleAnywhere)
@@ -90,7 +96,13 @@ private :
 	UPROPERTY(VisibleInstanceOnly)
 		AObjects* overlappedObjects;
 
+	//Enum charac states
+
 	ECharacterState characterState = ECharacterState::ECS_Unequipped;
+
+	EActionState actionState = EActionState::ECS_Unoccupied;
+
+
 
 	/* Animation montages*/
 

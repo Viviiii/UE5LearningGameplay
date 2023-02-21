@@ -66,6 +66,7 @@ void AEchoCharacter::BeginPlay()
 	
 }
 
+
 // Called every frame
 void AEchoCharacter::Tick(float DeltaTime)
 {
@@ -142,7 +143,7 @@ void AEchoCharacter::Interact()
 
 }
 
-void AEchoCharacter::Attack()
+void AEchoCharacter::PlayAttackMontage()
 {
 	UAnimInstance* montageAttack = GetMesh()->GetAnimInstance();
 	if (montageAttack) {
@@ -151,7 +152,7 @@ void AEchoCharacter::Attack()
 		int32 random = FMath::RandRange(0, 1);
 		FName selection = FName();
 		switch (random) {
-		case 0 :
+		case 0:
 			selection = FName("Attack1");
 			break;
 
@@ -159,11 +160,27 @@ void AEchoCharacter::Attack()
 			selection = FName("Attack2");
 			break;
 
-		default :
+		default:
 			break;
 		}
 		montageAttack->Montage_JumpToSection(selection, attackMontage);
-	}
-	
 
+
+	}
 }
+void AEchoCharacter::Attack()
+{
+	if (characterState == ECharacterState::ECS_equippedWeapon && actionState == EActionState::ECS_Unoccupied) {
+		PlayAttackMontage();
+		actionState = EActionState::ECS_Attacking;
+		GEngine->AddOnScreenDebugMessage(2, 1.f, FColor::Blue, FString::Printf((actionState)));
+	}
+}
+
+
+void AEchoCharacter::attackEnd()
+{
+	actionState = EActionState::ECS_Unoccupied;
+}
+
+
