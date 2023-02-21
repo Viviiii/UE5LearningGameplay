@@ -57,6 +57,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 		class UInputAction* AttackAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+		class UInputAction* WeaponAction;
+
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
 
@@ -68,6 +71,8 @@ protected:
 
 	/*Called for interacting*/
 	void Interact();
+
+	void UnarmWeapon();
 
 	void PlayAttackMontage();
 
@@ -100,7 +105,7 @@ private :
 
 	ECharacterState characterState = ECharacterState::ECS_Unequipped;
 
-	EActionState actionState = EActionState::ECS_Unoccupied;
+	EActionState actionState = EActionState::EAS_Unoccupied;
 
 
 

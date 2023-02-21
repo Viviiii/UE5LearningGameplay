@@ -93,6 +93,10 @@ void AEchoCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 		//Attacking
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AEchoCharacter::Attack);
+		
+		//Sword Actions
+		EnhancedInputComponent->BindAction(WeaponAction, ETriggerEvent::Triggered, this, &AEchoCharacter::UnarmWeapon);
+
 	}
 }
 
@@ -100,7 +104,9 @@ void AEchoCharacter::Move(const FInputActionValue& Value)
 {
 	// input is a Vector2D
 	FVector2D MovementVector = Value.Get<FVector2D>();
-
+	if (actionState == EActionState::EAS_Attacking) {
+		return;
+	}
 	if (Controller != nullptr)
 	{
 		// find out which way is forward
@@ -170,17 +176,36 @@ void AEchoCharacter::PlayAttackMontage()
 }
 void AEchoCharacter::Attack()
 {
-	if (characterState == ECharacterState::ECS_equippedWeapon && actionState == EActionState::ECS_Unoccupied) {
+	if (characterState == ECharacterState::ECS_equippedWeapon && actionState == EActionState::EAS_Unoccupied) {
 		PlayAttackMontage();
-		actionState = EActionState::ECS_Attacking;
-		GEngine->AddOnScreenDebugMessage(2, 1.f, FColor::Blue, FString::Printf((actionState)));
+		actionState = EActionState::EAS_Attacking;
+		
 	}
 }
 
 
 void AEchoCharacter::attackEnd()
 {
-	actionState = EActionState::ECS_Unoccupied;
+	GEngine->AddOnScreenDebugMessage(2, 1.f, FColor::Blue, FString("Attack just ended"));
+	actionState = EActionState::EAS_Unoccupied;
 }
 
+void AEchoCharacter::UnarmWeapon()
+{
+	AWeapon* overlappedWeapon = Cast<AWeapon>(overlappedObjects);
+	if (overlappedWeapon) {
+		overlappedWeapon->equip(GetMesh(), FName("WeaponSocket"));
+		characterState = ECharacterState::ECS_equippedWeapon;
+	}
+
+	ADoor* door = Cast<ADoor>(overlappedObjects);
+	if (door) {
+		door->doorOpening();
+	}
+
+	if (characterState == ECharacterState::ECS_equippedWeapon && actionState == EActionState::EAS_Unoccupied) {
+		
+	}
+
+}
 

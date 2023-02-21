@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "WeaponStateEnum.h"
 #include "Objects.generated.h"
 
 class UStaticMeshComponent;
@@ -28,16 +29,18 @@ protected:
 		float runningTime;
 
 	UPROPERTY(VisibleDefaultsOnly)
-		float amplitude = 0.25f;
+		float amplitude = 0.1f;
 
 	UPROPERTY(VisibleDefaultsOnly)
-		float speed = 0.25f;
+		float speed = 2.f;
 
 	UPROPERTY(EditAnywhere)
 		UStaticMeshComponent* ItemMesh;
 
 	UPROPERTY(EditAnywhere)
 		USphereComponent* Sphere;
+
+	EWeaponState weaponState = EWeaponState::EWS_Pickable;
 
 public:	
 	// Called every frame

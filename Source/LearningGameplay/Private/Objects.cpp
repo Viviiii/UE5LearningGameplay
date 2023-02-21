@@ -3,6 +3,7 @@
 
 #include "Objects.h"
 #include "EchoCharacter.h"
+#include "WeaponStateEnum.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
 
@@ -44,9 +45,11 @@ void AObjects::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	runningTime += DeltaTime;
 	FVector Location = GetActorLocation();
-	AddActorWorldOffset(FVector(0.f, 0.f, movCalcul(runningTime)));
-	//AddActorWorldRotation(FRotator(0.f, 45.f * DeltaTime, 0.f));
-
+	if (weaponState == EWeaponState::EWS_Pickable) {
+		AddActorWorldOffset(FVector(0.f, 0.f, movCalcul(runningTime)));
+		//AddActorWorldRotation(FRotator(0.f, 45.f * DeltaTime, 0.f));
+	}
+	
 }
 
 void AObjects::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

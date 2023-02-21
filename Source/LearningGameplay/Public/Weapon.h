@@ -16,6 +16,7 @@ class LEARNINGGAMEPLAY_API AWeapon : public AObjects
 {
 	GENERATED_BODY()
 
+
 protected :
 
 	class AEchoCharacter* echoCharacter;
@@ -26,5 +27,7 @@ protected :
 
 public :
 	void equip(USceneComponent* weap, FName socketName);
+
+	void Sheathe(USceneComponent* weap, FName socketName);
 	
 };

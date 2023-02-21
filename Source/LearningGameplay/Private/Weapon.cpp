@@ -2,6 +2,7 @@
 
 
 #include "Weapon.h"
+#include "WeaponStateEnum.h"
 #include "EchoCharacter.h"
 
 void AWeapon::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -21,11 +22,22 @@ void AWeapon::equip(USceneComponent* weap, FName socketName)
 {
 	const FAttachmentTransformRules attachmentRules(EAttachmentRule::SnapToTarget, true);
 	ItemMesh->AttachToComponent(weap, attachmentRules, socketName);
-	amplitude = 0;
-	speed = 0;
+	weaponState = EWeaponState::EWS_Equipped;
 
 }
 
+void AWeapon::Sheathe(USceneComponent* weap, FName socketName)
+{
+}
+
+/*
+void AWeapon::Sheathe(USceneComponent* weap, FName socketName)
+{
+	const FAttachmentTransformRules attachmentRules(EAttachmentRule::SnapToTarget, true);
+	ItemMesh->AttachToComponent(weap, attachmentRules, socketName);
+
+}
+*/
 
 /* BROUILLOOOOOOON
 	const FAttachmentTransformRules attachmentRules(EAttachmentRule::SnapToTarget, true);
