@@ -174,6 +174,25 @@ void AEchoCharacter::PlayAttackMontage()
 
 	}
 }
+
+void AEchoCharacter::PlayUnarmMontage()
+{
+	UAnimInstance* montageUnarm = GetMesh()->GetAnimInstance();
+	if (montageUnarm) {
+		montageUnarm->Montage_Play(unarmMontage);
+		if (characterState == ECharacterState::ECS_Unequipped) {
+			montageUnarm->Montage_JumpToSection("DrawSword", attackMontage);
+			characterState = ECharacterState::ECS_equippedWeapon;
+		}
+		else {
+			montageUnarm->Montage_JumpToSection("SheatheSword", attackMontage);
+			characterState = ECharacterState::ECS_Unequipped;
+		}
+		
+
+
+	}
+}
 void AEchoCharacter::Attack()
 {
 	if (characterState == ECharacterState::ECS_equippedWeapon && actionState == EActionState::EAS_Unoccupied) {
@@ -186,25 +205,18 @@ void AEchoCharacter::Attack()
 
 void AEchoCharacter::attackEnd()
 {
-	GEngine->AddOnScreenDebugMessage(2, 1.f, FColor::Blue, FString("Attack just ended"));
 	actionState = EActionState::EAS_Unoccupied;
+}
+
+void AEchoCharacter::unarmedSword()
+{
+	characterState = ECharacterState::ECS_Unequipped;
 }
 
 void AEchoCharacter::UnarmWeapon()
 {
-	AWeapon* overlappedWeapon = Cast<AWeapon>(overlappedObjects);
-	if (overlappedWeapon) {
-		overlappedWeapon->equip(GetMesh(), FName("WeaponSocket"));
-		characterState = ECharacterState::ECS_equippedWeapon;
-	}
-
-	ADoor* door = Cast<ADoor>(overlappedObjects);
-	if (door) {
-		door->doorOpening();
-	}
-
-	if (characterState == ECharacterState::ECS_equippedWeapon && actionState == EActionState::EAS_Unoccupied) {
-		
+	if (characterState != ECharacterState::ECS_Unequipped && actionState == EActionState::EAS_Unoccupied && unarmMontage) {
+		PlayUnarmMontage();
 	}
 
 }

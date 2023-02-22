@@ -76,12 +76,17 @@ protected:
 
 	void PlayAttackMontage();
 
+	void PlayUnarmMontage();
+
 	/*Called for attacking (with montage)*/
 	void Attack();
 
 	/*Anim notify functions*/
 	UFUNCTION(BlueprintCallable)
 		void attackEnd();
+
+	UFUNCTION(BlueprintCallable)
+		void unarmedSword();
 
 private :
 	UPROPERTY(VisibleAnywhere)
@@ -113,6 +118,9 @@ private :
 
 	UPROPERTY(EditDefaultsOnly, Category = "Montages | Attack")
 	UAnimMontage* attackMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Montages | Unarm")
+		UAnimMontage* unarmMontage;
 
 public:	
 	// Called every frame
