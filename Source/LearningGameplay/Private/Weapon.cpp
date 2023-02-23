@@ -26,6 +26,12 @@ void AWeapon::equip(USceneComponent* weap, FName socketName)
 
 }
 
+void AWeapon::unEquip(USceneComponent* weap, FName socketName)
+{
+	const FAttachmentTransformRules attachmentRules(EAttachmentRule::SnapToTarget, true);
+	ItemMesh->AttachToComponent(weap, attachmentRules, socketName);
+}
+
 void AWeapon::Sheathe(USceneComponent* weap, FName socketName)
 {
 }

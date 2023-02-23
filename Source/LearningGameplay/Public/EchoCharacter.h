@@ -15,6 +15,7 @@ class UCameraComponent;
 class UGroomComponent;
 class AObjects;
 class UAnimMontage;
+class AWeapon;
 
 UCLASS()
 class LEARNINGGAMEPLAY_API AEchoCharacter : public ACharacter
@@ -72,11 +73,15 @@ protected:
 	/*Called for interacting*/
 	void Interact();
 
+	bool canDraw();
+
+	bool canSheathe();
+
 	void UnarmWeapon();
 
 	void PlayAttackMontage();
 
-	void PlayUnarmMontage();
+	void PlayUnarmMontage(FName sectionName);
 
 	/*Called for attacking (with montage)*/
 	void Attack();
@@ -84,9 +89,6 @@ protected:
 	/*Anim notify functions*/
 	UFUNCTION(BlueprintCallable)
 		void attackEnd();
-
-	UFUNCTION(BlueprintCallable)
-		void unarmedSword();
 
 private :
 	UPROPERTY(VisibleAnywhere)
@@ -105,6 +107,9 @@ private :
 
 	UPROPERTY(VisibleInstanceOnly)
 		AObjects* overlappedObjects;
+
+	UPROPERTY(VisibleInstanceOnly, Category = "Weapon")
+	AWeapon* weaponEquipped;
 
 	//Enum charac states
 

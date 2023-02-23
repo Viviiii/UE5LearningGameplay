@@ -140,6 +140,7 @@ void AEchoCharacter::Interact()
 	if (overlappedWeapon) {
 		overlappedWeapon->equip(GetMesh(), FName("WeaponSocket"));
 		characterState = ECharacterState::ECS_equippedWeapon;
+		weaponEquipped = overlappedWeapon;
 	}
 
 	ADoor* door = Cast<ADoor>(overlappedObjects);
@@ -153,7 +154,6 @@ void AEchoCharacter::PlayAttackMontage()
 {
 	UAnimInstance* montageAttack = GetMesh()->GetAnimInstance();
 	if (montageAttack) {
-		GEngine->AddOnScreenDebugMessage(2, 1.f, FColor::Blue, FString("Attacking!"));
 		montageAttack->Montage_Play(attackMontage);
 		int32 random = FMath::RandRange(0, 1);
 		FName selection = FName();
@@ -175,21 +175,12 @@ void AEchoCharacter::PlayAttackMontage()
 	}
 }
 
-void AEchoCharacter::PlayUnarmMontage()
+void AEchoCharacter::PlayUnarmMontage(FName sectionName)
 {
 	UAnimInstance* montageUnarm = GetMesh()->GetAnimInstance();
-	if (montageUnarm) {
+	if (montageUnarm && unarmMontage) {
 		montageUnarm->Montage_Play(unarmMontage);
-		if (characterState == ECharacterState::ECS_Unequipped) {
-			montageUnarm->Montage_JumpToSection("DrawSword", attackMontage);
-			characterState = ECharacterState::ECS_equippedWeapon;
-		}
-		else {
-			montageUnarm->Montage_JumpToSection("SheatheSword", attackMontage);
-			characterState = ECharacterState::ECS_Unequipped;
-		}
-		
-
+		montageUnarm->Montage_JumpToSection(sectionName, unarmMontage);
 
 	}
 }
@@ -208,16 +199,27 @@ void AEchoCharacter::attackEnd()
 	actionState = EActionState::EAS_Unoccupied;
 }
 
-void AEchoCharacter::unarmedSword()
-{
-	characterState = ECharacterState::ECS_Unequipped;
+bool AEchoCharacter::canDraw() {
+
+	return actionState == EActionState::EAS_Unoccupied && characterState == ECharacterState::ECS_Unequipped && weaponEquipped;
+
 }
 
+bool AEchoCharacter::canSheathe() {
+
+	return actionState == EActionState::EAS_Unoccupied && characterState != ECharacterState::ECS_Unequipped && unarmMontage && weaponEquipped;
+}
 void AEchoCharacter::UnarmWeapon()
 {
-	if (characterState != ECharacterState::ECS_Unequipped && actionState == EActionState::EAS_Unoccupied && unarmMontage) {
-		PlayUnarmMontage();
+	if (canSheathe()) {
+		PlayUnarmMontage(FName("SheatheSword"));
+		weaponEquipped->unEquip(GetMesh(), FName(""));
+		characterState = ECharacterState::ECS_Unequipped;
+			
 	}
-
+	else if (canDraw()) {
+		PlayUnarmMontage(FName("DrawSword"));
+		characterState = ECharacterState::ECS_equippedWeapon;
+	}	
 }
 

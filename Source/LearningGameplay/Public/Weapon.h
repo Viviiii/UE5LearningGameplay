@@ -28,6 +28,7 @@ protected :
 public :
 	void equip(USceneComponent* weap, FName socketName);
 
+	void unEquip(USceneComponent* weap, FName socketName);
 	void Sheathe(USceneComponent* weap, FName socketName);
 	
 };
