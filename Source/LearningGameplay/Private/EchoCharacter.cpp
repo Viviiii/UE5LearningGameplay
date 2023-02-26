@@ -24,7 +24,6 @@ AEchoCharacter::AEchoCharacter()
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;
-	interact = false;
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 400.f, 0.f);
@@ -140,6 +139,7 @@ void AEchoCharacter::Interact()
 	if (overlappedWeapon) {
 		overlappedWeapon->equip(GetMesh(), FName("WeaponSocket"));
 		characterState = ECharacterState::ECS_equippedWeapon;
+		overlappedObjects = nullptr;
 		weaponEquipped = overlappedWeapon;
 	}
 
@@ -199,6 +199,12 @@ void AEchoCharacter::attackEnd()
 	actionState = EActionState::EAS_Unoccupied;
 }
 
+void AEchoCharacter::disarmSword()
+{
+	if(weaponEquipped)
+	weaponEquipped->AttachMeshToComponent(GetMesh(), FName("WeaponSheathedSocket"));
+}
+
 bool AEchoCharacter::canDraw() {
 
 	return actionState == EActionState::EAS_Unoccupied && characterState == ECharacterState::ECS_Unequipped && weaponEquipped;
@@ -213,12 +219,13 @@ void AEchoCharacter::UnarmWeapon()
 {
 	if (canSheathe()) {
 		PlayUnarmMontage(FName("SheatheSword"));
-		weaponEquipped->unEquip(GetMesh(), FName(""));
+		//weaponEquipped->AttachMeshToComponent(GetMesh(), FName("WeaponSheathedSocket"));
 		characterState = ECharacterState::ECS_Unequipped;
 			
 	}
 	else if (canDraw()) {
 		PlayUnarmMontage(FName("DrawSword"));
+		weaponEquipped->equip(GetMesh(), FName("WeaponSocket"));
 		characterState = ECharacterState::ECS_equippedWeapon;
 	}	
 }

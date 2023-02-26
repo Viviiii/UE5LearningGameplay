@@ -36,6 +36,8 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 		class UInputMappingContext* DefaultMappingContext;
@@ -44,7 +46,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 		class UInputAction* MoveAction;
 
-	/** Move Input Action */
+	/** Look Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 		class UInputAction* LookAction;
 
@@ -52,20 +54,20 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 		class UInputAction* InteractAction;
 
+	/** Jump Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 		class UInputAction* JumpAction;
 
+	/** Attack Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 		class UInputAction* AttackAction;
 
+	/** Draw/Sheathe Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 		class UInputAction* WeaponAction;
 
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
-
-	/* Called for movement input*/
-	void MoveRight(const FInputActionValue& Value);
 
 	/*Called for looking up*/
 	void Look(const FInputActionValue& Value);
@@ -73,12 +75,18 @@ protected:
 	/*Called for interacting*/
 	void Interact();
 
-	bool canDraw();
+	/*Anim notify functions*/
+	UFUNCTION(BlueprintCallable)
+		void attackEnd();
 
-	bool canSheathe();
+	UFUNCTION(BlueprintCallable)
+		void disarmSword();
 
+	
+	/*Draw/Sheathe weapon */
 	void UnarmWeapon();
 
+	/* Montages and sections played*/
 	void PlayAttackMontage();
 
 	void PlayUnarmMontage(FName sectionName);
@@ -86,11 +94,15 @@ protected:
 	/*Called for attacking (with montage)*/
 	void Attack();
 
-	/*Anim notify functions*/
-	UFUNCTION(BlueprintCallable)
-		void attackEnd();
+	/* Shorts functions to check character+actionState*/
+	bool canDraw();
+
+	bool canSheathe();
+
+
 
 private :
+	/* Used with camera*/
 	UPROPERTY(VisibleAnywhere)
 		USpringArmComponent* SpringArm;
 
@@ -98,6 +110,7 @@ private :
 	UPROPERTY(VisibleAnywhere)
 		UCameraComponent* FollowCamera;
 
+	/* Groom components*/
 	UPROPERTY(VisibleAnywhere, Category = "Hair")
 		class UGroomComponent* Hair;
 
@@ -105,9 +118,11 @@ private :
 	UPROPERTY(VisibleAnywhere, Category = "Hair")
 		class UGroomComponent* Eyesbrows;
 
+	/* Overlapping objects*/
 	UPROPERTY(VisibleInstanceOnly)
 		AObjects* overlappedObjects;
 
+	/* Use weapon equipped*/
 	UPROPERTY(VisibleInstanceOnly, Category = "Weapon")
 	AWeapon* weaponEquipped;
 
@@ -133,8 +148,5 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	bool interact;
-	
 
 };

@@ -3,7 +3,9 @@
 
 #include "Weapon.h"
 #include "WeaponStateEnum.h"
+#include "Kismet/GameplayStatics.h"
 #include "EchoCharacter.h"
+#include "Components/BoxComponent.h"
 
 void AWeapon::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
@@ -18,12 +20,27 @@ void AWeapon::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 
 }
 
+AWeapon::AWeapon()
+{
+	Box = CreateDefaultSubobject<UBoxComponent>(TEXT("Box"));
+	Box->SetupAttachment(GetRootComponent());
+}
+
 void AWeapon::equip(USceneComponent* weap, FName socketName)
+{
+	AttachMeshToComponent(weap, socketName);
+	weaponState = EWeaponState::EWS_Equipped;
+	if (equipSound) {
+		GEngine->AddOnScreenDebugMessage(1, 3, FColor::Blue, FString("SOUUUUND"));
+		UGameplayStatics::PlaySoundAtLocation(this, equipSound, GetActorLocation());
+	}
+
+}
+
+void AWeapon::AttachMeshToComponent(USceneComponent* weap, const FName& socketName)
 {
 	const FAttachmentTransformRules attachmentRules(EAttachmentRule::SnapToTarget, true);
 	ItemMesh->AttachToComponent(weap, attachmentRules, socketName);
-	weaponState = EWeaponState::EWS_Equipped;
-
 }
 
 void AWeapon::unEquip(USceneComponent* weap, FName socketName)
