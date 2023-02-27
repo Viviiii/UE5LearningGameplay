@@ -28,10 +28,6 @@ void AObjects::BeginPlay()
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &AObjects::OnSphereOverlap);
 	Sphere->OnComponentEndOverlap.AddDynamic(this, &AObjects::OnSphereEndOverlap);
 	
-	//ItemMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
-	//ItemMesh->SetupAttachment(GetRootComponent());
-	//Sphere = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere"));
-	//Sphere->SetupAttachment(GetRootComponent());
 	
 }
 

@@ -22,12 +22,16 @@ class LEARNINGGAMEPLAY_API AWeapon : public AObjects
 
 
 protected :
+	virtual void BeginPlay() override;
 
 	class AEchoCharacter* echoCharacter;
 
-		virtual void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	virtual void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-		virtual void OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	virtual void OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	UFUNCTION()
+		void OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 public :
 	AWeapon();
@@ -38,14 +42,24 @@ public :
 	void unEquip(USceneComponent* weap, FName socketName);
 	void Sheathe(USceneComponent* weap, FName socketName);
 
+	
+
 private :
 	
-		AWeapon* weaponEquipped;
+	AWeapon* weaponEquipped;
 
-		UPROPERTY(EditAnywhere, Category = "Weapon Property")
+	UPROPERTY(EditAnywhere, Category = "Weapon Property")
 	USoundBase* equipSound;
 
-		UPROPERTY(EditAnywhere)
-			UBoxComponent* Box;
+	UPROPERTY(VisibleAnywhere, Category = "Weapon Property")
+	UBoxComponent* Box;
+
+	UPROPERTY(VisibleAnywhere)
+		USceneComponent* BoxTraceStart;
+
+	UPROPERTY(VisibleAnywhere)
+		USceneComponent* BoxTraceEnd;
+
+
 	
 };
