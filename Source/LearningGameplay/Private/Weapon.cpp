@@ -6,6 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "EchoCharacter.h"
 #include "Components/BoxComponent.h"
+#include "IHitInterface.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 void AWeapon::BeginPlay()
@@ -16,14 +17,17 @@ void AWeapon::BeginPlay()
 }
 void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	GEngine->AddOnScreenDebugMessage(1, 3, FColor::Blue, FString("TOUUUUCH"));
-
 	const FVector endTrace = BoxTraceEnd->GetComponentLocation();
 	const FVector startTrace = BoxTraceStart->GetComponentLocation();
 	
 	TArray<AActor*> ActorsToIgnore;
 	ActorsToIgnore.Add(this);
 	FHitResult boxHit;
+
+	for (AActor* Actors : IgnoreActors) {
+		ActorsToIgnore.AddUnique(Actors);
+	}
+
 
 	UKismetSystemLibrary::BoxTraceSingle(this,
 		startTrace,
@@ -36,6 +40,15 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 		EDrawDebugTrace::ForDuration,
 		boxHit,
 		true);
+	if (boxHit.GetActor()) {
+		IIHitInterface* interfaceHit = Cast<IIHitInterface>(boxHit.GetActor());
+		if (interfaceHit) {
+			interfaceHit->getHit(boxHit.ImpactPoint);
+			
+		}
+		IgnoreActors.AddUnique(boxHit.GetActor());
+	}
+
 
 }
 void AWeapon::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -56,7 +69,7 @@ AWeapon::AWeapon()
 	Box = CreateDefaultSubobject<UBoxComponent>(TEXT("Box"));
 	Box->SetupAttachment(GetRootComponent());
 
-	Box->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	Box->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Box->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
 	Box->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 

@@ -82,6 +82,12 @@ protected:
 	UFUNCTION(BlueprintCallable)
 		void disarmSword();
 
+	UFUNCTION(BlueprintCallable)
+		void enableSwordCollision(ECollisionEnabled::Type CollisionEnabled);
+
+	UFUNCTION(BlueprintCallable)
+		void disableSwordCollision(ECollisionEnabled::Type CollisionEnabled);
+
 	
 	/*Draw/Sheathe weapon */
 	void UnarmWeapon();

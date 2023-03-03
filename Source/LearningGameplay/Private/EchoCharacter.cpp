@@ -13,6 +13,7 @@
 #include "Animation/AnimMontage.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Components/BoxComponent.h"
 #include "GameFramework/Pawn.h"
 
 // Sets default values
@@ -203,6 +204,22 @@ void AEchoCharacter::disarmSword()
 {
 	if(weaponEquipped)
 	weaponEquipped->AttachMeshToComponent(GetMesh(), FName("WeaponSheathedSocket"));
+}
+
+void AEchoCharacter::enableSwordCollision(ECollisionEnabled::Type CollisionEnabled)
+{
+	if (weaponEquipped && weaponEquipped->getBoxCollision()) {
+		weaponEquipped->getBoxCollision()->SetCollisionEnabled(CollisionEnabled);
+	}
+	
+}
+
+void AEchoCharacter::disableSwordCollision(ECollisionEnabled::Type CollisionEnabled)
+{
+	if (weaponEquipped && weaponEquipped->getBoxCollision()) {
+	weaponEquipped->getBoxCollision()->SetCollisionEnabled(CollisionEnabled);
+	weaponEquipped->IgnoreActors.Empty();
+	}
 }
 
 bool AEchoCharacter::canDraw() {

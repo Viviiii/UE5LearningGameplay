@@ -42,7 +42,11 @@ public :
 	void unEquip(USceneComponent* weap, FName socketName);
 	void Sheathe(USceneComponent* weap, FName socketName);
 
-	
+	FORCEINLINE UBoxComponent* getBoxCollision() {
+		return Box;
+	}
+
+	TArray<AActor*> IgnoreActors;
 
 private :
 	
