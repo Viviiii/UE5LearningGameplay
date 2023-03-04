@@ -5,6 +5,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "DrawDebugHelpers.h"
 #include "Components/SkeletalMeshComponent.h"
 
 
@@ -98,7 +99,8 @@ void AEnemy::getHit(const FVector& impactPoint)
 void AEnemy::DirectionalHit(const FVector& impactPoint)
 {
 	const FVector forward = GetActorForwardVector();
-	const FVector hitPoint = (impactPoint - GetActorLocation()).GetSafeNormal();
+	const FVector impactLow(impactPoint.X, impactPoint.Y, GetActorLocation().Z);
+	const FVector hitPoint = (impactLow - GetActorLocation()).GetSafeNormal();
 
 
 	//DotProduct = forward * hitPoint = (|forward||hitPoint|) * cos(theta)
@@ -113,26 +115,28 @@ void AEnemy::DirectionalHit(const FVector& impactPoint)
 	if (CrossP.Z < 0) {
 		theta *= -1.f;
 	}
-	//UKismetSystemLibrary::DrawDebugArrow(this, GetActorLocation(), GetActorLocation() + CrossP * 100.f, 5.f, FColor::Blue);
+	UKismetSystemLibrary::DrawDebugArrow(this, GetActorLocation(), GetActorLocation() + forward * 50.f, 5.f, FColor::Red,15.f);
+	UKismetSystemLibrary::DrawDebugArrow(this, GetActorLocation(), GetActorLocation() + hitPoint * 50.f, 5.f, FColor::Blue, 15.f);
 	FName Section("FromBack");
 
 	if (theta <= 45.f && theta >= -45.f) {
-		GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Blue, FString("FromFront"));
+		//GEngine->AddOnScreenDebugMessage(2, 5.f, FColor::Blue, FString("FromFront"));
 		Section = FName("FrontHit");
 	}
-	else if (theta >= -135.f && theta <= -45.f) {
-		GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Blue, FString("FromLeft"));
+	else if (theta >= -100.f && theta <= -45.f) {
+		//GEngine->AddOnScreenDebugMessage(2, 5.f, FColor::Blue, FString("FromLeft"));
 		Section = FName("LeftHit");
 	}
-	else if (theta <= 135.f && theta >= 45.f) {
-		GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Blue, FString("FromRight"));
+	else if (theta <= 100.f && theta >= 45.f) {
+		//GEngine->AddOnScreenDebugMessage(2, 5.f, FColor::Blue, FString("FromRight"));
 		Section = FName("RightHit");
 	}
-	else if (theta >= 135.f || theta <= -135.f) {
-		GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Blue, FString("FromBack"));
+	else if (theta >= 100.f || theta <= -100.f) {
+		//GEngine->AddOnScreenDebugMessage(2, 5.f, FColor::Blue, FString("FromBack"));
 		Section = FName("BackHit");
 	}
-	GEngine->AddOnScreenDebugMessage(1, 10.f, FColor::Blue, FString::Printf(TEXT("Theta : %f"), theta));
+	//GEngine->AddOnScreenDebugMessage(1, 10.f, FColor::Blue, FString::Printf(TEXT("hitPoint X: %f"), impactPoint.X));
+	//GEngine->AddOnScreenDebugMessage(2, 10.f, FColor::Blue, FString::Printf(TEXT("hitPoint Y: %f"), impactPoint.Y));
 	PlayHitMontage(Section);
 }
 
