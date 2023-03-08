@@ -43,12 +43,13 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 	if (boxHit.GetActor()) {
 		IIHitInterface* interfaceHit = Cast<IIHitInterface>(boxHit.GetActor());
 		if (interfaceHit) {
-			interfaceHit->getHit(boxHit.ImpactPoint);
+			interfaceHit->getHit_Implementation(boxHit.ImpactPoint);
 			
 		}
+		createField(boxHit.ImpactPoint);
 		IgnoreActors.AddUnique(boxHit.GetActor());
 	}
-	createField(boxHit.ImpactPoint);
+
 
 }
 void AWeapon::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

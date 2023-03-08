@@ -2,6 +2,9 @@
 
 
 #include "Breakable.h"
+#include "IHitInterface.h"
+#include "Kismet/GameplayStatics.h"
+#include "Components/CapsuleComponent.h"
 #include "GeometryCollection/GeometryCollectionComponent.h"
 
 // Sets default values
@@ -14,6 +17,12 @@ ABreakable::ABreakable()
 	SetRootComponent(breakable);
 	breakable->SetGenerateOverlapEvents(true);
 	breakable->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
+	breakable->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+
+	capsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule"));
+	capsule->SetupAttachment(GetRootComponent());
+	capsule->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	capsule->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
 
 }
 
@@ -29,5 +38,17 @@ void ABreakable::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void ABreakable::getHit_Implementation(const FVector& impactPoint)
+{
+	GEngine->AddOnScreenDebugMessage(1, 12.f, FColor::Black, FString("THEHE"));
+	if (treasureClass && GetWorld()) {
+		GetWorld()->SpawnActor<ATreasure>(treasureClass, GetActorLocation(), GetActorRotation());
+		if (breakSound) {
+			UGameplayStatics::PlaySoundAtLocation(this, breakSound, GetActorLocation());
+		}
+	}
+	
 }
 

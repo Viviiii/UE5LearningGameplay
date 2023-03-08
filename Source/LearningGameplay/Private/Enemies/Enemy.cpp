@@ -85,7 +85,7 @@ void AEnemy::PlayIdleMontage()
 	}
 }
 
-void AEnemy::getHit(const FVector& impactPoint)
+void AEnemy::getHit_Implementation(const FVector& impactPoint)
 {
 	
 	DirectionalHit(impactPoint);

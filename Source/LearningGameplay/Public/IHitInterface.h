@@ -22,5 +22,7 @@ class LEARNINGGAMEPLAY_API IIHitInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual void getHit(const FVector& impactPoint) = 0;
+
+	UFUNCTION(BlueprintNativeEvent)
+	void getHit(const FVector& impactPoint);
 };

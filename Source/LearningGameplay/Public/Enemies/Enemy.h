@@ -35,7 +35,7 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	virtual void getHit(const FVector& impactPoint) override;
+	virtual void getHit_Implementation(const FVector& impactPoint) override;
 
 	void DirectionalHit(const FVector& impactPoint);
 
