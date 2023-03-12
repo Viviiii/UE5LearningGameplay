@@ -21,7 +21,10 @@ AEnemy::AEnemy()
 	GetMesh()->SetGenerateOverlapEvents(true);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 
-	
+	Attributes = CreateDefaultSubobject<UEchoAttributes>(TEXT("EchoAttributes"));
+
+	widgetHealth = CreateDefaultSubobject<UHealthBar>(TEXT("HealthBar"));
+	widgetHealth->SetupAttachment(GetRootComponent());
 
 }
 
@@ -29,7 +32,10 @@ AEnemy::AEnemy()
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-	PlayIdleMontage();
+	if (widgetHealth) {
+		widgetHealth->setPercentHealth(1.f);
+	}
+	//PlayIdleMontage();
 	
 }
 
@@ -92,6 +98,7 @@ void AEnemy::getHit_Implementation(const FVector& impactPoint)
 	if (hitSound) {
 		UGameplayStatics::PlaySoundAtLocation(this, hitSound, impactPoint);
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bloodEffect, impactPoint);
+		widgetHealth->setPercentHealth(.8f);
 	}
 	
 }

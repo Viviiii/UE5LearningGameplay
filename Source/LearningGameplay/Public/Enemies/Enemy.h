@@ -6,11 +6,17 @@
 #include "GameFramework/Character.h"
 #include "IHitInterface.h"
 #include "Sound/SoundWave.h"
+#include "EchoFiles/EchoAttributes.h"
+#include "Components/WidgetComponent.h"
 #include "Particles/ParticleSystem.h"
+#include "HUD/HealthBar.h"
 #include "Enemy.generated.h"
 
 class USoundBase;
 class UParticleSystem;
+class UEchoAttributes;
+class UWidgetComponent;
+class UHealthBar;
 
 UCLASS()
 class LEARNINGGAMEPLAY_API AEnemy : public ACharacter, public IIHitInterface
@@ -40,6 +46,12 @@ public:
 	void DirectionalHit(const FVector& impactPoint);
 
 private :
+	UPROPERTY(EditAnywhere)
+		UEchoAttributes* Attributes;
+
+	UPROPERTY(VisibleAnywhere)
+		UHealthBar* widgetHealth;
+
 	/* Animation montages*/
 
 	UPROPERTY(EditDefaultsOnly, Category = "Montages | Hit")
