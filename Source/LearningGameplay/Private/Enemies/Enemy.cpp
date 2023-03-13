@@ -98,9 +98,18 @@ void AEnemy::getHit_Implementation(const FVector& impactPoint)
 	if (hitSound) {
 		UGameplayStatics::PlaySoundAtLocation(this, hitSound, impactPoint);
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bloodEffect, impactPoint);
-		widgetHealth->setPercentHealth(.8f);
+		//widgetHealth->setPercentHealth(.8f);
 	}
 	
+}
+
+float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	if (Attributes && widgetHealth) {
+		Attributes->ReceiveDamage(DamageAmount);
+		widgetHealth->setPercentHealth(Attributes->getHealth());
+	}
+	return DamageAmount;
 }
 
 void AEnemy::DirectionalHit(const FVector& impactPoint)

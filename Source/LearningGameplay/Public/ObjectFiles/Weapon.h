@@ -39,7 +39,7 @@ protected :
 	void createField(const FVector& location);
 public :
 	AWeapon();
-	void equip(USceneComponent* weap, FName socketName);
+	void equip(USceneComponent* weap, FName socketName,AActor* Owner, APawn* instigator) ;
 
 	void AttachMeshToComponent(USceneComponent* weap, const FName& socketName);
 
@@ -71,6 +71,7 @@ private :
 	UPROPERTY(EditAnywhere, Category = "Visual Effects")
 		UNiagaraComponent* VFX;
 
-
+	UPROPERTY(VisibleAnywhere, Category = "Weapon Property")
+		float Damage = 20.f;
 	
 };

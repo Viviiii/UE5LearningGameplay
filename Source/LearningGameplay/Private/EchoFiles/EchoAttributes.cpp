@@ -32,3 +32,15 @@ void UEchoAttributes::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 	// ...
 }
 
+void UEchoAttributes::ReceiveDamage(float Damage)
+{
+	//health = FMath::Clamp(health, 0.f, maxHealth);
+	health = FMath::Clamp(health - Damage, 0.f, maxHealth);
+
+}
+
+float UEchoAttributes::getHealth()
+{
+	return health/maxHealth;
+}
+

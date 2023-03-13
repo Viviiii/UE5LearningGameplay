@@ -138,7 +138,10 @@ void AEchoCharacter::Interact()
 {
 	AWeapon* overlappedWeapon = Cast<AWeapon>(overlappedObjects);
 	if (overlappedWeapon) {
-		overlappedWeapon->equip(GetMesh(), FName("WeaponSocket"));
+
+		overlappedWeapon->SetOwner(this);
+		overlappedWeapon->SetInstigator(this);
+		overlappedWeapon->equip(GetMesh(), FName("WeaponSocket"), this, this);
 		characterState = ECharacterState::ECS_equippedWeapon;
 		overlappedObjects = nullptr;
 		weaponEquipped = overlappedWeapon;
@@ -242,7 +245,7 @@ void AEchoCharacter::UnarmWeapon()
 	}
 	else if (canDraw()) {
 		PlayUnarmMontage(FName("DrawSword"));
-		weaponEquipped->equip(GetMesh(), FName("WeaponSocket"));
+		weaponEquipped->equip(GetMesh(), FName("WeaponSocket"), this, this);
 		characterState = ECharacterState::ECS_equippedWeapon;
 	}	
 }

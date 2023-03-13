@@ -43,6 +43,9 @@ public:
 
 	virtual void getHit_Implementation(const FVector& impactPoint) override;
 
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
+
+
 	void DirectionalHit(const FVector& impactPoint);
 
 private :
@@ -67,5 +70,7 @@ private :
 	/*VFX*/
 	UPROPERTY(EditAnywhere, Category = "Enemy Hit")
 		UParticleSystem* bloodEffect;
+
+
 
 };

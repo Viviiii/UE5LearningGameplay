@@ -23,17 +23,21 @@ protected:
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	void ReceiveDamage(float Damage);
+
+	float getHealth();
+
 private :
 	UPROPERTY(EditAnywhere, Category = "Echo Attributes")
-		UActorComponent* health;
+		float health;
 
 	UPROPERTY(EditAnywhere, Category = "Echo Attributes")
-		UActorComponent* maxHealth;
+		float maxHealth;
 
 	UPROPERTY(EditAnywhere, Category = "Echo Attributes")
-		UActorComponent* gold;
+		int gold;
 
 	UPROPERTY(EditAnywhere, Category = "Echo Attributes")
-		UActorComponent* level;
+		int level;
 		
 };
