@@ -27,6 +27,8 @@ public:
 
 	float getHealth();
 
+	bool isAlive();
+
 private :
 	UPROPERTY(EditAnywhere, Category = "Echo Attributes")
 		float health;

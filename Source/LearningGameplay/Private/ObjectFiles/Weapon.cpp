@@ -41,13 +41,14 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 		boxHit,
 		true);
 	if (boxHit.GetActor()) {
+		UGameplayStatics::ApplyDamage(boxHit.GetActor(), Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
 		IIHitInterface* interfaceHit = Cast<IIHitInterface>(boxHit.GetActor());
 		if (interfaceHit) {
 			interfaceHit->getHit_Implementation(boxHit.ImpactPoint);
 			
 		}
 		createField(boxHit.ImpactPoint);
-		UGameplayStatics::ApplyDamage(boxHit.GetActor(), Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
+		
 		IgnoreActors.AddUnique(boxHit.GetActor());
 	}
 
@@ -111,27 +112,3 @@ void AWeapon::unEquip(USceneComponent* weap, FName socketName)
 	const FAttachmentTransformRules attachmentRules(EAttachmentRule::SnapToTarget, true);
 	ItemMesh->AttachToComponent(weap, attachmentRules, socketName);
 }
-
-void AWeapon::Sheathe(USceneComponent* weap, FName socketName)
-{
-}
-
-/*
-void AWeapon::Sheathe(USceneComponent* weap, FName socketName)
-{
-	const FAttachmentTransformRules attachmentRules(EAttachmentRule::SnapToTarget, true);
-	ItemMesh->AttachToComponent(weap, attachmentRules, socketName);
-
-}
-*/
-
-/* BROUILLOOOOOOON
-	const FAttachmentTransformRules attachmentRules(EAttachmentRule::SnapToTarget, true);
-	echoCharacter = Cast<AEchoCharacter>(OtherActor);
-	if (echoCharacter) {
-		ItemMesh->AttachToComponent(echoCharacter->GetMesh(), attachmentRules, "WeaponSocket");
-		amplitude = 0;
-		speed = 0;
-	}
-	
-*/

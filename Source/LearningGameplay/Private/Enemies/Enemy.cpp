@@ -3,6 +3,7 @@
 
 #include "Enemies/Enemy.h"
 #include "Components/CapsuleComponent.h"
+#include "EchoFiles/CharacterStateEnum.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
@@ -26,6 +27,13 @@ AEnemy::AEnemy()
 	widgetHealth = CreateDefaultSubobject<UHealthBar>(TEXT("HealthBar"));
 	widgetHealth->SetupAttachment(GetRootComponent());
 
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	bUseControllerRotationYaw = false;
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationRoll = false;
+
+	
+
 }
 
 // Called when the game starts or when spawned
@@ -33,9 +41,18 @@ void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	if (widgetHealth) {
+		widgetHealth->SetVisibility(false);
 		widgetHealth->setPercentHealth(1.f);
 	}
-	//PlayIdleMontage();
+
+	/* IA Navigation*/
+	AIenemy = Cast<AAIController>(GetController());
+	if (AIenemy && !targetsPatrol.IsEmpty()) {
+		FAIMoveRequest moveReq;
+		int selec = FMath::RandRange(0, 2);
+		moveReq.SetGoalLocation(targetsPatrol[selec]->GetActorLocation());
+		AIenemy->MoveTo(moveReq);
+	}
 	
 }
 
@@ -45,6 +62,15 @@ void AEnemy::BeginPlay()
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (combatTarget) {
+		const double distanceTarget = (combatTarget->GetActorLocation() - GetActorLocation()).Size();
+		if (distanceTarget > combatRadius) {
+			combatTarget = nullptr;
+			if (widgetHealth) {
+				widgetHealth->SetVisibility(false);
+			}
+		}
+	}
 
 }
 
@@ -61,6 +87,41 @@ void AEnemy::PlayHitMontage(FName Section)
 	if (montageHit) {
 		montageHit->Montage_Play(hitMontage);
 		montageHit->Montage_JumpToSection(Section, hitMontage);
+	}
+}
+
+void AEnemy::PlayDeathMontage()
+{
+	UAnimInstance* montageDeath = GetMesh()->GetAnimInstance();
+	if (montageDeath) {
+		montageDeath->Montage_Play(deathMontage);
+		int32 random = FMath::RandRange(0, 3);
+		FName selection = FName();
+		switch (random) {
+			case 0:
+				selection = FName("Death");
+				deathState = EDeathState::ECS_Dead;
+				break;
+
+			case 1:
+				selection = FName("DeathBis");
+				deathState = EDeathState::ECS_Dead1;
+				break;
+
+			case 2:
+				selection = FName("DeathForward");
+				deathState = EDeathState::ECS_Dead2;
+				break;
+
+			case 3: 
+				selection = FName("DeathLeft");
+				deathState = EDeathState::ECS_Dead3;
+				break;
+
+			default:
+				break;
+		}
+		montageDeath->Montage_JumpToSection(selection, deathMontage);
 	}
 }
 
@@ -91,15 +152,29 @@ void AEnemy::PlayIdleMontage()
 	}
 }
 
+
 void AEnemy::getHit_Implementation(const FVector& impactPoint)
 {
-	
-	DirectionalHit(impactPoint);
+	if (widgetHealth) {
+		widgetHealth->SetVisibility(true);
+	}
 	if (hitSound) {
 		UGameplayStatics::PlaySoundAtLocation(this, hitSound, impactPoint);
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bloodEffect, impactPoint);
 		//widgetHealth->setPercentHealth(.8f);
 	}
+	if (Attributes && Attributes->isAlive()) {
+		DirectionalHit(impactPoint);
+	}
+
+	else {
+		PlayDeathMontage();
+		widgetHealth->DestroyComponent();
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		SetLifeSpan(3.f);
+		
+	}
+
 	
 }
 
@@ -108,7 +183,9 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 	if (Attributes && widgetHealth) {
 		Attributes->ReceiveDamage(DamageAmount);
 		widgetHealth->setPercentHealth(Attributes->getHealth());
+		GEngine->AddOnScreenDebugMessage(1, 2.f, FColor::Blue, FString::Printf(TEXT("HP : %f"),Attributes->getHealth()));
 	}
+	combatTarget = EventInstigator->GetPawn();
 	return DamageAmount;
 }
 
@@ -131,8 +208,8 @@ void AEnemy::DirectionalHit(const FVector& impactPoint)
 	if (CrossP.Z < 0) {
 		theta *= -1.f;
 	}
-	UKismetSystemLibrary::DrawDebugArrow(this, GetActorLocation(), GetActorLocation() + forward * 50.f, 5.f, FColor::Red,15.f);
-	UKismetSystemLibrary::DrawDebugArrow(this, GetActorLocation(), GetActorLocation() + hitPoint * 50.f, 5.f, FColor::Blue, 15.f);
+	//UKismetSystemLibrary::DrawDebugArrow(this, GetActorLocation(), GetActorLocation() + forward * 50.f, 5.f, FColor::Red,15.f);
+	//UKismetSystemLibrary::DrawDebugArrow(this, GetActorLocation(), GetActorLocation() + hitPoint * 50.f, 5.f, FColor::Blue, 15.f);
 	FName Section("FromBack");
 
 	if (theta <= 45.f && theta >= -45.f) {

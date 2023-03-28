@@ -4,9 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "IHitInterface.h"
 #include "Sound/SoundWave.h"
+#include "AIController.h"
 #include "EchoFiles/EchoAttributes.h"
+#include "EchoFiles/CharacterStateEnum.h"
 #include "Components/WidgetComponent.h"
 #include "Particles/ParticleSystem.h"
 #include "HUD/HealthBar.h"
@@ -17,6 +20,7 @@ class UParticleSystem;
 class UEchoAttributes;
 class UWidgetComponent;
 class UHealthBar;
+class AAIController;
 
 UCLASS()
 class LEARNINGGAMEPLAY_API AEnemy : public ACharacter, public IIHitInterface
@@ -33,7 +37,12 @@ protected:
 	/* Montages and sections played*/
 	void PlayHitMontage(FName Section);
 
+	void PlayDeathMontage();
+
 	void PlayIdleMontage();
+
+	UPROPERTY(BlueprintReadOnly)
+		EDeathState deathState = EDeathState::ECS_Alive;
 
 
 public:	
@@ -55,6 +64,8 @@ private :
 	UPROPERTY(VisibleAnywhere)
 		UHealthBar* widgetHealth;
 
+
+
 	/* Animation montages*/
 
 	UPROPERTY(EditDefaultsOnly, Category = "Montages | Hit")
@@ -62,6 +73,9 @@ private :
 
 	UPROPERTY(EditDefaultsOnly, Category = "Montages | Idle")
 		UAnimMontage* idleMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Montages | Death")
+		UAnimMontage* deathMontage;
 
 	/*Sounds*/
 	UPROPERTY(EditAnywhere, Category = "Enemy Hit")
@@ -71,6 +85,20 @@ private :
 	UPROPERTY(EditAnywhere, Category = "Enemy Hit")
 		UParticleSystem* bloodEffect;
 
+	UPROPERTY()
+		AActor* combatTarget;
 
+	UPROPERTY(EditAnywhere)
+		double combatRadius = 500.f;
 
-};
+	UPROPERTY()
+		AAIController* AIenemy;
+
+	/*Navigation */
+	UPROPERTY(EditInstanceOnly, Category =" IA Navigation")
+		AActor* targetPatrol;
+
+	UPROPERTY(EditInstanceOnly, Category = " IA Navigation")
+		TArray<AActor*> targetsPatrol;
+
+};		

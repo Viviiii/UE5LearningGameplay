@@ -137,7 +137,7 @@ private :
 	ECharacterState characterState = ECharacterState::ECS_Unequipped;
 
 	EActionState actionState = EActionState::EAS_Unoccupied;
-
+		
 
 
 	/* Animation montages*/

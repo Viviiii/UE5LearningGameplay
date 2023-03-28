@@ -44,3 +44,10 @@ float UEchoAttributes::getHealth()
 	return health/maxHealth;
 }
 
+bool UEchoAttributes::isAlive()
+{
+	return health >0.f;
+}
+
+
+
