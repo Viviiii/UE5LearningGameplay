@@ -29,7 +29,7 @@ AEnemy::AEnemy()
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	bUseControllerRotationYaw = false;
-	bUseControllerRotationPitch = false;
+	bUseControllerRotationPitch = false;	
 	bUseControllerRotationRoll = false;
 
 	
@@ -60,8 +60,7 @@ void AEnemy::Tick(float DeltaTime)
 	AIenemy = Cast<AAIController>(GetController());
 
 
-	if (combatTarget && targetPatrol) {
-		const double distanceTarget = (combatTarget->GetActorLocation() - GetActorLocation()).Size();
+	if (combatTarget) {
 		/* IA Attack*/
 		if (!isTargetInRange(combatTarget, combatRadius)) {
 			combatTarget = nullptr;
@@ -69,22 +68,31 @@ void AEnemy::Tick(float DeltaTime)
 				widgetHealth->SetVisibility(false);
 			}
 		}
+	}
 		/* IA Navigation*/
-		if (isTargetInRange(targetPatrol, 200.f)) {
+	if (targetPatrol && AIenemy) {
+		const int distanceTarget = (targetPatrol->GetActorLocation() - GetActorLocation()).Size();
+		
+		if (isTargetInRange(targetPatrol, 500.f)) {
 			TArray<AActor*> validActors;
-			if (AIenemy && !targetsPatrol.IsEmpty()) {
+			if (!targetsPatrol.IsEmpty()) {
 				for (AActor* target : targetsPatrol) {
-				validActors.AddUnique(target);
+					if (target != targetPatrol) {
+						validActors.AddUnique(target);
+					}		
 				}
-			
 				FAIMoveRequest moveReq;
-				int selec = FMath::RandRange(0, targetsPatrol.Num()-1);
-				AActor* target = validActors[selec];
-				moveReq.SetGoalLocation(target->GetActorLocation());
+				GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Black, FString::Printf(TEXT(" Array size : %d"), validActors.Num()));
+				int selec = FMath::RandRange(0, validActors.Num() - 1);
+				AActor* targetFocused = validActors[selec];
+				moveReq.SetGoalLocation(targetFocused->GetActorLocation());
+				moveReq.SetAcceptanceRadius(15.f);
 				AIenemy->MoveTo(moveReq);
 			}
 		}
 	}
+		
+	
 
 }
 
