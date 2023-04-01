@@ -41,6 +41,8 @@ protected:
 
 	void PlayIdleMontage();
 
+	bool isTargetInRange(AActor* target, double radius);
+
 	UPROPERTY(BlueprintReadOnly)
 		EDeathState deathState = EDeathState::ECS_Alive;
 
