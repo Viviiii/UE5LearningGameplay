@@ -45,14 +45,9 @@ void AEnemy::BeginPlay()
 		widgetHealth->setPercentHealth(1.f);
 	}
 
-	/* IA Navigation*/
-	AIenemy = Cast<AAIController>(GetController());
-	if (AIenemy && !targetsPatrol.IsEmpty()) {
-		FAIMoveRequest moveReq;
-		int selec = FMath::RandRange(0, 2);
-		moveReq.SetGoalLocation(targetsPatrol[selec]->GetActorLocation());
-		AIenemy->MoveTo(moveReq);
-	}
+	
+	
+	
 	
 }
 
@@ -62,12 +57,31 @@ void AEnemy::BeginPlay()
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (combatTarget) {
+	AIenemy = Cast<AAIController>(GetController());
+
+
+	if (combatTarget && targetPatrol) {
 		const double distanceTarget = (combatTarget->GetActorLocation() - GetActorLocation()).Size();
-		if (distanceTarget > combatRadius) {
+		/* IA Attack*/
+		if (!isTargetInRange(combatTarget, combatRadius)) {
 			combatTarget = nullptr;
 			if (widgetHealth) {
 				widgetHealth->SetVisibility(false);
+			}
+		}
+		/* IA Navigation*/
+		if (isTargetInRange(targetPatrol, 200.f)) {
+			TArray<AActor*> validActors;
+			if (AIenemy && !targetsPatrol.IsEmpty()) {
+				for (AActor* target : targetsPatrol) {
+				validActors.AddUnique(target);
+				}
+			
+				FAIMoveRequest moveReq;
+				int selec = FMath::RandRange(0, targetsPatrol.Num()-1);
+				AActor* target = validActors[selec];
+				moveReq.SetGoalLocation(target->GetActorLocation());
+				AIenemy->MoveTo(moveReq);
 			}
 		}
 	}
@@ -150,6 +164,15 @@ void AEnemy::PlayIdleMontage()
 		}
 		montageIdle->Montage_JumpToSection(selection, idleMontage);
 	}
+}
+
+bool AEnemy::isTargetInRange(AActor* target, double radius)
+{
+	const double distanceTarget = (target->GetActorLocation() - GetActorLocation()).Size();
+	if (distanceTarget <= radius) {
+		return true;
+	}
+	return false;
 }
 
 
