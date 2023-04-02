@@ -45,10 +45,6 @@ void AEnemy::BeginPlay()
 		widgetHealth->setPercentHealth(1.f);
 	}
 
-	
-	
-	
-	
 }
 
 
@@ -60,8 +56,7 @@ void AEnemy::Tick(float DeltaTime)
 	AIenemy = Cast<AAIController>(GetController());
 
 
-	if (combatTarget && targetPatrol) {
-		const double distanceTarget = (combatTarget->GetActorLocation() - GetActorLocation()).Size();
+	if (combatTarget) {
 		/* IA Attack*/
 		if (!isTargetInRange(combatTarget, combatRadius)) {
 			combatTarget = nullptr;
@@ -69,22 +64,31 @@ void AEnemy::Tick(float DeltaTime)
 				widgetHealth->SetVisibility(false);
 			}
 		}
+	}
+	if (targetPatrol && AIenemy) {
+		const double distanceTarget = (targetPatrol->GetActorLocation() - GetActorLocation()).Size();
+
+		GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Black, FString::Printf(TEXT("First step %d"), distanceTarget));
+
 		/* IA Navigation*/
-		if (isTargetInRange(targetPatrol, 200.f)) {
+		if (isTargetInRange(targetPatrol, 400.f)) {
+			GEngine->AddOnScreenDebugMessage(2, 5.f, FColor::Black, TEXT("Second step"));
 			TArray<AActor*> validActors;
-			if (AIenemy && !targetsPatrol.IsEmpty()) {
+			if (!targetsPatrol.IsEmpty()) {
 				for (AActor* target : targetsPatrol) {
-				validActors.AddUnique(target);
-				}
-			
+					validActors.AddUnique(target);
+				
+				GEngine->AddOnScreenDebugMessage(3, 5.f, FColor::Black, TEXT("Third step"));
 				FAIMoveRequest moveReq;
-				int selec = FMath::RandRange(0, targetsPatrol.Num()-1);
-				AActor* target = validActors[selec];
-				moveReq.SetGoalLocation(target->GetActorLocation());
+				int selec = FMath::RandRange(0, validActors.Num() - 1);
+				AActor* targetFocused = validActors[selec];
+				moveReq.SetGoalLocation(targetFocused->GetActorLocation());
 				AIenemy->MoveTo(moveReq);
+				}
 			}
 		}
 	}
+	
 
 }
 
