@@ -29,7 +29,7 @@ AEnemy::AEnemy()
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	bUseControllerRotationYaw = false;
-	bUseControllerRotationPitch = false;
+	bUseControllerRotationPitch = false;	
 	bUseControllerRotationRoll = false;
 
 	
@@ -65,29 +65,29 @@ void AEnemy::Tick(float DeltaTime)
 			}
 		}
 	}
-	if (targetPatrol && AIenemy) {
-		const double distanceTarget = (targetPatrol->GetActorLocation() - GetActorLocation()).Size();
-
-		GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Black, FString::Printf(TEXT("First step %d"), distanceTarget));
-
 		/* IA Navigation*/
-		if (isTargetInRange(targetPatrol, 400.f)) {
-			GEngine->AddOnScreenDebugMessage(2, 5.f, FColor::Black, TEXT("Second step"));
+	if (targetPatrol && AIenemy) {
+		const int distanceTarget = (targetPatrol->GetActorLocation() - GetActorLocation()).Size();
+		
+		if (isTargetInRange(targetPatrol, 500.f)) {
 			TArray<AActor*> validActors;
 			if (!targetsPatrol.IsEmpty()) {
 				for (AActor* target : targetsPatrol) {
-					validActors.AddUnique(target);
-				
-				GEngine->AddOnScreenDebugMessage(3, 5.f, FColor::Black, TEXT("Third step"));
+					if (target != targetPatrol) {
+						validActors.AddUnique(target);
+					}		
+				}
 				FAIMoveRequest moveReq;
+				GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Black, FString::Printf(TEXT(" Array size : %d"), validActors.Num()));
 				int selec = FMath::RandRange(0, validActors.Num() - 1);
 				AActor* targetFocused = validActors[selec];
 				moveReq.SetGoalLocation(targetFocused->GetActorLocation());
+				moveReq.SetAcceptanceRadius(15.f);
 				AIenemy->MoveTo(moveReq);
-				}
 			}
 		}
 	}
+		
 	
 
 }
