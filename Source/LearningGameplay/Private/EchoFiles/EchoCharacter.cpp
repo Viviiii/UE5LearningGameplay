@@ -63,6 +63,8 @@ void AEchoCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
+
+	Tags.Add(FName("EchoCharacter"));
 	
 }
 

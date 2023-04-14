@@ -21,3 +21,10 @@ enum class EDeathState : uint8 {
 	ECS_Dead2 UMETA(DisplayName = "Dead2"),
 	ECS_Dead3 UMETA(DisplayName = "Dead3"),
 };
+
+UENUM(BlueprintType)
+enum class EEnemyState : uint8 {
+	EES_Patrol UMETA(DisplayName = "Patrolling"),
+	EES_Chasing UMETA(DisplayName = "Chasing"),
+	EES_Attacking UMETA(DisplayName = "Attacking"),
+};

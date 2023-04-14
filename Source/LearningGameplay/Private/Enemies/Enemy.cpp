@@ -24,6 +24,12 @@ AEnemy::AEnemy()
 
 	Attributes = CreateDefaultSubobject<UEchoAttributes>(TEXT("EchoAttributes"));
 
+	pawnSensing = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensingComponent"));
+	pawnSensing->bHearNoises = 812.f;
+	pawnSensing->SightRadius = 877.f;
+	pawnSensing->SetPeripheralVisionAngle(38.f);
+	pawnSensing->LOSHearingThreshold = 1050.f;
+
 	widgetHealth = CreateDefaultSubobject<UHealthBar>(TEXT("HealthBar"));
 	widgetHealth->SetupAttachment(GetRootComponent());
 
@@ -44,52 +50,64 @@ void AEnemy::BeginPlay()
 		widgetHealth->SetVisibility(false);
 		widgetHealth->setPercentHealth(1.f);
 	}
-
+	AIenemy = Cast<AAIController>(GetController());
+	//echo = Cast<AEchoCharacter>(GetController()->GetPawn());
+	if (pawnSensing) {
+		//pawnSensing->OnSeePawn.AddDynamic(this, &AEnemy::pawnSeen(APawn* pawn));
+		pawnSensing->OnSeePawn.AddDynamic(this, &AEnemy::pawnSeen);
+	}
 }
-
-
 
 // Called every frame
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	AIenemy = Cast<AAIController>(GetController());
 
+	/*IA Attack*/
+	if (enemyState > EEnemyState::EES_Patrol) {
+		GEngine->AddOnScreenDebugMessage(1, 0.5f, FColor::Red, FString("First case scenario"));
 
-	if (combatTarget) {
-		/* IA Attack*/
-		if (!isTargetInRange(combatTarget, combatRadius)) {
-			combatTarget = nullptr;
-			if (widgetHealth) {
-				widgetHealth->SetVisibility(false);
-			}
-		}
+		CheckCombatTarget();
 	}
+	else {
+		GEngine->AddOnScreenDebugMessage(1, 0.5f, FColor::Red, FString("Second case scenario"));
+
 		/* IA Navigation*/
-	if (targetPatrol && AIenemy) {
-		const int distanceTarget = (targetPatrol->GetActorLocation() - GetActorLocation()).Size();
-		
-		if (isTargetInRange(targetPatrol, 500.f)) {
-			TArray<AActor*> validActors;
-			if (!targetsPatrol.IsEmpty()) {
-				for (AActor* target : targetsPatrol) {
-					if (target != targetPatrol) {
-						validActors.AddUnique(target);
-					}		
-				}
-				FAIMoveRequest moveReq;
-				GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Black, FString::Printf(TEXT(" Array size : %d"), validActors.Num()));
-				int selec = FMath::RandRange(0, validActors.Num() - 1);
-				AActor* targetFocused = validActors[selec];
-				moveReq.SetGoalLocation(targetFocused->GetActorLocation());
-				moveReq.SetAcceptanceRadius(15.f);
-				AIenemy->MoveTo(moveReq);
-			}
-		}
+		CheckPatrolTarget();
 	}
-		
 	
 
+}
+
+void AEnemy::CheckPatrolTarget()
+{
+	enemyState = EEnemyState::EES_Patrol;
+	if (isTargetInRange(targetPatrol, patrolRadius)) {
+		
+		targetPatrol = choosingTarget();
+		GetWorld()->GetTimerManager().SetTimer(patrolTimer, this, &AEnemy::patrolTimerFinished, FMath::RandRange(1, 2) , true);
+	}
+}
+
+void AEnemy::CheckCombatTarget()
+{
+	/*Ennemies lose interest, go back to patrolling*/
+	
+	if (!isTargetInRange(combatTarget, combatRadius)) {
+		combatTarget = nullptr;
+		if (widgetHealth) {
+			widgetHealth->SetVisibility(false);
+		}
+		enemyState = EEnemyState::EES_Patrol;
+		GetCharacterMovement()->MaxWalkSpeed = 300.f;
+		GEngine->AddOnScreenDebugMessage(3, 5.f, FColor::Red, FString(targetPatrol->GetName()));
+
+		MoveToTarget(targetPatrol);
+
+	}
+	else {
+		GEngine->AddOnScreenDebugMessage(3, 5.f, FColor::Red, FString("Oh we're lost"));
+	}
 }
 
 // Called to bind functionality to input
@@ -173,10 +191,43 @@ void AEnemy::PlayIdleMontage()
 bool AEnemy::isTargetInRange(AActor* target, double radius)
 {
 	const double distanceTarget = (target->GetActorLocation() - GetActorLocation()).Size();
-	if (distanceTarget <= radius) {
-		return true;
+	return (distanceTarget <= radius);
+}
+
+void AEnemy::MoveToTarget(AActor* target)
+{
+	//It's going here
+	if (target == nullptr || AIenemy == nullptr) return ;
+	GEngine->AddOnScreenDebugMessage(4, 2.f, FColor::Red, FString("Mooooove"));
+	FAIMoveRequest moveReq;
+	moveReq.SetGoalActor(target);
+	moveReq.SetAcceptanceRadius(15.f);
+	FNavPathSharedPtr navPath;
+	AIenemy->MoveTo(moveReq, &navPath);
+	
+}
+
+void AEnemy::patrolTimerFinished()
+{
+	GEngine->AddOnScreenDebugMessage(2, 0.5f, FColor::Red, FString("MatrolTimerFinished"));
+
+	MoveToTarget(targetPatrol);
+
+}
+
+AActor* AEnemy::choosingTarget()
+{
+	//It's going here
+	if (targetPatrol == nullptr || targetsPatrol.IsEmpty()) return nullptr;
+	TArray<AActor*> validActors;
+	for (AActor* target : targetsPatrol) {
+		if (target != targetPatrol) {
+			validActors.AddUnique(target);
+		}
 	}
-	return false;
+	const int32 selec = FMath::RandRange(0, validActors.Num() - 1);
+	return validActors[selec];
+
 }
 
 
@@ -214,6 +265,19 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 	}
 	combatTarget = EventInstigator->GetPawn();
 	return DamageAmount;
+}
+
+void AEnemy::pawnSeen(APawn* pawn)
+{
+	if (enemyState == EEnemyState::EES_Chasing) return;
+	if (pawn->ActorHasTag(FName("EchoCharacter"))) {
+		enemyState = EEnemyState::EES_Chasing;
+		GetCharacterMovement()->MaxWalkSpeed = 450.f;
+		combatTarget = pawn;
+		GetWorld()->GetTimerManager().ClearTimer(patrolTimer);
+		MoveToTarget(pawn);
+	}
+	
 }
 
 void AEnemy::DirectionalHit(const FVector& impactPoint)

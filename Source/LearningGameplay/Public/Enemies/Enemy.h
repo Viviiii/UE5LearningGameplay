@@ -12,6 +12,7 @@
 #include "EchoFiles/CharacterStateEnum.h"
 #include "Components/WidgetComponent.h"
 #include "Particles/ParticleSystem.h"
+#include "Perception/PawnSensingComponent.h"
 #include "HUD/HealthBar.h"
 #include "Enemy.generated.h"
 
@@ -21,6 +22,7 @@ class UEchoAttributes;
 class UWidgetComponent;
 class UHealthBar;
 class AAIController;
+class UPawnSensingComponent;
 
 UCLASS()
 class LEARNINGGAMEPLAY_API AEnemy : public ACharacter, public IIHitInterface
@@ -41,14 +43,29 @@ protected:
 
 	void PlayIdleMontage();
 
-	bool isTargetInRange(AActor* target, double radius);
-
 	UPROPERTY(BlueprintReadOnly)
 		EDeathState deathState = EDeathState::ECS_Alive;
+
+	/*Navigation */
+
+	bool isTargetInRange(AActor* target, double radius);
+
+	void MoveToTarget(AActor* target);
+
+	UFUNCTION()
+	void patrolTimerFinished();
+
+	AActor* choosingTarget();
 
 
 public:	
 	virtual void Tick(float DeltaTime) override;
+
+	/*Navigation */
+
+	void CheckPatrolTarget();
+
+	void CheckCombatTarget();
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
@@ -56,8 +73,12 @@ public:
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
 
+	UFUNCTION()
+	void pawnSeen(APawn* pawn);
 
 	void DirectionalHit(const FVector& impactPoint);
+
+	EEnemyState enemyState = EEnemyState::EES_Patrol;
 
 private :
 	UPROPERTY(EditAnywhere)
@@ -66,6 +87,7 @@ private :
 	UPROPERTY(VisibleAnywhere)
 		UHealthBar* widgetHealth;
 
+	FTimerHandle patrolTimer;
 
 
 	/* Animation montages*/
@@ -79,6 +101,7 @@ private :
 	UPROPERTY(EditDefaultsOnly, Category = "Montages | Death")
 		UAnimMontage* deathMontage;
 
+
 	/*Sounds*/
 	UPROPERTY(EditAnywhere, Category = "Enemy Hit")
 		USoundBase* hitSound;
@@ -87,20 +110,28 @@ private :
 	UPROPERTY(EditAnywhere, Category = "Enemy Hit")
 		UParticleSystem* bloodEffect;
 
-	UPROPERTY()
-		AActor* combatTarget;
 
-	UPROPERTY(EditAnywhere)
-		double combatRadius = 500.f;
-
-	UPROPERTY()
-		AAIController* AIenemy;
 
 	/*Navigation */
-	UPROPERTY(EditInstanceOnly, Category =" IA Navigation")
+	UPROPERTY(EditInstanceOnly, Category =" IA Navigation", BlueprintReadWrite, meta =(AllowPrivateAccess = "true"))
 		AActor* targetPatrol;
 
 	UPROPERTY(EditInstanceOnly, Category = " IA Navigation")
 		TArray<AActor*> targetsPatrol;
+
+	UPROPERTY(EditInstanceOnly, Category = " IA Navigation")
+		AActor* combatTarget;
+
+	UPROPERTY(EditAnywhere)
+		double combatRadius = 550.f;
+
+	UPROPERTY(EditAnywhere)
+		double patrolRadius = 3000.f;
+
+	UPROPERTY()
+		AAIController* AIenemy;
+
+	UPROPERTY(EditAnywhere)
+		UPawnSensingComponent* pawnSensing;
 
 };		
