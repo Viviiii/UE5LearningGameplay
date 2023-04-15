@@ -43,6 +43,8 @@ protected:
 
 	void PlayIdleMontage();
 
+	void PlayAttackMontage();
+
 	UPROPERTY(BlueprintReadOnly)
 		EDeathState deathState = EDeathState::ECS_Alive;
 
@@ -100,6 +102,9 @@ private :
 
 	UPROPERTY(EditDefaultsOnly, Category = "Montages | Death")
 		UAnimMontage* deathMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Montages | Attack")
+		UAnimMontage* attackMontage;
 
 
 	/*Sounds*/
