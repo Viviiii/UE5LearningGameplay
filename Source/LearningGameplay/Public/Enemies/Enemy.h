@@ -113,12 +113,18 @@ private :
 
 
 	/*Navigation */
+
+
+	UPROPERTY()
+		AAIController* AIenemy;
+
 	UPROPERTY(EditInstanceOnly, Category =" IA Navigation", BlueprintReadWrite, meta =(AllowPrivateAccess = "true"))
 		AActor* targetPatrol;
 
 	UPROPERTY(EditInstanceOnly, Category = " IA Navigation")
 		TArray<AActor*> targetsPatrol;
 
+	/* Chasing + attacks*/
 	UPROPERTY(EditInstanceOnly, Category = " IA Navigation")
 		AActor* combatTarget;
 
@@ -126,10 +132,10 @@ private :
 		double combatRadius = 550.f;
 
 	UPROPERTY(EditAnywhere)
-		double patrolRadius = 3000.f;
+		double attackRadius = 250.f;
 
-	UPROPERTY()
-		AAIController* AIenemy;
+	UPROPERTY(EditAnywhere)
+		double patrolRadius = 3000.f;
 
 	UPROPERTY(EditAnywhere)
 		UPawnSensingComponent* pawnSensing;

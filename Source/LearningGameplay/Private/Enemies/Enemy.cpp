@@ -51,7 +51,6 @@ void AEnemy::BeginPlay()
 		widgetHealth->setPercentHealth(1.f);
 	}
 	AIenemy = Cast<AAIController>(GetController());
-	//echo = Cast<AEchoCharacter>(GetController()->GetPawn());
 	if (pawnSensing) {
 		//pawnSensing->OnSeePawn.AddDynamic(this, &AEnemy::pawnSeen(APawn* pawn));
 		pawnSensing->OnSeePawn.AddDynamic(this, &AEnemy::pawnSeen);
@@ -65,8 +64,6 @@ void AEnemy::Tick(float DeltaTime)
 
 	/*IA Attack*/
 	if (enemyState > EEnemyState::EES_Patrol) {
-		GEngine->AddOnScreenDebugMessage(1, 0.5f, FColor::Red, FString("First case scenario"));
-
 		CheckCombatTarget();
 	}
 	else {
@@ -100,14 +97,22 @@ void AEnemy::CheckCombatTarget()
 		}
 		enemyState = EEnemyState::EES_Patrol;
 		GetCharacterMovement()->MaxWalkSpeed = 300.f;
-		GEngine->AddOnScreenDebugMessage(3, 5.f, FColor::Red, FString(targetPatrol->GetName()));
-
 		MoveToTarget(targetPatrol);
 
 	}
-	else {
-		GEngine->AddOnScreenDebugMessage(3, 5.f, FColor::Red, FString("Oh we're lost"));
+	/* Enemies too far to attack so goes back to chasing*/
+	else if (!isTargetInRange(combatTarget, combatRadius) && enemyState != EEnemyState::EES_Chasing) {
+		enemyState = EEnemyState::EES_Chasing;
+		GetCharacterMovement()->MaxWalkSpeed = 300.f;
+		MoveToTarget(combatTarget);
 	}
+	/* Enemies ATTAAAAAAAAAAAAACK*/
+	else if (isTargetInRange(combatTarget, combatRadius) && enemyState != EEnemyState::EES_Attacking) {
+		enemyState = EEnemyState::EES_Attacking;
+		GEngine->AddOnScreenDebugMessage(1, 0.5f, FColor::Red, FString("Attack this bitch"));
+
+	}
+	
 }
 
 // Called to bind functionality to input
@@ -198,7 +203,7 @@ void AEnemy::MoveToTarget(AActor* target)
 {
 	//It's going here
 	if (target == nullptr || AIenemy == nullptr) return ;
-	GEngine->AddOnScreenDebugMessage(4, 2.f, FColor::Red, FString("Mooooove"));
+
 	FAIMoveRequest moveReq;
 	moveReq.SetGoalActor(target);
 	moveReq.SetAcceptanceRadius(15.f);
