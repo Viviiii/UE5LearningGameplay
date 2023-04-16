@@ -64,11 +64,11 @@ void AEnemy::Tick(float DeltaTime)
 
 	/*IA Attack*/
 	if (enemyState > EEnemyState::EES_Patrol) {
+		
 		CheckCombatTarget();
 	}
 	else {
-		GEngine->AddOnScreenDebugMessage(1, 0.5f, FColor::Red, FString("Second case scenario"));
-
+		
 		/* IA Navigation*/
 		CheckPatrolTarget();
 	}
@@ -96,20 +96,25 @@ void AEnemy::CheckCombatTarget()
 			widgetHealth->SetVisibility(false);
 		}
 		enemyState = EEnemyState::EES_Patrol;
+		GEngine->AddOnScreenDebugMessage(1, 0.5f, FColor::Red, FString("patrol"));
 		GetCharacterMovement()->MaxWalkSpeed = 300.f;
 		MoveToTarget(targetPatrol);
 
 	}
+
 	/* Enemies too far to attack so goes back to chasing*/
 	else if (!isTargetInRange(combatTarget, combatRadius) && enemyState != EEnemyState::EES_Chasing) {
 		enemyState = EEnemyState::EES_Chasing;
+		GEngine->AddOnScreenDebugMessage(2, 0.5f, FColor::Red, FString("Chasing"));
 		GetCharacterMovement()->MaxWalkSpeed = 300.f;
 		MoveToTarget(combatTarget);
 	}
+
 	/* Enemies ATTAAAAAAAAAAAAACK*/
 	else if (isTargetInRange(combatTarget, combatRadius) && enemyState != EEnemyState::EES_Attacking) {
 		enemyState = EEnemyState::EES_Attacking;
-		GEngine->AddOnScreenDebugMessage(1, 0.5f, FColor::Red, FString("Attack this bitch"));
+		GEngine->AddOnScreenDebugMessage(3, 0.5f, FColor::Red, FString("Attacking"));
+		PlayAttackMontage();
 
 	}
 	
@@ -310,6 +315,7 @@ void AEnemy::pawnSeen(APawn* pawn)
 		GetCharacterMovement()->MaxWalkSpeed = 450.f;
 		combatTarget = pawn;
 		GetWorld()->GetTimerManager().ClearTimer(patrolTimer);
+		GEngine->AddOnScreenDebugMessage(4, 0.5f, FColor::Red, FString("I SAW YOU"));
 		MoveToTarget(pawn);
 	}
 	
