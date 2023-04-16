@@ -198,39 +198,9 @@ void AEnemy::PlayIdleMontage()
 	}
 }
 
-void AEnemy::PlayAttackMontage()
-{
-		UAnimInstance* montageAttack = GetMesh()->GetAnimInstance();
-		if (montageAttack) {
-			montageAttack->Montage_Play(attackMontage);
-			int32 random = FMath::RandRange(0, 3);
-			FName selection = FName();
-			switch (random) {
-			case 0:
-				selection = FName("Attack");
-				//deathState = EDeathState::ECS_Dead;
-				break;
-
-			case 1:
-				selection = FName("Attack1");
-				//deathState = EDeathState::ECS_Dead1;
-				break;
-
-			case 2:
-				selection = FName("Attack2");
-				//deathState = EDeathState::ECS_Dead2;
-				break;
-
-			default:
-				break;
-			}
-			montageAttack->Montage_JumpToSection(selection, attackMontage);
-		}
-}
-
 bool AEnemy::isTargetInRange(AActor* target, double radius)
 {
-	const double distanceTarget = (/*target->GetActorLocation() - */ GetActorLocation()).Size();
+	const double distanceTarget = (target->GetActorLocation() - GetActorLocation()).Size();
 	return (distanceTarget <= radius);
 }
 
