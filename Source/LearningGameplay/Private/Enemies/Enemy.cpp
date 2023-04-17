@@ -70,7 +70,7 @@ void AEnemy::Tick(float DeltaTime)
 	else {
 		
 		/* IA Navigation*/
-		CheckPatrolTarget();
+		//CheckPatrolTarget();
 	}
 	
 
