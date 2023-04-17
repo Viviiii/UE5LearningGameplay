@@ -1,7 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "EchoFiles/EchoCharacter.h"
 #include "EchoFiles/EchoAnimInst.h"
+#include "EchoFiles/EchoCharacter.h"
+
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 
