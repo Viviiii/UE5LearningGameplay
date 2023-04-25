@@ -134,7 +134,7 @@ private :
 		AActor* combatTarget;
 
 	UPROPERTY(EditAnywhere)
-		double combatRadius = 1500.f;
+		double combatRadius = 1200.f;
 
 	UPROPERTY(EditAnywhere)
 		double attackRadius = 150.f;

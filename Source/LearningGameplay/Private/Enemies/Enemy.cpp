@@ -70,7 +70,7 @@ void AEnemy::Tick(float DeltaTime)
 	else {
 		
 		/* IA Navigation*/
-		//CheckPatrolTarget();
+		CheckPatrolTarget();
 	}
 	
 
@@ -103,17 +103,17 @@ void AEnemy::CheckCombatTarget()
 	}
 
 	/* Enemies too far to attack so goes back to chasing*/
-	else if (!isTargetInRange(combatTarget, combatRadius) && enemyState != EEnemyState::EES_Chasing) {
+	else if (isTargetInRange(combatTarget, combatRadius) && enemyState != EEnemyState::EES_Chasing) {
 		enemyState = EEnemyState::EES_Chasing;
-		GEngine->AddOnScreenDebugMessage(2, 0.5f, FColor::Red, FString("Chasing"));
-		GetCharacterMovement()->MaxWalkSpeed = 300.f;
+		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString("Chasing"));
+		GetCharacterMovement()->MaxWalkSpeed = 450.f;
 		MoveToTarget(combatTarget);
 	}
 
 	/* Enemies ATTAAAAAAAAAAAAACK*/
-	else if (isTargetInRange(combatTarget, combatRadius) && enemyState != EEnemyState::EES_Attacking) {
+	else if (isTargetInRange(combatTarget, attackRadius) && enemyState != EEnemyState::EES_Attacking) {
 		enemyState = EEnemyState::EES_Attacking;
-		GEngine->AddOnScreenDebugMessage(3, 0.5f, FColor::Red, FString("Attacking"));
+		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString("Attacking"));
 		//PlayAttackMontage();
 
 	}
@@ -246,6 +246,7 @@ void AEnemy::MoveToTarget(AActor* target)
 
 void AEnemy::patrolTimerFinished()
 {
+	GEngine->AddOnScreenDebugMessage(1, 1.5f, FColor::Blue, FString("YOUPIII"));
 	MoveToTarget(targetPatrol);
 }
 
@@ -308,13 +309,13 @@ void AEnemy::pawnSeen(APawn* pawn)
 {
 	if (enemyState == EEnemyState::EES_Chasing) return;
 	if (pawn->ActorHasTag(FName("EchoCharacter"))) {
-		
 		GetCharacterMovement()->MaxWalkSpeed = 450.f;
 		combatTarget = pawn;
 		GetWorld()->GetTimerManager().ClearTimer(patrolTimer);
-
+		
 		if (enemyState != EEnemyState::EES_Attacking) {
 			enemyState = EEnemyState::EES_Chasing;
+			GEngine->AddOnScreenDebugMessage(2, 2.f, FColor::Purple, FString("Je te vois toujours hein"));
 			MoveToTarget(combatTarget);
 		}
 	}
