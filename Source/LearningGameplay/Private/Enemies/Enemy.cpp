@@ -51,6 +51,8 @@ void AEnemy::BeginPlay()
 		widgetHealth->setPercentHealth(1.f);
 	}
 	AIenemy = Cast<AAIController>(GetController());
+	targetPatrol = choosingTarget();
+	GetWorld()->GetTimerManager().SetTimer(patrolTimer, this, &AEnemy::patrolTimerFinished, FMath::RandRange(2, 6), true);
 	if (pawnSensing) {
 		//pawnSensing->OnSeePawn.AddDynamic(this, &AEnemy::pawnSeen(APawn* pawn));
 		pawnSensing->OnSeePawn.AddDynamic(this, &AEnemy::pawnSeen);
@@ -64,13 +66,16 @@ void AEnemy::Tick(float DeltaTime)
 
 	/*IA Attack*/
 	if (enemyState > EEnemyState::EES_Patrol) {
-		
+
+		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString("FIGHT"));
 		CheckCombatTarget();
 	}
 	else {
 		
 		/* IA Navigation*/
-		//CheckPatrolTarget();
+
+		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString("PATROOOOOL"));
+		CheckPatrolTarget();
 	}
 	
 
@@ -79,14 +84,23 @@ void AEnemy::Tick(float DeltaTime)
 void AEnemy::CheckPatrolTarget()
 {
 	enemyState = EEnemyState::EES_Patrol;
-	if (isTargetInRange(targetPatrol, patrolRadius)) {
+
+	/*if (targetPatrol) {
 		
-		targetPatrol = choosingTarget();
-		GetWorld()->GetTimerManager().SetTimer(patrolTimer, this, &AEnemy::patrolTimerFinished, FMath::RandRange(1, 2) , true);
-	}
+		if (isTargetInRange(targetPatrol, patrolRadius)) {
+			
+			targetPatrol = choosingTarget();
+			GEngine->AddOnScreenDebugMessage(3, 1.f, FColor::Red, FString(targetPatrol->GetName()));
+			GEngine->AddOnScreenDebugMessage(2, 1.f, FColor::Red, FString("IIIIIIIIIIF"));
+			//MoveToTarget(targetPatrol);
+			GetWorld()->GetTimerManager().SetTimer(patrolTimer, this, &AEnemy::patrolTimerFinished, FMath::RandRange(1, 3), true);
+			//GetWorldTimerManager().SetTimer(patrolTimer, this, &AEnemy::patrolTimerFinished, 2, true);
+		}
+	}*/
+	
 }
 
-void AEnemy::CheckCombatTarget()
+	void AEnemy::CheckCombatTarget()
 {
 	/*Ennemies lose interest, go back to patrolling*/
 	
@@ -96,7 +110,7 @@ void AEnemy::CheckCombatTarget()
 			widgetHealth->SetVisibility(false);
 		}
 		enemyState = EEnemyState::EES_Patrol;
-		GEngine->AddOnScreenDebugMessage(1, 0.5f, FColor::Red, FString("patrol"));
+		GEngine->AddOnScreenDebugMessage(2, 1.5f, FColor::Red, FString("patrol"));
 		GetCharacterMovement()->MaxWalkSpeed = 300.f;
 		MoveToTarget(targetPatrol);
 
@@ -105,7 +119,7 @@ void AEnemy::CheckCombatTarget()
 	/* Enemies too far to attack so goes back to chasing*/
 	else if (!isTargetInRange(combatTarget, combatRadius) && enemyState != EEnemyState::EES_Chasing) {
 		enemyState = EEnemyState::EES_Chasing;
-		GEngine->AddOnScreenDebugMessage(2, 0.5f, FColor::Red, FString("Chasing"));
+		GEngine->AddOnScreenDebugMessage(3, 1.5f, FColor::Red, FString("Chasing"));
 		GetCharacterMovement()->MaxWalkSpeed = 300.f;
 		MoveToTarget(combatTarget);
 	}
@@ -113,9 +127,13 @@ void AEnemy::CheckCombatTarget()
 	/* Enemies ATTAAAAAAAAAAAAACK*/
 	else if (isTargetInRange(combatTarget, combatRadius) && enemyState != EEnemyState::EES_Attacking) {
 		enemyState = EEnemyState::EES_Attacking;
-		GEngine->AddOnScreenDebugMessage(3, 0.5f, FColor::Red, FString("Attacking"));
+		GEngine->AddOnScreenDebugMessage(4, 1.5f, FColor::Red, FString("Attacking"));
 		//PlayAttackMontage();
 
+	}
+
+	else {
+		GEngine->AddOnScreenDebugMessage(5, 1.5f, FColor::Red, FString("So lost bro"));
 	}
 	
 }
@@ -234,10 +252,11 @@ bool AEnemy::isTargetInRange(AActor* target, double radius)
 void AEnemy::MoveToTarget(AActor* target)
 {
 	//It's going here
-	if (target == nullptr || AIenemy == nullptr) return ;
+	if (target == nullptr || AIenemy == nullptr)  return ;
 
 	FAIMoveRequest moveReq;
 	moveReq.SetGoalActor(target);
+
 	moveReq.SetAcceptanceRadius(10.f);
 	FNavPathSharedPtr navPath;
 	AIenemy->MoveTo(moveReq, &navPath);
@@ -246,20 +265,28 @@ void AEnemy::MoveToTarget(AActor* target)
 
 void AEnemy::patrolTimerFinished()
 {
-	MoveToTarget(targetPatrol);
+	if (targetPatrol) {
+		targetPatrol = choosingTarget();
+		MoveToTarget(targetPatrol);
+	}
+
+	
 }
 
 AActor* AEnemy::choosingTarget()
 {
 	//It's going here
-	if (targetPatrol == nullptr || targetsPatrol.IsEmpty()) return nullptr;
+	if (targetPatrol == nullptr || targetsPatrol.IsEmpty())  return nullptr;
 	TArray<AActor*> validActors;
 	for (AActor* target : targetsPatrol) {
 		if (target != targetPatrol) {
 			validActors.AddUnique(target);
 		}
+		
 	}
+
 	const int32 selec = FMath::RandRange(0, validActors.Num() - 1);
+	
 	return validActors[selec];
 
 }
