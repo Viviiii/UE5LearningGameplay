@@ -51,10 +51,20 @@ void AEnemy::BeginPlay()
 		widgetHealth->setPercentHealth(1.f);
 	}
 	AIenemy = Cast<AAIController>(GetController());
+
 	if (pawnSensing) {
 		//pawnSensing->OnSeePawn.AddDynamic(this, &AEnemy::pawnSeen(APawn* pawn));
 		pawnSensing->OnSeePawn.AddDynamic(this, &AEnemy::pawnSeen);
 	}
+	if (targetPatrol != nullptr) {
+		MoveToTarget(targetPatrol);
+		GEngine->AddOnScreenDebugMessage(1, 2.f, FColor::Blue, FString(targetPatrol->GetName()));
+		GEngine->AddOnScreenDebugMessage(2, 2.f, FColor::Blue, FString::Printf(TEXT("Nombre de %d"), targetsPatrol.Num()));
+
+	}
+	
+	GetWorld()->GetTimerManager().SetTimer(patrolTimer, this, &AEnemy::patrolTimerFinished, 5.f, true);
+
 }
 
 // Called every frame
@@ -64,12 +74,13 @@ void AEnemy::Tick(float DeltaTime)
 
 	/*IA Attack*/
 	if (enemyState > EEnemyState::EES_Patrol) {
-		
+			
 		CheckCombatTarget();
 	}
 	else {
 		
 		/* IA Navigation*/
+		//GetWorld()->GetTimerManager().SetTimer(patrolTimer, this, &AEnemy::CheckPatrolTarget, 3.f, true);
 		CheckPatrolTarget();
 	}
 	
@@ -79,11 +90,19 @@ void AEnemy::Tick(float DeltaTime)
 void AEnemy::CheckPatrolTarget()
 {
 	enemyState = EEnemyState::EES_Patrol;
-	if (isTargetInRange(targetPatrol, patrolRadius)) {
-		
-		targetPatrol = choosingTarget();
-		GetWorld()->GetTimerManager().SetTimer(patrolTimer, this, &AEnemy::patrolTimerFinished, FMath::RandRange(1, 2) , true);
+	//
+	
+	if (targetPatrol) {
+		if (isTargetInRange(targetPatrol, patrolRadius)) {
+			
+
+			
+			
+			//MoveToTarget(targetPatrol);
+			
+		}
 	}
+	//GetWorld()->GetTimerManager().SetTimer(patrolTimer, this, &AEnemy::patrolTimerFinished, 5.f, true);
 }
 
 void AEnemy::CheckCombatTarget()
@@ -96,16 +115,17 @@ void AEnemy::CheckCombatTarget()
 			widgetHealth->SetVisibility(false);
 		}
 		enemyState = EEnemyState::EES_Patrol;
-		GEngine->AddOnScreenDebugMessage(1, 0.5f, FColor::Red, FString("patrol"));
+	/*	GEngine->AddOnScreenDebugMessage(1, 0.5f, FColor::Red, FString("patrol"));*/
 		GetCharacterMovement()->MaxWalkSpeed = 300.f;
 		MoveToTarget(targetPatrol);
+		GEngine->AddOnScreenDebugMessage(2, 2.f, FColor::Blue, FString::Printf(TEXT("Nombre de %d"), targetsPatrol.Num()));
 
 	}
 
 	/* Enemies too far to attack so goes back to chasing*/
 	else if (isTargetInRange(combatTarget, combatRadius) && enemyState != EEnemyState::EES_Chasing) {
 		enemyState = EEnemyState::EES_Chasing;
-		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString("Chasing"));
+		/*GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString("Chasing"));*/
 		GetCharacterMovement()->MaxWalkSpeed = 450.f;
 		MoveToTarget(combatTarget);
 	}
@@ -113,7 +133,7 @@ void AEnemy::CheckCombatTarget()
 	/* Enemies ATTAAAAAAAAAAAAACK*/
 	else if (isTargetInRange(combatTarget, attackRadius) && enemyState != EEnemyState::EES_Attacking) {
 		enemyState = EEnemyState::EES_Attacking;
-		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString("Attacking"));
+		/*GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString("Attacking"));*/
 		//PlayAttackMontage();
 
 	}
@@ -234,35 +254,51 @@ bool AEnemy::isTargetInRange(AActor* target, double radius)
 void AEnemy::MoveToTarget(AActor* target)
 {
 	//It's going here
-	if (target == nullptr || AIenemy == nullptr) return ;
-
-	FAIMoveRequest moveReq;
-	moveReq.SetGoalActor(target);
-	moveReq.SetAcceptanceRadius(10.f);
-	FNavPathSharedPtr navPath;
-	AIenemy->MoveTo(moveReq, &navPath);
+	if (target != nullptr) {
+		FAIMoveRequest moveReq;
+		moveReq.SetGoalActor(target);
+		/*GEngine->AddOnScreenDebugMessage(3, 2.f, FColor::Blue, FString("MOOOOVING"));*/
+		moveReq.SetAcceptanceRadius(10.f);
+		FNavPathSharedPtr navPath;
+		AIenemy->MoveTo(moveReq, &navPath);
+	}
+	if (target == nullptr) {
+		/*GEngine->AddOnScreenDebugMessage(3, 2.f, FColor::Blue, FString("Premier if"));*/
+		return;
+	}
+	
+	
 	
 }
 
 void AEnemy::patrolTimerFinished()
 {
-	GEngine->AddOnScreenDebugMessage(1, 1.5f, FColor::Blue, FString("YOUPIII"));
+	targetPatrol = choosingTarget();
 	MoveToTarget(targetPatrol);
+	
+
+	//if (!targetPatrol) {
+	//	GEngine->AddOnScreenDebugMessage(1, 2.f, FColor::Red, FString("Bro cm'ojn"));
+	//	//
+	//}
+	
 }
 
 AActor* AEnemy::choosingTarget()
 {
 	//It's going here
-	if (targetPatrol == nullptr || targetsPatrol.IsEmpty()) return nullptr;
 	TArray<AActor*> validActors;
 	for (AActor* target : targetsPatrol) {
-		if (target != targetPatrol) {
-			validActors.AddUnique(target);
-		}
+			if (target != targetPatrol) {
+				validActors.AddUnique(target);
+			}
 	}
-	const int32 selec = FMath::RandRange(0, validActors.Num() - 1);
-	return validActors[selec];
-
+	if (validActors.Num() > 0) {
+		const int32 selec = FMath::RandRange(0, validActors.Num() - 1);
+		return validActors[selec];
+	}
+	/*GEngine->AddOnScreenDebugMessage(3, 2.f, FColor::Red, FString("choosingTarget bad"));*/
+	return nullptr;
 }
 
 
@@ -310,12 +346,12 @@ void AEnemy::pawnSeen(APawn* pawn)
 	if (enemyState == EEnemyState::EES_Chasing) return;
 	if (pawn->ActorHasTag(FName("EchoCharacter"))) {
 		GetCharacterMovement()->MaxWalkSpeed = 450.f;
+		GEngine->AddOnScreenDebugMessage(4, 1.f, FColor::Blue, FString::Printf(TEXT("Vitessse : %d"), GetCharacterMovement()->MaxWalkSpeed));
 		combatTarget = pawn;
-		GetWorld()->GetTimerManager().ClearTimer(patrolTimer);
+		//GetWorld()->GetTimerManager().ClearTimer(patrolTimer);
 		
 		if (enemyState != EEnemyState::EES_Attacking) {
 			enemyState = EEnemyState::EES_Chasing;
-			GEngine->AddOnScreenDebugMessage(2, 2.f, FColor::Purple, FString("Je te vois toujours hein"));
 			MoveToTarget(combatTarget);
 		}
 	}

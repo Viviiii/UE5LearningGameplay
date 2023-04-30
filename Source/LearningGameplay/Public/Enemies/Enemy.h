@@ -64,7 +64,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	/*Navigation */
-
+	UFUNCTION()
 	void CheckPatrolTarget();
 
 	void CheckCombatTarget();
@@ -120,6 +120,7 @@ private :
 	/*Navigation */
 
 
+
 	UPROPERTY()
 		AAIController* AIenemy;
 
@@ -140,7 +141,7 @@ private :
 		double attackRadius = 150.f;
 
 	UPROPERTY(EditAnywhere)
-		double patrolRadius = 3000.f;
+		double patrolRadius = 5000.f;
 
 	UPROPERTY(EditAnywhere)
 		UPawnSensingComponent* pawnSensing;
