@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "Objects.h"
 #include "Sound/SoundWave.h"
+#include "EchoFiles/CharacterStateEnum.h"
+#include "EchoFiles/EchoCharacter.h"
 #include "NiagaraComponent.h"
 #include "Weapon.generated.h"
 
@@ -16,6 +18,7 @@ class AEchoCharacter;
 class USoundBase;
 class UBoxComponent;
 class UNiagaraComponent;
+class AEchoCharacter;
 
 UCLASS()
 class LEARNINGGAMEPLAY_API AWeapon : public AObjects
@@ -37,6 +40,7 @@ protected :
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void createField(const FVector& location);
+
 public :
 	AWeapon();
 	void equip(USceneComponent* weap, FName socketName,AActor* Owner, APawn* instigator) ;
@@ -51,6 +55,8 @@ public :
 	}
 
 	TArray<AActor*> IgnoreActors;
+
+	AEchoCharacter* echoCharac;
 
 private :
 	
@@ -71,7 +77,6 @@ private :
 	UPROPERTY(EditAnywhere, Category = "Visual Effects")
 		UNiagaraComponent* VFX;
 
-	UPROPERTY(VisibleAnywhere, Category = "Weapon Property")
+	UPROPERTY(EditInstanceOnly, Category = "Weapon Property")
 		float Damage = 20.f;
-	
 };

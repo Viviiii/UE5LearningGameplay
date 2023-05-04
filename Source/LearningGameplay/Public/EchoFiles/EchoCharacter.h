@@ -32,6 +32,11 @@ public:
 	FORCEINLINE ECharacterState getCharacterState() {
 		return characterState;
 	}
+	FORCEINLINE EActionState getActionState() {
+		return actionState;
+	}
+
+	EActionState actionState = EActionState::EAS_Unoccupied;
 
 protected:
 	// Called when the game starts or when spawned
@@ -135,10 +140,6 @@ private :
 	//Enum charac states
 
 	ECharacterState characterState = ECharacterState::ECS_Unequipped;
-
-	EActionState actionState = EActionState::EAS_Unoccupied;
-		
-
 
 	/* Animation montages*/
 

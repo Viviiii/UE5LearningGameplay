@@ -3,6 +3,7 @@
 
 #include "ObjectFiles/Weapon.h"
 #include "ObjectFiles/WeaponStateEnum.h"
+#include "EchoFiles/CharacterStateEnum.h"
 #include "Kismet/GameplayStatics.h"
 #include "EchoFiles/EchoCharacter.h"
 #include "Components/BoxComponent.h"
@@ -28,7 +29,7 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 		ActorsToIgnore.AddUnique(Actors);
 	}
 
-
+	/*It should only be working when the player is attacking*/
 	UKismetSystemLibrary::BoxTraceSingle(this,
 		startTrace,
 		endTrace,
@@ -40,19 +41,19 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 		EDrawDebugTrace::None,
 		boxHit,
 		true);
-	if (boxHit.GetActor()) {
-		UGameplayStatics::ApplyDamage(boxHit.GetActor(), Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
-		IIHitInterface* interfaceHit = Cast<IIHitInterface>(boxHit.GetActor());
-		if (interfaceHit) {
-			interfaceHit->getHit_Implementation(boxHit.ImpactPoint);
-			
+		if (boxHit.GetActor() != nullptr && (boxHit.GetActor()->ActorHasTag(FName("Breakable")) || boxHit.GetActor()->ActorHasTag(FName("Enemy")))) {
+			GEngine->AddOnScreenDebugMessage(1, 1.5f, FColor::Red, FString("BOXHIT IS REAL"));
+			UGameplayStatics::ApplyDamage(boxHit.GetActor(), Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
+			IIHitInterface* interfaceHit = Cast<IIHitInterface>(boxHit.GetActor());
+			if (interfaceHit) {
+				interfaceHit->getHit_Implementation(boxHit.ImpactPoint);
+
+			}
+
+			createField(boxHit.ImpactPoint);
+			IgnoreActors.AddUnique(boxHit.GetActor());
 		}
-		createField(boxHit.ImpactPoint);
-		
-		IgnoreActors.AddUnique(boxHit.GetActor());
-	}
-
-
+	
 }
 void AWeapon::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
@@ -72,7 +73,8 @@ AWeapon::AWeapon()
 	Box = CreateDefaultSubobject<UBoxComponent>(TEXT("Box"));
 	Box->SetupAttachment(GetRootComponent());
 
-	Box->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	//Box->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	Box->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	Box->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
 	Box->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 

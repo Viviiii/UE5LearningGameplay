@@ -51,18 +51,11 @@ void AEnemy::BeginPlay()
 		widgetHealth->setPercentHealth(1.f);
 	}
 	AIenemy = Cast<AAIController>(GetController());
-
+	Tags.Add(FName("Enemy"));
 	if (pawnSensing) {
 		//pawnSensing->OnSeePawn.AddDynamic(this, &AEnemy::pawnSeen(APawn* pawn));
 		pawnSensing->OnSeePawn.AddDynamic(this, &AEnemy::pawnSeen);
 	}
-	if (targetPatrol != nullptr) {
-		MoveToTarget(targetPatrol);
-		GEngine->AddOnScreenDebugMessage(1, 2.f, FColor::Blue, FString(targetPatrol->GetName()));
-		GEngine->AddOnScreenDebugMessage(2, 2.f, FColor::Blue, FString::Printf(TEXT("Nombre de %d"), targetsPatrol.Num()));
-
-	}
-	
 	GetWorld()->GetTimerManager().SetTimer(patrolTimer, this, &AEnemy::patrolTimerFinished, 5.f, true);
 
 }
@@ -118,8 +111,6 @@ void AEnemy::CheckCombatTarget()
 	/*	GEngine->AddOnScreenDebugMessage(1, 0.5f, FColor::Red, FString("patrol"));*/
 		GetCharacterMovement()->MaxWalkSpeed = 300.f;
 		MoveToTarget(targetPatrol);
-		GEngine->AddOnScreenDebugMessage(2, 2.f, FColor::Blue, FString::Printf(TEXT("Nombre de %d"), targetsPatrol.Num()));
-
 	}
 
 	/* Enemies too far to attack so goes back to chasing*/
@@ -257,13 +248,11 @@ void AEnemy::MoveToTarget(AActor* target)
 	if (target != nullptr) {
 		FAIMoveRequest moveReq;
 		moveReq.SetGoalActor(target);
-		/*GEngine->AddOnScreenDebugMessage(3, 2.f, FColor::Blue, FString("MOOOOVING"));*/
 		moveReq.SetAcceptanceRadius(10.f);
 		FNavPathSharedPtr navPath;
 		AIenemy->MoveTo(moveReq, &navPath);
 	}
 	if (target == nullptr) {
-		/*GEngine->AddOnScreenDebugMessage(3, 2.f, FColor::Blue, FString("Premier if"));*/
 		return;
 	}
 	
@@ -275,13 +264,6 @@ void AEnemy::patrolTimerFinished()
 {
 	targetPatrol = choosingTarget();
 	MoveToTarget(targetPatrol);
-	
-
-	//if (!targetPatrol) {
-	//	GEngine->AddOnScreenDebugMessage(1, 2.f, FColor::Red, FString("Bro cm'ojn"));
-	//	//
-	//}
-	
 }
 
 AActor* AEnemy::choosingTarget()
@@ -297,7 +279,6 @@ AActor* AEnemy::choosingTarget()
 		const int32 selec = FMath::RandRange(0, validActors.Num() - 1);
 		return validActors[selec];
 	}
-	/*GEngine->AddOnScreenDebugMessage(3, 2.f, FColor::Red, FString("choosingTarget bad"));*/
 	return nullptr;
 }
 
