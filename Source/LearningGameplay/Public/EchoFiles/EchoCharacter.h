@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "BaseCharacter.h"
 #include "InputActionValue.h"
 #include "CharacterStateEnum.h"
 #include "EchoCharacter.generated.h"
@@ -18,7 +19,7 @@ class UAnimMontage;
 class AWeapon;
 
 UCLASS()
-class LEARNINGGAMEPLAY_API AEchoCharacter : public ACharacter
+class LEARNINGGAMEPLAY_API AEchoCharacter : public ABaseCharacter
 {
 	GENERATED_BODY()
 
@@ -81,29 +82,33 @@ protected:
 	void Interact();
 
 	/*Anim notify functions*/
-	UFUNCTION(BlueprintCallable)
-		void attackEnd();
+	/*UFUNCTION(BlueprintCallable)
+		void attackEnd();*/
 
 	UFUNCTION(BlueprintCallable)
 		void disarmSword();
 
-	UFUNCTION(BlueprintCallable)
-		void enableSwordCollision(ECollisionEnabled::Type CollisionEnabled);
+	//UFUNCTION(BlueprintCallable)
+	//	void enableSwordCollision(ECollisionEnabled::Type CollisionEnabled);
 
-	UFUNCTION(BlueprintCallable)
-		void disableSwordCollision(ECollisionEnabled::Type CollisionEnabled);
+	//UFUNCTION(BlueprintCallable)
+	//	void disableSwordCollision(ECollisionEnabled::Type CollisionEnabled);
 
 	
 	/*Draw/Sheathe weapon */
 	void UnarmWeapon();
 
+	
+
 	/* Montages and sections played*/
-	void PlayAttackMontage();
+	//void PlayAttackMontage();
+
+	//void PlayHitMontage(FName Section);
 
 	void PlayUnarmMontage(FName sectionName);
 
 	/*Called for attacking (with montage)*/
-	void Attack();
+	/*void Attack();*/
 
 	/* Shorts functions to check character+actionState*/
 	bool canDraw();
@@ -113,6 +118,21 @@ protected:
 
 
 private :
+
+	/*Inheritance test */
+
+	/*Called for attacking (with montage)*/
+	virtual void Attack() override;
+
+	/* Montages and sections played*/
+	virtual void PlayHitMontage(FName Section) override;
+
+	virtual void PlayDeathMontage() override;
+
+	virtual void PlayAttackMontage() override;
+
+	virtual void PlayIdleMontage() override;
+
 	/* Used with camera*/
 	UPROPERTY(VisibleAnywhere)
 		USpringArmComponent* SpringArm;
@@ -133,9 +153,7 @@ private :
 	UPROPERTY(VisibleInstanceOnly)
 		AObjects* overlappedObjects;
 
-	/* Use weapon equipped*/
-	UPROPERTY(VisibleInstanceOnly, Category = "Weapon")
-	AWeapon* weaponEquipped;
+
 
 	//Enum charac states
 
@@ -143,8 +161,8 @@ private :
 
 	/* Animation montages*/
 
-	UPROPERTY(EditDefaultsOnly, Category = "Montages | Attack")
-	UAnimMontage* attackMontage;
+	/*UPROPERTY(EditDefaultsOnly, Category = "Montages | Attack")
+	UAnimMontage* attackMontage;*/
 
 	UPROPERTY(EditDefaultsOnly, Category = "Montages | Unarm")
 		UAnimMontage* unarmMontage;
@@ -155,5 +173,11 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	/*Anim notify functions*/
+	virtual void attackEnd() override;
+	virtual void enableSwordCollision(ECollisionEnabled::Type CollisionEnabled) override;
+	virtual void disableSwordCollision(ECollisionEnabled::Type CollisionEnabled) override;
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
 
 };

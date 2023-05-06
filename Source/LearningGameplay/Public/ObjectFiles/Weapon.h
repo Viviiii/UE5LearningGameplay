@@ -6,7 +6,6 @@
 #include "Objects.h"
 #include "Sound/SoundWave.h"
 #include "EchoFiles/CharacterStateEnum.h"
-#include "EchoFiles/EchoCharacter.h"
 #include "NiagaraComponent.h"
 #include "Weapon.generated.h"
 
@@ -18,7 +17,6 @@ class AEchoCharacter;
 class USoundBase;
 class UBoxComponent;
 class UNiagaraComponent;
-class AEchoCharacter;
 
 UCLASS()
 class LEARNINGGAMEPLAY_API AWeapon : public AObjects

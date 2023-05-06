@@ -45,6 +45,10 @@ AEchoCharacter::AEchoCharacter()
 	Eyesbrows->SetupAttachment(GetMesh());
 	Eyesbrows->AttachmentName = FString("head");
 
+	Attributes = CreateDefaultSubobject<UEchoAttributes>(TEXT("EchoAttributes"));
+	widgetHealth = CreateDefaultSubobject<UHealthBar>(TEXT("HealthBar"));
+	widgetHealth->SetupAttachment(GetRootComponent());
+
 
 
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
@@ -181,6 +185,10 @@ void AEchoCharacter::PlayAttackMontage()
 	}
 }
 
+void AEchoCharacter::PlayIdleMontage()
+{
+}
+
 void AEchoCharacter::PlayUnarmMontage(FName sectionName)
 {
 	UAnimInstance* montageUnarm = GetMesh()->GetAnimInstance();
@@ -227,6 +235,11 @@ void AEchoCharacter::disableSwordCollision(ECollisionEnabled::Type CollisionEnab
 	}
 }
 
+float AEchoCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	return 0.0f;
+}
+
 bool AEchoCharacter::canDraw() {
 
 	return actionState == EActionState::EAS_Unoccupied && characterState == ECharacterState::ECS_Unequipped && weaponEquipped;
@@ -251,4 +264,20 @@ void AEchoCharacter::UnarmWeapon()
 		characterState = ECharacterState::ECS_equippedWeapon;
 	}	
 }
+
+
+/*Inheritance test */
+void AEchoCharacter::PlayHitMontage(FName Section)
+{
+	UAnimInstance* montageHit = GetMesh()->GetAnimInstance();
+	if (montageHit) {
+		montageHit->Montage_Play(hitMontage);
+		montageHit->Montage_JumpToSection(Section, hitMontage);
+	}
+}
+
+void AEchoCharacter::PlayDeathMontage()
+{
+}
+
 

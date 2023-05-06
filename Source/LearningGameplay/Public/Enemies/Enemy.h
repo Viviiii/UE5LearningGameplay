@@ -13,6 +13,7 @@
 #include "Components/WidgetComponent.h"
 #include "Particles/ParticleSystem.h"
 #include "Perception/PawnSensingComponent.h"
+#include "BaseCharacter.h"
 #include "HUD/HealthBar.h"
 #include "Enemy.generated.h"
 
@@ -25,7 +26,7 @@ class AAIController;
 class UPawnSensingComponent;
 
 UCLASS()
-class LEARNINGGAMEPLAY_API AEnemy : public ACharacter, public IIHitInterface
+class LEARNINGGAMEPLAY_API AEnemy : public ABaseCharacter
 {
 	GENERATED_BODY()
 
@@ -37,19 +38,18 @@ protected:
 	virtual void BeginPlay() override;
 
 	/* Montages and sections played*/
-	void PlayHitMontage(FName Section);
+	virtual void PlayHitMontage(FName Section) override;
 
-	void PlayDeathMontage();
+	virtual void PlayDeathMontage() override;
 
-	void PlayIdleMontage();
+	virtual void PlayIdleMontage() override;
 
-	void PlayAttackMontage();
+	virtual void PlayAttackMontage() override;
 
 	UPROPERTY(BlueprintReadOnly)
 		EDeathState deathState = EDeathState::ECS_Alive;
 
 	/*Navigation */
-
 	bool isTargetInRange(AActor* target, double radius);
 
 	void MoveToTarget(AActor* target);
@@ -69,8 +69,6 @@ public:
 
 	void CheckCombatTarget();
 
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 	virtual void getHit_Implementation(const FVector& impactPoint) override;
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
@@ -78,48 +76,44 @@ public:
 	UFUNCTION()
 	void pawnSeen(APawn* pawn);
 
-	void DirectionalHit(const FVector& impactPoint);
+	virtual void DirectionalHit(const FVector& impactPoint) override;
 
 	EEnemyState enemyState = EEnemyState::EES_Patrol;
 
 private :
-	UPROPERTY(EditAnywhere)
+	/*UPROPERTY(EditAnywhere)
 		UEchoAttributes* Attributes;
 
 	UPROPERTY(VisibleAnywhere)
-		UHealthBar* widgetHealth;
+		UHealthBar* widgetHealth;*/
 
 	FTimerHandle patrolTimer;
 
 
 	/* Animation montages*/
 
-	UPROPERTY(EditDefaultsOnly, Category = "Montages | Hit")
-		UAnimMontage* hitMontage;
+	//UPROPERTY(EditDefaultsOnly, Category = "Montages | Hit")
+	//	UAnimMontage* hitMontage;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Montages | Idle")
-		UAnimMontage* idleMontage;
+	//UPROPERTY(EditDefaultsOnly, Category = "Montages | Idle")
+	//	UAnimMontage* idleMontage;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Montages | Death")
-		UAnimMontage* deathMontage;
+	//UPROPERTY(EditDefaultsOnly, Category = "Montages | Death")
+	//	UAnimMontage* deathMontage;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Montages | Attack")
-		UAnimMontage* attackMontage;
+	//UPROPERTY(EditDefaultsOnly, Category = "Montages | Attack")
+	//	UAnimMontage* attackMontage;
 
 
 	/*Sounds*/
-	UPROPERTY(EditAnywhere, Category = "Enemy Hit")
-		USoundBase* hitSound;
+	//UPROPERTY(EditAnywhere, Category = "Enemy Hit")
+	//	USoundBase* hitSound;
 
 	/*VFX*/
-	UPROPERTY(EditAnywhere, Category = "Enemy Hit")
-		UParticleSystem* bloodEffect;
-
-
+	//UPROPERTY(EditAnywhere, Category = "Enemy Hit")
+	//	UParticleSystem* bloodEffect;
 
 	/*Navigation */
-
-
 
 	UPROPERTY()
 		AAIController* AIenemy;
