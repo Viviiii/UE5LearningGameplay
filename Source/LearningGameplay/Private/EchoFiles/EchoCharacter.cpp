@@ -60,6 +60,11 @@ void AEchoCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (widgetHealth) {
+		widgetHealth->SetVisibility(false);
+		widgetHealth->setPercentHealth(1.f);
+	}
+
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
@@ -237,7 +242,13 @@ void AEchoCharacter::disableSwordCollision(ECollisionEnabled::Type CollisionEnab
 
 float AEchoCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	return 0.0f;
+	if (Attributes && widgetHealth) {
+		Attributes->ReceiveDamage(DamageAmount);
+		widgetHealth->setPercentHealth(Attributes->getHealth());
+		GEngine->AddOnScreenDebugMessage(1, 2.f, FColor::Blue, FString::Printf(TEXT("HP : %f"), Attributes->getHealth()));
+	}
+
+	return DamageAmount;
 }
 
 bool AEchoCharacter::canDraw() {

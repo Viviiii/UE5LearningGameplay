@@ -8,6 +8,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Components/BoxComponent.h"
 
 
 // Sets default values
@@ -38,7 +40,6 @@ AEnemy::AEnemy()
 	bUseControllerRotationPitch = false;	
 	bUseControllerRotationRoll = false;
 
-	
 
 }
 
@@ -56,6 +57,13 @@ void AEnemy::BeginPlay()
 		//pawnSensing->OnSeePawn.AddDynamic(this, &AEnemy::pawnSeen(APawn* pawn));
 		pawnSensing->OnSeePawn.AddDynamic(this, &AEnemy::pawnSeen);
 	}
+
+	if (weaponClass) {
+		AWeapon* activeWeapon =  GetWorld()->SpawnActor<AWeapon>(weaponClass, GetActorLocation(), GetActorRotation());
+		activeWeapon ->equip(GetMesh(), FName("WeaponSocket"), this, this);
+		weaponEquipped = activeWeapon;
+	}
+	
 	GetWorld()->GetTimerManager().SetTimer(patrolTimer, this, &AEnemy::patrolTimerFinished, 5.f, true);
 
 }
@@ -108,15 +116,15 @@ void AEnemy::CheckCombatTarget()
 			widgetHealth->SetVisibility(false);
 		}
 		enemyState = EEnemyState::EES_Patrol;
-	/*	GEngine->AddOnScreenDebugMessage(1, 0.5f, FColor::Red, FString("patrol"));*/
+		GEngine->AddOnScreenDebugMessage(3, 0.5f, FColor::Red, FString("patrol"));
 		GetCharacterMovement()->MaxWalkSpeed = 300.f;
 		MoveToTarget(targetPatrol);
 	}
 
 	/* Enemies too far to attack so goes back to chasing*/
-	else if (isTargetInRange(combatTarget, combatRadius) && enemyState != EEnemyState::EES_Chasing) {
+	else if (!isTargetInRange(combatTarget, attackRadius) && enemyState != EEnemyState::EES_Chasing) {
 		enemyState = EEnemyState::EES_Chasing;
-		/*GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString("Chasing"));*/
+		GEngine->AddOnScreenDebugMessage(2, 1.f, FColor::Red, FString("Chasing"));
 		GetCharacterMovement()->MaxWalkSpeed = 450.f;
 		MoveToTarget(combatTarget);
 	}
@@ -124,11 +132,22 @@ void AEnemy::CheckCombatTarget()
 	/* Enemies ATTAAAAAAAAAAAAACK*/
 	else if (isTargetInRange(combatTarget, attackRadius) && enemyState != EEnemyState::EES_Attacking) {
 		enemyState = EEnemyState::EES_Attacking;
-		/*GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString("Attacking"));*/
-		//PlayAttackMontage();
-
+		GEngine->AddOnScreenDebugMessage(1, 0.5f, FColor::Red, FString("Attacking"));
+		Attack();
+		
 	}
 	
+}
+
+void AEnemy::Attack() {
+	//Super::Attack();
+	PlayAttackMontage();
+
+}
+
+void AEnemy::attackEnd()
+{
+	//enemyState = EEnemyState::EES_Chasing;
 }
 
 void AEnemy::PlayHitMontage(FName Section)
@@ -157,7 +176,7 @@ void AEnemy::PlayDeathMontage()
 				selection = FName("DeathBis");
 				deathState = EDeathState::ECS_Dead1;
 				break;
-
+				  
 			case 2:
 				selection = FName("DeathForward");
 				deathState = EDeathState::ECS_Dead2;
@@ -249,8 +268,6 @@ void AEnemy::MoveToTarget(AActor* target)
 		return;
 	}
 	
-	
-	
 }
 
 void AEnemy::patrolTimerFinished()
@@ -315,6 +332,13 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 	return DamageAmount;
 }
 
+void AEnemy::Destroyed()
+{
+	if (weaponEquipped) {
+		weaponEquipped->Destroy();	
+	}
+}
+
 void AEnemy::pawnSeen(APawn* pawn)
 {
 	if (enemyState == EEnemyState::EES_Chasing) return;
@@ -376,3 +400,18 @@ void AEnemy::DirectionalHit(const FVector& impactPoint)
 	PlayHitMontage(Section);
 }
 
+void AEnemy::enableSwordCollision(ECollisionEnabled::Type CollisionEnabled)
+{
+	if (weaponEquipped && weaponEquipped->getBoxCollision()) {
+		weaponEquipped->getBoxCollision()->SetCollisionEnabled(CollisionEnabled);
+	}
+
+}
+
+void AEnemy::disableSwordCollision(ECollisionEnabled::Type CollisionEnabled)
+{
+	if (weaponEquipped && weaponEquipped->getBoxCollision()) {
+		weaponEquipped->getBoxCollision()->SetCollisionEnabled(CollisionEnabled);
+		weaponEquipped->IgnoreActors.Empty();
+	}
+}

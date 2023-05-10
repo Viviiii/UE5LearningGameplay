@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/StaticMeshComponent.h"
 #include "IHitInterface.h"
 #include "Sound/SoundWave.h"
 #include "AIController.h"
@@ -15,6 +16,7 @@
 #include "Perception/PawnSensingComponent.h"
 #include "BaseCharacter.h"
 #include "HUD/HealthBar.h"
+#include "ObjectFiles/Objects.h"
 #include "Enemy.generated.h"
 
 class USoundBase;
@@ -24,6 +26,7 @@ class UWidgetComponent;
 class UHealthBar;
 class AAIController;
 class UPawnSensingComponent;
+class AObjects;
 
 UCLASS()
 class LEARNINGGAMEPLAY_API AEnemy : public ABaseCharacter
@@ -73,10 +76,18 @@ public:
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
 
+	virtual void Destroyed() override;
+
+	virtual void enableSwordCollision(ECollisionEnabled::Type CollisionEnabled) override;
+	virtual void disableSwordCollision(ECollisionEnabled::Type CollisionEnabled) override;
+
 	UFUNCTION()
 	void pawnSeen(APawn* pawn);
 
 	virtual void DirectionalHit(const FVector& impactPoint) override;
+
+	virtual void Attack() override;
+	virtual void attackEnd() override;
 
 	EEnemyState enemyState = EEnemyState::EES_Patrol;
 
@@ -114,6 +125,9 @@ private :
 	//	UParticleSystem* bloodEffect;
 
 	/*Navigation */
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AWeapon> weaponClass;
 
 	UPROPERTY()
 		AAIController* AIenemy;
