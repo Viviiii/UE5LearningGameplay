@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Objects.h"
 #include "Sound/SoundWave.h"
+#include "EchoFiles/CharacterStateEnum.h"
 #include "NiagaraComponent.h"
 #include "Weapon.generated.h"
 
@@ -35,8 +36,13 @@ protected :
 	UFUNCTION()
 		void OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+	void ExecuteHit(AActor* OtherActor, FHitResult& boxHit);
+
+	void BoxTraceWeapon(FHitResult& boxHit);
+
 	UFUNCTION(BlueprintImplementableEvent)
 	void createField(const FVector& location);
+
 public :
 	AWeapon();
 	void equip(USceneComponent* weap, FName socketName,AActor* Owner, APawn* instigator) ;
@@ -51,6 +57,8 @@ public :
 	}
 
 	TArray<AActor*> IgnoreActors;
+
+	AEchoCharacter* echoCharac;
 
 private :
 	
@@ -71,7 +79,6 @@ private :
 	UPROPERTY(EditAnywhere, Category = "Visual Effects")
 		UNiagaraComponent* VFX;
 
-	UPROPERTY(VisibleAnywhere, Category = "Weapon Property")
+	UPROPERTY(EditInstanceOnly, Category = "Weapon Property")
 		float Damage = 20.f;
-	
 };

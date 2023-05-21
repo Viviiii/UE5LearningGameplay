@@ -4,9 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "BaseCharacter.h"
 #include "InputActionValue.h"
 #include "CharacterStateEnum.h"
+#include "HUD/EchoInterfaceComp.h"
 #include "EchoCharacter.generated.h"
+
 
 class USkeletalMeshComponent;
 class UCapsuleComponent;
@@ -16,9 +19,10 @@ class UGroomComponent;
 class AObjects;
 class UAnimMontage;
 class AWeapon;
+class UEchoInterfaceComp;
 
 UCLASS()
-class LEARNINGGAMEPLAY_API AEchoCharacter : public ACharacter
+class LEARNINGGAMEPLAY_API AEchoCharacter : public ABaseCharacter
 {
 	GENERATED_BODY()
 
@@ -32,6 +36,11 @@ public:
 	FORCEINLINE ECharacterState getCharacterState() {
 		return characterState;
 	}
+	FORCEINLINE EActionState getActionState() {
+		return actionState;
+	}
+
+	EActionState actionState = EActionState::EAS_Unoccupied;
 
 protected:
 	// Called when the game starts or when spawned
@@ -66,6 +75,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 		class UInputAction* WeaponAction;
 
+	/* SFX */
+	UPROPERTY(EditAnywhere, Category = "Weapon Property")
+		USoundBase* equipSound;
+
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
 
@@ -76,38 +89,50 @@ protected:
 	void Interact();
 
 	/*Anim notify functions*/
-	UFUNCTION(BlueprintCallable)
-		void attackEnd();
 
 	UFUNCTION(BlueprintCallable)
 		void disarmSword();
-
-	UFUNCTION(BlueprintCallable)
-		void enableSwordCollision(ECollisionEnabled::Type CollisionEnabled);
-
-	UFUNCTION(BlueprintCallable)
-		void disableSwordCollision(ECollisionEnabled::Type CollisionEnabled);
 
 	
 	/*Draw/Sheathe weapon */
 	void UnarmWeapon();
 
-	/* Montages and sections played*/
-	void PlayAttackMontage();
-
 	void PlayUnarmMontage(FName sectionName);
-
-	/*Called for attacking (with montage)*/
-	void Attack();
 
 	/* Shorts functions to check character+actionState*/
 	bool canDraw();
 
 	bool canSheathe();
 
+	virtual void getHit_Implementation(const FVector& impactPoint) override;
 
+	virtual void DirectionalHit(const FVector& impactPoint) override;
 
 private :
+
+	/*Inheritance test */
+
+	/*Called for attacking (with montage)*/
+	virtual void Attack() override;
+
+	//virtual void PlayMontageSection(UAnimMontage* montage, const FName& section);
+
+	///* Choose a random section of a montage*/
+	//virtual int32 PlayRandomMontageSection(UAnimMontage* montage, TArray<FName> montageSections);
+
+	/* Montages and sections played*/
+	virtual void PlayHitMontage(FName Section) override;
+
+	virtual int32 PlayDeathMontage() override;
+
+	UPROPERTY(VisibleAnywhere)
+		UEchoInterfaceComp* echoWidget;
+
+
+	virtual int32 PlayAttackMontage() override;
+
+	virtual void PlayIdleMontage() override;
+
 	/* Used with camera*/
 	UPROPERTY(VisibleAnywhere)
 		USpringArmComponent* SpringArm;
@@ -128,22 +153,11 @@ private :
 	UPROPERTY(VisibleInstanceOnly)
 		AObjects* overlappedObjects;
 
-	/* Use weapon equipped*/
-	UPROPERTY(VisibleInstanceOnly, Category = "Weapon")
-	AWeapon* weaponEquipped;
-
 	//Enum charac states
 
 	ECharacterState characterState = ECharacterState::ECS_Unequipped;
 
-	EActionState actionState = EActionState::EAS_Unoccupied;
-		
-
-
 	/* Animation montages*/
-
-	UPROPERTY(EditDefaultsOnly, Category = "Montages | Attack")
-	UAnimMontage* attackMontage;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Montages | Unarm")
 		UAnimMontage* unarmMontage;
@@ -155,4 +169,14 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	/*Anim notify functions*/
+	virtual void attackEnd() override;
+	virtual void enableSwordCollision(ECollisionEnabled::Type CollisionEnabled) override;
+	virtual void disableSwordCollision(ECollisionEnabled::Type CollisionEnabled) override;
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
+	/*virtual void ReduceHealth(float dmgAmount);*/
+
+private:
+
+	void echoDeath();
 };

@@ -22,3 +22,5 @@ public :
 		UProgressBar* healthBar;
 	
 };
+
+/* For echo, just create a new class from this one, and create a new HUD with health, mana, XP and etc...*/

@@ -15,6 +15,8 @@
 #include "EnhancedInputSubsystems.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/Pawn.h"
+#include "Kismet/GameplayStatics.h"
+//#include "BaseCharacter.cpp"
 
 // Sets default values
 AEchoCharacter::AEchoCharacter()
@@ -28,6 +30,12 @@ AEchoCharacter::AEchoCharacter()
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 400.f, 0.f);
+
+	GetMesh()->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	GetMesh()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
+	GetMesh()->SetGenerateOverlapEvents(true);
+
 
 	//Attach between character and camera
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
@@ -45,6 +53,10 @@ AEchoCharacter::AEchoCharacter()
 	Eyesbrows->SetupAttachment(GetMesh());
 	Eyesbrows->AttachmentName = FString("head");
 
+	Attributes = CreateDefaultSubobject<UEchoAttributes>(TEXT("EchoAttributes"));
+	echoWidget = CreateDefaultSubobject<UEchoInterfaceComp>(TEXT("HealthBar"));
+	echoWidget->SetupAttachment(GetRootComponent());
+
 
 
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
@@ -55,6 +67,12 @@ AEchoCharacter::AEchoCharacter()
 void AEchoCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	if (echoWidget) {
+		echoWidget->setPercentHealth(1.f);
+		echoWidget->setPercentMana(0.8f);
+		echoWidget->addXP(0.f);
+	}
 
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
@@ -63,9 +81,10 @@ void AEchoCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
+
+	Tags.Add(FName("EchoCharacter"));
 	
 }
-
 
 // Called every frame
 void AEchoCharacter::Tick(float DeltaTime)
@@ -154,9 +173,10 @@ void AEchoCharacter::Interact()
 
 }
 
-void AEchoCharacter::PlayAttackMontage()
+int32 AEchoCharacter::PlayAttackMontage()
 {
-	UAnimInstance* montageAttack = GetMesh()->GetAnimInstance();
+	return PlayRandomMontageSection(attackMontage, AttackMontageSections);
+	/*UAnimInstance* montageAttack = GetMesh()->GetAnimInstance();
 	if (montageAttack) {
 		montageAttack->Montage_Play(attackMontage);
 		int32 random = FMath::RandRange(0, 1);
@@ -176,7 +196,11 @@ void AEchoCharacter::PlayAttackMontage()
 		montageAttack->Montage_JumpToSection(selection, attackMontage);
 
 
-	}
+	}*/
+}
+
+void AEchoCharacter::PlayIdleMontage()
+{
 }
 
 void AEchoCharacter::PlayUnarmMontage(FName sectionName)
@@ -196,7 +220,6 @@ void AEchoCharacter::Attack()
 		
 	}
 }
-
 
 void AEchoCharacter::attackEnd()
 {
@@ -225,6 +248,25 @@ void AEchoCharacter::disableSwordCollision(ECollisionEnabled::Type CollisionEnab
 	}
 }
 
+float AEchoCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	Super::ReduceHealth(DamageAmount);
+	if (echoWidget) {
+		echoWidget->setPercentHealth(Attributes->getHealth());
+	}
+	return DamageAmount;
+}
+
+void AEchoCharacter::echoDeath()
+{
+	/*enemyState = EEnemyState::EES_Dead;
+	GetCharacterMovement()->MaxWalkSpeed = 0.f;	
+	PlayDeathMontage();
+	widgetHealth->DestroyComponent();
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SetLifeSpan(3.f);*/
+}
+
 bool AEchoCharacter::canDraw() {
 
 	return actionState == EActionState::EAS_Unoccupied && characterState == ECharacterState::ECS_Unequipped && weaponEquipped;
@@ -235,6 +277,59 @@ bool AEchoCharacter::canSheathe() {
 
 	return actionState == EActionState::EAS_Unoccupied && characterState != ECharacterState::ECS_Unequipped && unarmMontage && weaponEquipped;
 }
+
+void AEchoCharacter::getHit_Implementation(const FVector& impactPoint)
+{
+	PlaySound(impactPoint);
+	PlayVFX(impactPoint);
+
+	if (IsAlive()) {
+		DirectionalHit(impactPoint);
+		
+	}
+	if (equipSound) {
+		UGameplayStatics::PlaySoundAtLocation(this, equipSound, GetActorLocation());
+	}
+}
+
+void AEchoCharacter::DirectionalHit(const FVector& impactPoint)
+{
+	const FVector forward = GetActorForwardVector();
+	const FVector impactLow(impactPoint.X, impactPoint.Y, GetActorLocation().Z);
+	const FVector hitPoint = (impactLow - GetActorLocation()).GetSafeNormal();
+
+	const double Costheta = FVector::DotProduct(forward, hitPoint);
+	double theta = FMath::Acos(Costheta);
+	theta = FMath::RadiansToDegrees(theta);
+
+
+	const FVector CrossP = FVector::CrossProduct(forward, hitPoint);
+
+	if (CrossP.Z < 0) {
+		theta *= -1.f;
+	}
+
+	FName Section("RightHit");
+
+	if (theta <= 45.f && theta >= -45.f) {
+
+		Section = FName("RightHit");
+	}
+	else if (theta >= -100.f && theta <= -45.f) {
+
+		Section = FName("RightHit");
+	}
+	else if (theta <= 100.f && theta >= 45.f) {
+
+		Section = FName("RightHit");
+	}
+	else if (theta >= 100.f || theta <= -100.f) {
+
+		Section = FName("RightHit");
+	}
+	PlayHitMontage(Section);
+}
+
 void AEchoCharacter::UnarmWeapon()
 {
 	if (canSheathe()) {
@@ -250,3 +345,24 @@ void AEchoCharacter::UnarmWeapon()
 	}	
 }
 
+/*Inheritance test */
+void AEchoCharacter::PlayHitMontage(FName Section)
+{
+	UAnimInstance* montageHit = GetMesh()->GetAnimInstance();
+	if (montageHit) {
+		montageHit->Montage_Play(hitMontage);
+		montageHit->Montage_JumpToSection(Section, hitMontage);
+	}
+}
+
+int32 AEchoCharacter::PlayDeathMontage()
+{
+	return PlayRandomMontageSection(deathMontage, DeathMontageSections);
+}
+
+
+/* Find super attack for the montage
+* Find input for super attacks
+* Create new attack state
+* Create function to activate part of the montage
+*/

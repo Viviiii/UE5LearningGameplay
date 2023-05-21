@@ -30,6 +30,8 @@ ABreakable::ABreakable()
 void ABreakable::BeginPlay()
 {
 	Super::BeginPlay();
+
+	Tags.Add(FName("Breakable"));
 	
 }
 
