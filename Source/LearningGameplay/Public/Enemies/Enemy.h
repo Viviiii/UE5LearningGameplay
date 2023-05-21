@@ -36,21 +36,29 @@ class LEARNINGGAMEPLAY_API AEnemy : public ABaseCharacter
 public:
 	
 	AEnemy();
+	virtual void Tick(float DeltaTime) override;
 
-protected:
+	/*Damage and attack functions */
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
+
+	virtual void Destroyed() override;
+
+	virtual void getHit_Implementation(const FVector& impactPoint) override;
+
+	virtual void DirectionalHit(const FVector& impactPoint) override;
+
+protected :
+
+	/* Begin Play functions*/
 	virtual void BeginPlay() override;
 
-	/* Montages and sections played*/
-	virtual void PlayHitMontage(FName Section) override;
+	void StartHealth();
 
-	virtual void PlayDeathMontage() override;
+	void SpawnDefaultWeapon();
 
-	virtual void PlayIdleMontage() override;
+	/* IA Navigation */
 
-	virtual void PlayAttackMontage() override;
-
-	UPROPERTY(BlueprintReadOnly)
-		EDeathState deathState = EDeathState::ECS_Alive;
+	void CheckCombatTarget();
 
 	/*Navigation */
 	bool isTargetInRange(AActor* target, double radius);
@@ -58,100 +66,97 @@ protected:
 	void MoveToTarget(AActor* target);
 
 	UFUNCTION()
-	void patrolTimerFinished();
+		void patrolTimerFinished();
 
 	AActor* choosingTarget();
 
+	bool IsAttacking();
 
-public:	
-	virtual void Tick(float DeltaTime) override;
+	bool IsChasing();
 
-	/*Navigation */
-	UFUNCTION()
-	void CheckPatrolTarget();
+	bool IsAlive();
 
-	void CheckCombatTarget();
+	bool IsOutsideAttackRadius();
 
-	virtual void getHit_Implementation(const FVector& impactPoint) override;
+	bool IsOutsideCombatRadius();
 
-	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
+	bool bCanAttack();
 
-	virtual void Destroyed() override;
+	void ChaseTarget();
 
-	virtual void enableSwordCollision(ECollisionEnabled::Type CollisionEnabled) override;
-	virtual void disableSwordCollision(ECollisionEnabled::Type CollisionEnabled) override;
+	void StartPatrolling();
 
-	UFUNCTION()
-	void pawnSeen(APawn* pawn);
+	void LoseInterest();
 
-	virtual void DirectionalHit(const FVector& impactPoint) override;
+	void startAttackTimer();
 
-	virtual void Attack() override;
-	virtual void attackEnd() override;
-
-	EEnemyState enemyState = EEnemyState::EES_Patrol;
-
-private :
-	/*UPROPERTY(EditAnywhere)
-		UEchoAttributes* Attributes;
-
-	UPROPERTY(VisibleAnywhere)
-		UHealthBar* widgetHealth;*/
+	UPROPERTY(BlueprintReadOnly, Category = "Death")
+		TEnumAsByte<EDeathState> deathPose = EDeathState::ECS_Alive;
 
 	FTimerHandle patrolTimer;
-
-
-	/* Animation montages*/
-
-	//UPROPERTY(EditDefaultsOnly, Category = "Montages | Hit")
-	//	UAnimMontage* hitMontage;
-
-	//UPROPERTY(EditDefaultsOnly, Category = "Montages | Idle")
-	//	UAnimMontage* idleMontage;
-
-	//UPROPERTY(EditDefaultsOnly, Category = "Montages | Death")
-	//	UAnimMontage* deathMontage;
-
-	//UPROPERTY(EditDefaultsOnly, Category = "Montages | Attack")
-	//	UAnimMontage* attackMontage;
-
-
-	/*Sounds*/
-	//UPROPERTY(EditAnywhere, Category = "Enemy Hit")
-	//	USoundBase* hitSound;
-
-	/*VFX*/
-	//UPROPERTY(EditAnywhere, Category = "Enemy Hit")
-	//	UParticleSystem* bloodEffect;
-
-	/*Navigation */
-
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<AWeapon> weaponClass;
 
 	UPROPERTY()
 		AAIController* AIenemy;
 
-	UPROPERTY(EditInstanceOnly, Category =" IA Navigation", BlueprintReadWrite, meta =(AllowPrivateAccess = "true"))
+	UPROPERTY(EditInstanceOnly, Category = " IA Navigation", BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		AActor* targetPatrol;
 
 	UPROPERTY(EditInstanceOnly, Category = " IA Navigation")
 		TArray<AActor*> targetsPatrol;
 
-	/* Chasing + attacks*/
 	UPROPERTY(EditInstanceOnly, Category = " IA Navigation")
 		AActor* combatTarget;
 
-	UPROPERTY(EditAnywhere)
-		double combatRadius = 600.f;
+	FTimerHandle attackTimer;
+
+	UFUNCTION()
+		void pawnSeen(APawn* pawn);
 
 	UPROPERTY(EditAnywhere)
-		double attackRadius = 150.f;
-
-	UPROPERTY(EditAnywhere)
-		double patrolRadius = 5000.f;
+		TSubclassOf<AWeapon> weaponClass;
 
 	UPROPERTY(EditAnywhere)
 		UPawnSensingComponent* pawnSensing;
 
+	void ShowHealth();
+
+	void EnemyDeath();
+
+	/* Montages and sections played*/
+	virtual void PlayHitMontage(FName Section) override;
+
+	virtual void PlayIdleMontage() override;
+
+	/* Call attack montage*/
+	virtual int32 PlayAttackMontage() override;
+
+	virtual int32 PlayDeathMontage() override;
+
+	/*virtual void ReduceHealth(float dmgAmount);*/
+
+	/*Attacking */
+
+	virtual void enableSwordCollision(ECollisionEnabled::Type CollisionEnabled) override;
+	virtual void disableSwordCollision(ECollisionEnabled::Type CollisionEnabled) override;
+	virtual void attackEnd() override;
+
+	virtual void Attack() override;
+
+private : 
+
+	EEnemyState enemyState = EEnemyState::EES_Patrol;
+
+	EActionState actionState = EActionState::EAS_Unoccupied;
+
+	/* Chasing + attacks*/
+
+	
+	UPROPERTY(EditAnywhere)
+		double combatRadius = 1000.f;
+
+	UPROPERTY(EditAnywhere)
+		double attackRadius = 200.f;
+
+	UPROPERTY(EditAnywhere)
+		double patrolRadius = 5000.f;
 };		

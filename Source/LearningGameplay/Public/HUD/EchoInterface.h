@@ -11,6 +11,8 @@
 /**
  * 
  */
+
+class UProgressBar;
 UCLASS()
 class LEARNINGGAMEPLAY_API UEchoInterface : public UUserWidget
 {
@@ -25,5 +27,6 @@ public:
 
 	UPROPERTY(meta = (BindWidget))
 		UProgressBar* XPBar;
+	
 	
 };

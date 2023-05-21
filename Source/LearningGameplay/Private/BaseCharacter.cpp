@@ -2,6 +2,7 @@
 
 
 #include "BaseCharacter.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ABaseCharacter::ABaseCharacter()
@@ -27,13 +28,6 @@ void ABaseCharacter::PlayHitMontage(FName Section)
 	}
 }
 
-void ABaseCharacter::PlayDeathMontage()
-{
-}
-
-void ABaseCharacter::PlayAttackMontage()
-{
-}
 
 void ABaseCharacter::attackEnd()
 {
@@ -51,8 +45,55 @@ void ABaseCharacter::Attack()
 {
 }
 
+void ABaseCharacter::PlayMontageSection(UAnimMontage* montage, const FName& section)
+{
+	UAnimInstance* animInstance = GetMesh()->GetAnimInstance();
+	if (animInstance && montage) {
+		animInstance->Montage_Play(montage);
+		animInstance->Montage_JumpToSection(section, montage);
+
+	}
+}
+
+int32 ABaseCharacter::PlayRandomMontageSection(UAnimMontage* montage, TArray<FName> montageSections)
+{
+	if (montageSections.Num() <= 0) return 0;
+	int32 random = FMath::RandRange(0, montageSections.Num() - 1);
+	PlayMontageSection(montage, montageSections[random]);
+	return random;
+}
+
+int32 ABaseCharacter::PlayDeathMontage()
+{
+	return PlayRandomMontageSection(deathMontage, DeathMontageSections);
+}
+
+int32 ABaseCharacter::PlayAttackMontage()
+{
+	return PlayRandomMontageSection(attackMontage, AttackMontageSections);
+}
+
 void ABaseCharacter::PlayIdleMontage()
 {
+}
+
+bool ABaseCharacter::IsAlive()
+{
+	return Attributes && Attributes->isAlive();
+}
+
+void ABaseCharacter::PlayVFX(const FVector& impactPoint)
+{
+	if (bloodEffect) {
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bloodEffect, impactPoint);
+	}
+}
+
+void ABaseCharacter::PlaySound(const FVector& impactPoint)
+{
+	if (hitSound) {
+		UGameplayStatics::PlaySoundAtLocation(this, hitSound, impactPoint);
+	}
 }
 
 void ABaseCharacter::getHit_Implementation(const FVector& impactPoint)
@@ -66,6 +107,13 @@ float ABaseCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageE
 
 void ABaseCharacter::DirectionalHit(const FVector& impactPoint)
 {
+}
+
+void ABaseCharacter::ReduceHealth(float dmgAmount)
+{
+	if (Attributes) {
+		Attributes->ReceiveDamage(dmgAmount);
+	}
 }
 
 

@@ -8,6 +8,7 @@
 #include "EchoInterfaceComp.generated.h"
 
 
+
 /**
  * 
  */
@@ -18,10 +19,15 @@ class LEARNINGGAMEPLAY_API UEchoInterfaceComp : public UWidgetComponent
 	
 public:
 	void setPercentHealth(float HP);
-private:
-		UEchoInterface* healthBarW;
 
-		UEchoInterface* manaBarW;
+	void setPercentMana(float Mana);
+
+	void addXP(float XP);
+
+private:
+		UEchoInterface* healthBarEchoW;
+
+		UEchoInterface* manaBarEchoW;
 
 		UEchoInterface* XPBarW;
 

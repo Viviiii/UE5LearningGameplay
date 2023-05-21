@@ -56,6 +56,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Montages | Attack")
 		UAnimMontage* attackMontage;
 
+	UPROPERTY(EditAnywhere, Category = "Montage Sections")
+		TArray<FName> AttackMontageSections;
+
+	UPROPERTY(EditAnywhere, Category = "Montage Sections")
+		TArray<FName> DeathMontageSections;
+
 	/*Sounds*/
 	UPROPERTY(EditAnywhere, Category = "Enemy Hit")
 		USoundBase* hitSound;
@@ -64,21 +70,14 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Enemy Hit")
 		UParticleSystem* bloodEffect;
 
-	/* Montages and sections played*/
-	virtual void PlayHitMontage(FName Section);
-
-	virtual void PlayDeathMontage();
-
-	virtual void PlayAttackMontage();
-
-	virtual void PlayIdleMontage();
-
 	/* Attack and hit functions*/
 	virtual void getHit_Implementation(const FVector& impactPoint) override;
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
 
 	virtual void DirectionalHit(const FVector& impactPoint);
+
+	virtual void ReduceHealth(float dmgAmount);
 
 
 	/*Anim notify functions*/
@@ -93,5 +92,30 @@ protected:
 
 	/*Called for attacking (with montage)*/
 	virtual void Attack();
+
+	virtual void PlayMontageSection(UAnimMontage* montage, const FName& section);
+
+	/* Choose a random section of a montage*/
+	virtual int32 PlayRandomMontageSection(UAnimMontage* montage, TArray<FName> montageSections);
+
+
+	/* Montages and sections played*/
+	virtual void PlayHitMontage(FName Section);
+
+	virtual int32 PlayDeathMontage();
+
+	virtual int32 PlayAttackMontage();
+
+	virtual void PlayIdleMontage();
+
+	virtual bool IsAlive();
+
+	/* VFX & SFX*/
+
+	virtual void PlayVFX(const FVector& impactPoint);
+
+	virtual void PlaySound(const FVector& impactPoint);
+
+
 
 };

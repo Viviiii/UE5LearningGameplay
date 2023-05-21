@@ -36,6 +36,10 @@ protected :
 	UFUNCTION()
 		void OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+	void ExecuteHit(AActor* OtherActor, FHitResult& boxHit);
+
+	void BoxTraceWeapon(FHitResult& boxHit);
+
 	UFUNCTION(BlueprintImplementableEvent)
 	void createField(const FVector& location);
 
