@@ -72,6 +72,8 @@ void AEchoCharacter::BeginPlay()
 		echoWidget->setPercentHealth(1.f);
 		echoWidget->setPercentMana(0.8f);
 		echoWidget->addXP(0.f);
+		//echoWidget->addPotions();
+		//echoWidget->addCoins();
 	}
 
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
@@ -115,6 +117,11 @@ void AEchoCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		
 		//Sword Actions
 		EnhancedInputComponent->BindAction(WeaponAction, ETriggerEvent::Triggered, this, &AEchoCharacter::UnarmWeapon);
+
+		//Abilities Actions
+		EnhancedInputComponent->BindAction(Ability1Action, ETriggerEvent::Triggered, this, &AEchoCharacter::Ability1);
+
+		//EnhancedInputComponent->BindAction(Ability2Action, ETriggerEvent::Triggered, this, &AEchoCharacter::Ability2);
 
 	}
 }
@@ -173,6 +180,17 @@ void AEchoCharacter::Interact()
 
 }
 
+void AEchoCharacter::Ability1()
+{
+	GetCharacterMovement()->MaxWalkSpeed = 600.f;
+	UAnimInstance* animInstance = GetMesh()->GetAnimInstance();
+	if (animInstance && abilitiesMontage) {
+		animInstance->Montage_Play(abilitiesMontage);	
+		animInstance->Montage_JumpToSection("Ability2", abilitiesMontage);
+
+	}
+}
+
 int32 AEchoCharacter::PlayAttackMontage()
 {
 	return PlayRandomMontageSection(attackMontage, AttackMontageSections);
@@ -224,6 +242,7 @@ void AEchoCharacter::Attack()
 void AEchoCharacter::attackEnd()
 {
 	actionState = EActionState::EAS_Unoccupied;
+
 }
 
 void AEchoCharacter::disarmSword()

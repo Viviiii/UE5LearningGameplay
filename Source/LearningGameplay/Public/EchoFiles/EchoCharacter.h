@@ -71,6 +71,14 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 		class UInputAction* AttackAction;
 
+	/** Ability1 Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+		class UInputAction* Ability1Action;
+
+	/** Ability2 Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+		class UInputAction* Ability2Action;
+
 	/** Draw/Sheathe Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 		class UInputAction* WeaponAction;
@@ -78,6 +86,10 @@ protected:
 	/* SFX */
 	UPROPERTY(EditAnywhere, Category = "Weapon Property")
 		USoundBase* equipSound;
+
+	/* Ability montage */
+	UPROPERTY(EditDefaultsOnly, Category = "Montages | Abilities")
+		UAnimMontage* abilitiesMontage;
 
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
@@ -87,6 +99,9 @@ protected:
 
 	/*Called for interacting*/
 	void Interact();
+
+	/*Called for interacting*/
+	void Ability1();
 
 	/*Anim notify functions*/
 
@@ -133,21 +148,6 @@ private :
 
 	virtual void PlayIdleMontage() override;
 
-	/* Used with camera*/
-	UPROPERTY(VisibleAnywhere)
-		USpringArmComponent* SpringArm;
-
-	/** Follow camera */
-	UPROPERTY(VisibleAnywhere)
-		UCameraComponent* FollowCamera;
-
-	/* Groom components*/
-	UPROPERTY(VisibleAnywhere, Category = "Hair")
-		class UGroomComponent* Hair;
-
-	/** Follow camera */
-	UPROPERTY(VisibleAnywhere, Category = "Hair")
-		class UGroomComponent* Eyesbrows;
 
 	/* Overlapping objects*/
 	UPROPERTY(VisibleInstanceOnly)
@@ -177,6 +177,23 @@ public:
 	/*virtual void ReduceHealth(float dmgAmount);*/
 
 private:
+
+
+	/* Used with camera*/
+	UPROPERTY(VisibleAnywhere)
+		USpringArmComponent* SpringArm;
+
+	/** Follow camera */
+	UPROPERTY(VisibleAnywhere)
+		UCameraComponent* FollowCamera;
+
+	/* Groom components*/
+	UPROPERTY(VisibleAnywhere, Category = "Hair")
+		class UGroomComponent* Hair;
+
+	/** Follow camera */
+	UPROPERTY(VisibleAnywhere, Category = "Hair")
+		class UGroomComponent* Eyesbrows;
 
 	void echoDeath();
 };

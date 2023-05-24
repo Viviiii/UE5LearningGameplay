@@ -4,12 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "Objects.h"
+#include "HUD/EchoInterface.h"
 #include "Treasure.generated.h"
 
 /**
  * 
  */
+
+class UEchoInterfaceComp;
 UCLASS()
+
 class LEARNINGGAMEPLAY_API ATreasure : public AObjects
 {
 	GENERATED_BODY()
@@ -22,5 +26,14 @@ private :
 
 	UPROPERTY(EditAnywhere, Category = "Gold")
 		int32 Coin;
+
+	/*UPROPERTY(EditAnywhere)
+		UEchoInterfaceComp* echoWidget;*/
+
+public :
+	ATreasure();
+
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
 	
 };

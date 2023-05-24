@@ -38,3 +38,37 @@ void UEchoInterfaceComp::addXP(float XP)
 		XPBarW->XPBar->SetPercent(XP);
 	}
 }
+
+void UEchoInterfaceComp::addPotions()
+{
+	if (potionsW == nullptr) {
+		potionsW = Cast<UEchoInterface>(GetUserWidgetObject());
+		potions = 0;
+
+	}
+	if (potionsW && potionsW->potions) {
+		potions++;
+		potionsW->potions->SetText(FText::AsNumber(potions));
+		
+	}
+}
+
+void UEchoInterfaceComp::removePotions()
+{
+}
+
+void UEchoInterfaceComp::addCoins()
+{
+	if (coinsW == nullptr) {
+		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Blue, FString("NOOOOOOOOOOOOOOOO"));
+		coinsW = Cast<UEchoInterface>(GetUserWidgetObject());
+		coin = 0;
+
+	}
+	if (coinsW && coinsW->coins) {
+		GEngine->AddOnScreenDebugMessage(2, 1.f, FColor::Blue, FString("Almost there"));
+		coin = coin + 5 ;
+		coinsW->coins->SetText(FText::AsNumber(coin));
+
+	}
+}

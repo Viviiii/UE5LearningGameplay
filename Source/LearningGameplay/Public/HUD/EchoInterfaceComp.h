@@ -24,11 +24,31 @@ public:
 
 	void addXP(float XP);
 
+	void addPotions();
+
+	void removePotions();
+
+	void addCoins();
+
+	UPROPERTY(BlueprintReadWrite)
+		int potions;
+
+	UPROPERTY(BlueprintReadWrite)
+		int coin;
+
+	UEchoInterface* potionsW;
+
+	UEchoInterface* coinsW;
+
 private:
 		UEchoInterface* healthBarEchoW;
 
 		UEchoInterface* manaBarEchoW;
 
 		UEchoInterface* XPBarW;
+
+		
+
+		
 
 };
