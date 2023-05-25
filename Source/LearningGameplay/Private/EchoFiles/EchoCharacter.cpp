@@ -72,8 +72,8 @@ void AEchoCharacter::BeginPlay()
 		echoWidget->setPercentHealth(1.f);
 		echoWidget->setPercentMana(0.8f);
 		echoWidget->addXP(0.f);
-		//echoWidget->addPotions();
-		//echoWidget->addCoins();
+		echoWidget->addPotions();
+		echoWidget->addCoins();
 	}
 
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))

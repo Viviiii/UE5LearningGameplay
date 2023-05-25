@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Objects.h"
 #include "HUD/EchoInterface.h"
+#include "EchoFiles/EchoCharacter.h"
 #include "Treasure.generated.h"
 
 /**
@@ -29,6 +30,8 @@ private :
 
 	/*UPROPERTY(EditAnywhere)
 		UEchoInterfaceComp* echoWidget;*/
+
+	AEchoCharacter* echo;
 
 public :
 	ATreasure();

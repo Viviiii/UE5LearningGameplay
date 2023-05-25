@@ -42,6 +42,10 @@ public:
 
 	EActionState actionState = EActionState::EAS_Unoccupied;
 
+
+	UPROPERTY(VisibleAnywhere)
+		UEchoInterfaceComp* echoWidget;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -140,8 +144,6 @@ private :
 
 	virtual int32 PlayDeathMontage() override;
 
-	UPROPERTY(VisibleAnywhere)
-		UEchoInterfaceComp* echoWidget;
 
 
 	virtual int32 PlayAttackMontage() override;
