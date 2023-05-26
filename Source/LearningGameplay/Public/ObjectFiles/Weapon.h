@@ -60,12 +60,18 @@ public :
 
 	AEchoCharacter* echoCharac;
 
+	
+
 private :
 	
 	AWeapon* weaponEquipped;
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Property")
 	USoundBase* equipSound;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Property")
+		float Damage = 20.f;
+
 
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Property")
 	UBoxComponent* Box;
@@ -79,6 +85,5 @@ private :
 	UPROPERTY(EditAnywhere, Category = "Visual Effects")
 		UNiagaraComponent* VFX;
 
-	UPROPERTY(EditInstanceOnly, Category = "Weapon Property")
-		float Damage = 20.f;
+	
 };
