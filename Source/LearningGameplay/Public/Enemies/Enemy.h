@@ -6,7 +6,7 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/StaticMeshComponent.h"
-#include "IHitInterface.h"
+#include "Interfaces/IHitInterface.h"
 #include "Sound/SoundWave.h"
 #include "AIController.h"
 #include "EchoFiles/EchoAttributes.h"

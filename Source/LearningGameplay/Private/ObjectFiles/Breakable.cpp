@@ -2,7 +2,7 @@
 
 
 #include "ObjectFiles/Breakable.h"
-#include "IHitInterface.h"
+#include "Interfaces/IHitInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/CapsuleComponent.h"
 #include "GeometryCollection/GeometryCollectionComponent.h"

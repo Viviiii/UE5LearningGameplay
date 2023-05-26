@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "HUD/HealthBar.h"
-#include "IHitInterface.h"
+#include "Interfaces/IHitInterface.h"
 #include "ObjectFiles/Weapon.h"
 #include "EchoFiles/EchoAttributes.h"
 #include "BaseCharacter.generated.h"

@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Sound/SoundWave.h"
-#include "IHitInterface.h"
+#include "Interfaces/IHitInterface.h"
 #include "Treasure.h"
 #include "Breakable.generated.h"
 

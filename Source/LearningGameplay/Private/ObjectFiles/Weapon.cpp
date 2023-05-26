@@ -7,7 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "EchoFiles/EchoCharacter.h"
 #include "Components/BoxComponent.h"
-#include "IHitInterface.h"
+#include "Interfaces/IHitInterface.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 void AWeapon::BeginPlay()

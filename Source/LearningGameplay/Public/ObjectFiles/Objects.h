@@ -5,13 +5,15 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "WeaponStateEnum.h"
+#include "Interfaces/PickUpInterface.h"
 #include "Objects.generated.h"
 
 class UStaticMeshComponent;
 class USphereComponent;
+class IPickUpInterface;
 
 UCLASS()
-class LEARNINGGAMEPLAY_API AObjects : public AActor
+class LEARNINGGAMEPLAY_API AObjects : public AActor, public IPickUpInterface
 {
 	GENERATED_BODY()
 	
@@ -51,6 +53,5 @@ public:
 
 	UFUNCTION()
 	virtual void OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) ;
-
 
 };

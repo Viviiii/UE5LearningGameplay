@@ -28,7 +28,7 @@ public:
 
 	void removePotions();
 
-	void addCoins();
+	void addCoins(int amount);
 
 	UPROPERTY(BlueprintReadWrite)
 		int potions;

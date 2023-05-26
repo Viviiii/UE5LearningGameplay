@@ -4,8 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Objects.h"
-#include "HUD/EchoInterface.h"
-#include "EchoFiles/EchoCharacter.h"
 #include "Treasure.generated.h"
 
 /**
@@ -24,19 +22,9 @@ private :
 	
 	UPROPERTY(EditAnywhere, Category = "PickCoin")
 		USoundBase* pickCoin;
+	
+public :
 
 	UPROPERTY(EditAnywhere, Category = "Gold")
-		int32 Coin;
-
-	/*UPROPERTY(EditAnywhere)
-		UEchoInterfaceComp* echoWidget;*/
-
-	AEchoCharacter* echo;
-
-public :
-	ATreasure();
-
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-	
+		int32 coin;
 };

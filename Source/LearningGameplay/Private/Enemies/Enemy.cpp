@@ -84,23 +84,8 @@ void AEnemy::Tick(float DeltaTime)
 			
 		CheckCombatTarget();
 	}
-	/*else {
-		CheckPatrolTarget();
-	}*/
-	
 
 }
-
-//void AEnemy::CheckPatrolTarget()
-//{
-//	//enemyState = EEnemyState::EES_Patrol;
-//
-//	if (targetPatrol) {
-//		if (isTargetInRange(targetPatrol, patrolRadius)) {
-//		}
-//	}
-//}
-
 
 void AEnemy::getHit_Implementation(const FVector& impactPoint)
 {
@@ -135,7 +120,6 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 	if (widgetHealth) {
 		widgetHealth->setPercentHealth(Attributes->getHealth());
 	}
-	return DamageAmount;
 	combatTarget = EventInstigator->GetPawn();
 	ChaseTarget();
 	/*enemyState = EEnemyState::EES_Chasing;
@@ -203,7 +187,6 @@ void AEnemy::DirectionalHit(const FVector& impactPoint)
 	PlayHitMontage(Section);
 }
 
-
 void AEnemy::PlayHitMontage(FName Section)
 {
 	UAnimInstance* montageHit = GetMesh()->GetAnimInstance();
@@ -245,8 +228,6 @@ void AEnemy::PlayIdleMontage()
 void AEnemy::enableSwordCollision(ECollisionEnabled::Type CollisionEnabled)
 {
 	if (weaponEquipped && weaponEquipped->getBoxCollision()) {
-		//GEngine->AddOnScreenDebugMessage(3, 2.f, FColor::Blue, FString::Printf(TEXT("Box name : %s"), weaponEquipped->getBoxCollision()->GetName()));
-		//GEngine->AddOnScreenDebugMessage(3, 2.f, FColor::Blue, FString::Printf(FName(weaponEquipped->getBoxCollision()->GetName())));
 		weaponEquipped->getBoxCollision()->SetCollisionEnabled(CollisionEnabled);
 	}
 
@@ -296,7 +277,6 @@ bool AEnemy::bCanAttack()
 /* IA Navigation */
 void AEnemy::ChaseTarget()
 {
-	GEngine->AddOnScreenDebugMessage(1, 1.5f, FColor::Blue, FString("Chasing"));
 	GetWorld()->GetTimerManager().ClearTimer(attackTimer);
 	actionState = EActionState::EAS_Unoccupied;
 	enemyState = EEnemyState::EES_Chasing;
@@ -309,12 +289,10 @@ void AEnemy::StartPatrolling()
 	enemyState = EEnemyState::EES_Patrol;
 	GetCharacterMovement()->MaxWalkSpeed = 300.f;
 	MoveToTarget(targetPatrol);
-	GEngine->AddOnScreenDebugMessage(3, 1.5f, FColor::Blue, FString("Patrolling"));
 }
 
 void AEnemy::LoseInterest()
 {
-	GEngine->AddOnScreenDebugMessage(3, 1.5f, FColor::Blue, FString("LosingInterest"));
 	GetWorld()->GetTimerManager().ClearTimer(attackTimer);
 	combatTarget = nullptr;
 	if (widgetHealth) {
@@ -352,8 +330,7 @@ void AEnemy::Attack() {
 void AEnemy::startAttackTimer()
 {
 	enemyState = EEnemyState::EES_Attacking;
-	GEngine->AddOnScreenDebugMessage(2, 1.5f, FColor::Blue, FString("StartAttackTimer"));
-	GetWorld()->GetTimerManager().SetTimer(attackTimer, this, &AEnemy::Attack, 1.5f, true, 0.2f);
+	GetWorld()->GetTimerManager().SetTimer(attackTimer, this, &AEnemy::Attack, 1.f, true, 0.2f);
 }
 
 bool AEnemy::isTargetInRange(AActor* target, double radius)
@@ -476,5 +453,5 @@ void AEnemy::EnemyDeath()
 	PlayDeathMontage();
 	widgetHealth->DestroyComponent();
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	SetLifeSpan(3.f);
+	SetLifeSpan(3.5f);
 }

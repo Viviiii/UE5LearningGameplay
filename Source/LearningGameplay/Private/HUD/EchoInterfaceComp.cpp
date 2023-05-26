@@ -57,7 +57,7 @@ void UEchoInterfaceComp::removePotions()
 {
 }
 
-void UEchoInterfaceComp::addCoins()
+void UEchoInterfaceComp::addCoins(int amount)
 {
 	if (coinsW == nullptr) {
 		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Blue, FString("NOOOOOOOOOOOOOOOO"));
@@ -67,7 +67,7 @@ void UEchoInterfaceComp::addCoins()
 	}
 	if (coinsW && coinsW->coins) {
 		GEngine->AddOnScreenDebugMessage(2, 1.f, FColor::Blue, FString("Almost there"));
-		coin = coin + 5 ;
+		coin = coin + amount;
 		coinsW->coins->SetText(FText::AsNumber(coin));
 
 	}

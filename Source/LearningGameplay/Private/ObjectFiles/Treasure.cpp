@@ -13,22 +13,9 @@ void ATreasure::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 	if (pickCoin) {
 		UGameplayStatics::PlaySoundAtLocation(this, pickCoin, GetActorLocation());
 	}
-
-	if (echo->echoWidget) {
-		echo->echoWidget->addCoins();
+	IPickUpInterface* pickUpInterface = Cast<IPickUpInterface>(OtherActor);
+	if (pickUpInterface) {
+		pickUpInterface->addCoins(this);
 	}
-	
 	Destroy();
-
-}
-
-ATreasure::ATreasure()
-{
-	/*echoWidget = CreateDefaultSubobject<UEchoInterfaceComp>(TEXT("HealthBar"));
-	echoWidget->SetupAttachment(GetRootComponent());*/
-}
-
-void ATreasure::BeginPlay()
-{
-	//echoWidget->addCoins();
 }

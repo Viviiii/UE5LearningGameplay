@@ -73,7 +73,8 @@ void AEchoCharacter::BeginPlay()
 		echoWidget->setPercentMana(0.8f);
 		echoWidget->addXP(0.f);
 		echoWidget->addPotions();
-		echoWidget->addCoins();
+		echoWidget->addCoins(5);
+
 	}
 
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
@@ -276,6 +277,21 @@ float AEchoCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageE
 	return DamageAmount;
 }
 
+void AEchoCharacter::setOverlappingItem(AObjects* item)
+{
+	overlappedObjects = item;
+}
+
+void AEchoCharacter::addCoins(ATreasure* treasure)
+{
+	echoWidget->addCoins(treasure->coin);
+}
+
+void AEchoCharacter::addPotion(APotions* potion)
+{
+	echoWidget->addPotions();
+}
+
 void AEchoCharacter::echoDeath()
 {
 	/*enemyState = EEnemyState::EES_Dead;
@@ -303,7 +319,8 @@ void AEchoCharacter::getHit_Implementation(const FVector& impactPoint)
 	PlayVFX(impactPoint);
 
 	if (IsAlive()) {
-		DirectionalHit(impactPoint);
+		GEngine->AddOnScreenDebugMessage(1, 1.5f, FColor::Blue, FString("Aie Aie aie "));
+		//DirectionalHit(impactPoint);
 		
 	}
 	if (equipSound) {

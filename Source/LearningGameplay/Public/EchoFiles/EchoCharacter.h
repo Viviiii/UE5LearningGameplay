@@ -7,8 +7,12 @@
 #include "BaseCharacter.h"
 #include "InputActionValue.h"
 #include "CharacterStateEnum.h"
+#include "Interfaces/PickUpInterface.h"
 #include "HUD/EchoInterfaceComp.h"
+#include "ObjectFiles/Treasure.h"
+#include "ObjectFiles/Potions.h"
 #include "EchoCharacter.generated.h"
+
 
 
 class USkeletalMeshComponent;
@@ -20,9 +24,10 @@ class AObjects;
 class UAnimMontage;
 class AWeapon;
 class UEchoInterfaceComp;
+class IPickUpInterface;
 
 UCLASS()
-class LEARNINGGAMEPLAY_API AEchoCharacter : public ABaseCharacter
+class LEARNINGGAMEPLAY_API AEchoCharacter : public ABaseCharacter, public IPickUpInterface
 {
 	GENERATED_BODY()
 
@@ -176,7 +181,11 @@ public:
 	virtual void enableSwordCollision(ECollisionEnabled::Type CollisionEnabled) override;
 	virtual void disableSwordCollision(ECollisionEnabled::Type CollisionEnabled) override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
-	/*virtual void ReduceHealth(float dmgAmount);*/
+	
+	
+	virtual void setOverlappingItem(AObjects* item) override;
+	virtual void addCoins(ATreasure* treasure) override;
+	virtual void addPotion(APotions* potion) override;
 
 private:
 
