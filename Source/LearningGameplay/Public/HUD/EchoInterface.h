@@ -21,7 +21,25 @@ class LEARNINGGAMEPLAY_API UEchoInterface : public UUserWidget
 {
 	GENERATED_BODY()
 
-public:
+public : 
+	void setPercentHealth(float HP);
+
+	void setPercentMana(float Mana);
+
+	void addPotions();
+
+	void removePotions();
+
+	void addCoins(int amount);
+
+	UPROPERTY(BlueprintReadWrite)
+		int potionsNbr;
+
+	UPROPERTY(BlueprintReadWrite)
+		int coinNbr;
+
+
+private :
 	UPROPERTY(meta = (BindWidget))
 		UProgressBar* healthBar;
 

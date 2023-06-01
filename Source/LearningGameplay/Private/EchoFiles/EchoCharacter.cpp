@@ -10,6 +10,7 @@
 #include "ObjectFiles/Objects.h"
 #include "ObjectFiles/Weapon.h"
 #include "ObjectFiles/Door.h"
+#include "HUD/EchoHUD.h"
 #include "Animation/AnimMontage.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -54,8 +55,8 @@ AEchoCharacter::AEchoCharacter()
 	Eyesbrows->AttachmentName = FString("head");
 
 	Attributes = CreateDefaultSubobject<UEchoAttributes>(TEXT("EchoAttributes"));
-	echoWidget = CreateDefaultSubobject<UEchoInterfaceComp>(TEXT("HealthBar"));
-	echoWidget->SetupAttachment(GetRootComponent());
+	/*echoWidget = CreateDefaultSubobject<UEchoInterfaceComp>(TEXT("HealthBar"));
+	echoWidget->SetupAttachment(GetRootComponent());*/
 
 
 
@@ -68,14 +69,14 @@ void AEchoCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if (echoWidget) {
+	/*if (echoWidget) {
 		echoWidget->setPercentHealth(1.f);
 		echoWidget->setPercentMana(0.8f);
 		echoWidget->addXP(0.f);
 		echoWidget->addPotions();
 		echoWidget->addCoins(5);
 
-	}
+	}*/
 
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
@@ -83,6 +84,15 @@ void AEchoCharacter::BeginPlay()
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
+		AEchoHUD* echoHUD = Cast<AEchoHUD>(PlayerController->GetHUD());
+		if (echoHUD) {
+			echoInterface = echoHUD->GetEchoInterface();
+			if (echoInterface) {
+				echoInterface->setPercentHealth(1.f);
+				echoInterface->setPercentMana(0.8f);
+			}
+		}
+		
 	}
 
 	Tags.Add(FName("EchoCharacter"));
@@ -121,8 +131,6 @@ void AEchoCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 		//Abilities Actions
 		EnhancedInputComponent->BindAction(Ability1Action, ETriggerEvent::Triggered, this, &AEchoCharacter::Ability1);
-
-		//EnhancedInputComponent->BindAction(Ability2Action, ETriggerEvent::Triggered, this, &AEchoCharacter::Ability2);
 
 	}
 }
@@ -271,8 +279,8 @@ void AEchoCharacter::disableSwordCollision(ECollisionEnabled::Type CollisionEnab
 float AEchoCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	Super::ReduceHealth(DamageAmount);
-	if (echoWidget) {
-		echoWidget->setPercentHealth(Attributes->getHealth());
+	if (echoInterface) {
+		echoInterface->setPercentHealth(Attributes->getHealth());
 	}
 	return DamageAmount;
 }
@@ -284,12 +292,12 @@ void AEchoCharacter::setOverlappingItem(AObjects* item)
 
 void AEchoCharacter::addCoins(ATreasure* treasure)
 {
-	echoWidget->addCoins(treasure->coin);
+	echoInterface->addCoins(treasure->coin);
 }
 
 void AEchoCharacter::addPotion(APotions* potion)
 {
-	echoWidget->addPotions();
+	echoInterface->addPotions();
 }
 
 void AEchoCharacter::echoDeath()
@@ -319,8 +327,7 @@ void AEchoCharacter::getHit_Implementation(const FVector& impactPoint)
 	PlayVFX(impactPoint);
 
 	if (IsAlive()) {
-		GEngine->AddOnScreenDebugMessage(1, 1.5f, FColor::Blue, FString("Aie Aie aie "));
-		//DirectionalHit(impactPoint);
+		DirectionalHit(impactPoint);
 		
 	}
 	if (equipSound) {

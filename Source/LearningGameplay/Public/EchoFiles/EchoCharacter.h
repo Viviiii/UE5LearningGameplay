@@ -160,6 +160,8 @@ private :
 	UPROPERTY(VisibleInstanceOnly)
 		AObjects* overlappedObjects;
 
+	UEchoInterface* echoInterface;
+
 	//Enum charac states
 
 	ECharacterState characterState = ECharacterState::ECS_Unequipped;

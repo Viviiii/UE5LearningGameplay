@@ -7,6 +7,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "DrawDebugHelpers.h"
 #include "Components/BoxComponent.h"
+#include <Kismet/GameplayStatics.h>
 //#include "BaseCharacter.cpp"
 
 // Sets default values
@@ -142,7 +143,6 @@ void AEnemy::pawnSeen(APawn* pawn)
 		&& pawn->ActorHasTag(FName("EchoCharacter"));
 
 	if (shouldChaseTarget) {
-		GEngine->AddOnScreenDebugMessage(5, 1.5f, FColor::Blue, FString("I don't see you anymore"));
 		combatTarget = pawn;
 		ChaseTarget();
 	}
@@ -323,6 +323,7 @@ void AEnemy::Attack() {
 	//Super::Attack();
 	GetCharacterMovement()->MaxWalkSpeed = 0.f;
 	actionState = EActionState::EAS_Attacking;
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.2);
 	PlayAttackMontage();
 
 }
@@ -330,7 +331,7 @@ void AEnemy::Attack() {
 void AEnemy::startAttackTimer()
 {
 	enemyState = EEnemyState::EES_Attacking;
-	GetWorld()->GetTimerManager().SetTimer(attackTimer, this, &AEnemy::Attack, 1.f, true, 0.2f);
+	GetWorld()->GetTimerManager().SetTimer(attackTimer, this, &AEnemy::Attack, 1.5f, true, 0.2f);
 }
 
 bool AEnemy::isTargetInRange(AActor* target, double radius)
