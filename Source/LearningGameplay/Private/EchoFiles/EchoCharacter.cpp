@@ -260,6 +260,11 @@ void AEchoCharacter::disarmSword()
 	weaponEquipped->AttachMeshToComponent(GetMesh(), FName("WeaponSheathedSocket"));
 }
 
+void AEchoCharacter::hitReactionEnd()
+{
+	actionState = EActionState::EAS_Unoccupied;
+}
+
 void AEchoCharacter::enableSwordCollision(ECollisionEnabled::Type CollisionEnabled)
 {
 	if (weaponEquipped && weaponEquipped->getBoxCollision()) {
@@ -329,6 +334,7 @@ void AEchoCharacter::getHit_Implementation(const FVector& impactPoint)
 	if (IsAlive()) {
 		DirectionalHit(impactPoint);
 		disableSwordCollision(ECollisionEnabled::NoCollision);
+		actionState = EActionState::EAS_HitReaction;
 		
 	}
 	if (equipSound) {

@@ -462,6 +462,7 @@ void AEnemy::EnemyDeath()
 	GetWorld()->GetTimerManager().ClearTimer(attackTimer);
 	PlayDeathMontage();
 	widgetHealth->DestroyComponent();
+	disableSwordCollision(ECollisionEnabled::NoCollision);
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SetLifeSpan(3.5f);
 }
