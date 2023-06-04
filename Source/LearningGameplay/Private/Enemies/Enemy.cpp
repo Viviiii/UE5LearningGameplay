@@ -88,10 +88,13 @@ void AEnemy::Tick(float DeltaTime)
 
 }
 
-void AEnemy::getHit_Implementation(const FVector& impactPoint)
+void AEnemy::getHit_Implementation(const FVector& impactPoint)	
 {
 	ShowHealth();
-
+	GetWorld()->GetTimerManager().ClearTimer(attackTimer);
+	GetWorld()->GetTimerManager().ClearTimer(patrolTimer);
+	StopAttackMontage();
+	disableSwordCollision(ECollisionEnabled::NoCollision);
 	PlaySound(impactPoint);
 	PlayVFX(impactPoint);
 	if (IsAlive()) {
@@ -100,6 +103,7 @@ void AEnemy::getHit_Implementation(const FVector& impactPoint)
 	else {
 		EnemyDeath();
 	}
+	
 }
 
 
@@ -122,7 +126,11 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 		widgetHealth->setPercentHealth(Attributes->getHealth());
 	}
 	combatTarget = EventInstigator->GetPawn();
-	ChaseTarget();
+	if(IsOutsideAttackRadius()){
+		ChaseTarget();
+	}
+
+	//ChaseTarget();
 	/*enemyState = EEnemyState::EES_Chasing;
 	MoveToTarget(combatTarget);*/
 	return DamageAmount;
@@ -315,6 +323,7 @@ void AEnemy::CheckCombatTarget()
 	else if (!IsOutsideAttackRadius() /*&& !IsAttacking()*/ && bCanAttack()) {
 		/*enemyState =  EEnemyState::EES_Attacking;
 		Attack();*/
+		GEngine->AddOnScreenDebugMessage(1, 1.5f, FColor::Black, FString("Waiting to attack"));
 		startAttackTimer();
 	}
 }
@@ -323,7 +332,7 @@ void AEnemy::Attack() {
 	//Super::Attack();
 	GetCharacterMovement()->MaxWalkSpeed = 0.f;
 	actionState = EActionState::EAS_Attacking;
-	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.2);
+	//UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.2);
 	PlayAttackMontage();
 
 }
@@ -331,7 +340,7 @@ void AEnemy::Attack() {
 void AEnemy::startAttackTimer()
 {
 	enemyState = EEnemyState::EES_Attacking;
-	GetWorld()->GetTimerManager().SetTimer(attackTimer, this, &AEnemy::Attack, 1.5f, true, 0.2f);
+	GetWorld()->GetTimerManager().SetTimer(attackTimer, this, &AEnemy::Attack, 2.5f, true, 0.2f);
 }
 
 bool AEnemy::isTargetInRange(AActor* target, double radius)
@@ -453,6 +462,7 @@ void AEnemy::EnemyDeath()
 	GetWorld()->GetTimerManager().ClearTimer(attackTimer);
 	PlayDeathMontage();
 	widgetHealth->DestroyComponent();
+	disableSwordCollision(ECollisionEnabled::NoCollision);
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SetLifeSpan(3.5f);
 }

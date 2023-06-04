@@ -104,7 +104,7 @@ protected :
 	UPROPERTY(EditInstanceOnly, Category = " IA Navigation")
 		TArray<AActor*> targetsPatrol;
 
-	UPROPERTY(EditInstanceOnly, Category = " IA Navigation")
+	UPROPERTY(BlueprintReadOnly, Category = " IA Navigation")
 		AActor* combatTarget;
 
 	FTimerHandle attackTimer;
@@ -151,11 +151,11 @@ private :
 	/* Chasing + attacks*/
 
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere)	
 		double combatRadius = 1000.f;
 
 	UPROPERTY(EditAnywhere)
-		double attackRadius = 200.f;
+		double attackRadius = 250.f;
 
 	UPROPERTY(EditAnywhere)
 		double patrolRadius = 5000.f;
