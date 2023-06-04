@@ -117,6 +117,8 @@ protected:
 	UFUNCTION(BlueprintCallable)
 		void disarmSword();
 
+	UFUNCTION(BlueprintCallable)
+		void hitReactionEnd();
 	
 	/*Draw/Sheathe weapon */
 	void UnarmWeapon();

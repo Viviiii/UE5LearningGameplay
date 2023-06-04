@@ -108,6 +108,8 @@ protected:
 
 	virtual void PlayIdleMontage();
 
+	virtual void StopAttackMontage();
+
 	virtual bool IsAlive();
 
 	/* VFX & SFX*/
