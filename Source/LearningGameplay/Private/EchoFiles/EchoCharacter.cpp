@@ -328,6 +328,7 @@ void AEchoCharacter::getHit_Implementation(const FVector& impactPoint)
 
 	if (IsAlive()) {
 		DirectionalHit(impactPoint);
+		disableSwordCollision(ECollisionEnabled::NoCollision);
 		
 	}
 	if (equipSound) {
@@ -352,15 +353,15 @@ void AEchoCharacter::DirectionalHit(const FVector& impactPoint)
 		theta *= -1.f;
 	}
 
-	FName Section("RightHit");
+	FName Section("FromBack");
 
 	if (theta <= 45.f && theta >= -45.f) {
 
-		Section = FName("RightHit");
+		Section = FName("FrontHit");
 	}
 	else if (theta >= -100.f && theta <= -45.f) {
 
-		Section = FName("RightHit");
+		Section = FName("LeftHit");
 	}
 	else if (theta <= 100.f && theta >= 45.f) {
 
@@ -368,7 +369,7 @@ void AEchoCharacter::DirectionalHit(const FVector& impactPoint)
 	}
 	else if (theta >= 100.f || theta <= -100.f) {
 
-		Section = FName("RightHit");
+		Section = FName("BackHit");
 	}
 	PlayHitMontage(Section);
 }

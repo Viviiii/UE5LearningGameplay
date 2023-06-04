@@ -77,6 +77,14 @@ void ABaseCharacter::PlayIdleMontage()
 {
 }
 
+void ABaseCharacter::StopAttackMontage()
+{
+	UAnimInstance* montageAttack = GetMesh()->GetAnimInstance();
+	if (montageAttack) {
+		montageAttack->Montage_Stop(0.25f, attackMontage);
+	}
+}
+
 bool ABaseCharacter::IsAlive()
 {
 	return Attributes && Attributes->isAlive();
