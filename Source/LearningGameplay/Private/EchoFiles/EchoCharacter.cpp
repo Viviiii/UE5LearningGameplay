@@ -284,6 +284,7 @@ void AEchoCharacter::disableSwordCollision(ECollisionEnabled::Type CollisionEnab
 float AEchoCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	Super::ReduceHealth(DamageAmount);
+	
 	if (echoInterface) {
 		echoInterface->setPercentHealth(Attributes->getHealth());
 	}
@@ -326,12 +327,12 @@ bool AEchoCharacter::canSheathe() {
 	return actionState == EActionState::EAS_Unoccupied && characterState != ECharacterState::ECS_Unequipped && unarmMontage && weaponEquipped;
 }
 
-void AEchoCharacter::getHit_Implementation(const FVector& impactPoint)
+void AEchoCharacter::getHit_Implementation(const FVector& impactPoint, AActor* hitter)
 {
 	PlaySound(impactPoint);
 	PlayVFX(impactPoint);
-
-	if (IsAlive()) {
+	StopAttackMontage();
+	if (IsAlive() && hitter) {
 		DirectionalHit(impactPoint);
 		disableSwordCollision(ECollisionEnabled::NoCollision);
 		actionState = EActionState::EAS_HitReaction;

@@ -88,10 +88,10 @@ void AEnemy::Tick(float DeltaTime)
 
 }
 
-void AEnemy::getHit_Implementation(const FVector& impactPoint)	
+void AEnemy::getHit_Implementation(const FVector& impactPoint, AActor* hitter)	
 {
 	ShowHealth();
-	GetWorld()->GetTimerManager().ClearTimer(attackTimer);
+	//GetWorld()->GetTimerManager().ClearTimer(attackTimer);
 	GetWorld()->GetTimerManager().ClearTimer(patrolTimer);
 	StopAttackMontage();
 	disableSwordCollision(ECollisionEnabled::NoCollision);
@@ -126,11 +126,12 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 		widgetHealth->setPercentHealth(Attributes->getHealth());
 	}
 	combatTarget = EventInstigator->GetPawn();
-	if(IsOutsideAttackRadius()){
+	/*if(IsOutsideAttackRadius()){
+		ChaseTarget();
+	}*/
+	if (enemyState != EEnemyState::EES_Attacking) {
 		ChaseTarget();
 	}
-
-	//ChaseTarget();
 	/*enemyState = EEnemyState::EES_Chasing;
 	MoveToTarget(combatTarget);*/
 	return DamageAmount;
@@ -323,13 +324,13 @@ void AEnemy::CheckCombatTarget()
 	else if (!IsOutsideAttackRadius() /*&& !IsAttacking()*/ && bCanAttack()) {
 		/*enemyState =  EEnemyState::EES_Attacking;
 		Attack();*/
-		GEngine->AddOnScreenDebugMessage(1, 1.5f, FColor::Black, FString("Waiting to attack"));
 		startAttackTimer();
 	}
 }
 
 void AEnemy::Attack() {
 	//Super::Attack();
+	GEngine->AddOnScreenDebugMessage(1, 0.5f, FColor::Purple, FString("Attackkkk"));
 	GetCharacterMovement()->MaxWalkSpeed = 0.f;
 	actionState = EActionState::EAS_Attacking;
 	//UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.2);
@@ -340,7 +341,7 @@ void AEnemy::Attack() {
 void AEnemy::startAttackTimer()
 {
 	enemyState = EEnemyState::EES_Attacking;
-	GetWorld()->GetTimerManager().SetTimer(attackTimer, this, &AEnemy::Attack, 2.5f, true, 0.2f);
+	GetWorld()->GetTimerManager().SetTimer(attackTimer, this, &AEnemy::Attack, 3.5f, true, 0.2f);
 }
 
 bool AEnemy::isTargetInRange(AActor* target, double radius)

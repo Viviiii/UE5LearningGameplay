@@ -43,7 +43,7 @@ public:
 
 	virtual void Destroyed() override;
 
-	virtual void getHit_Implementation(const FVector& impactPoint) override;
+	virtual void getHit_Implementation(const FVector& impactPoint, AActor* hitter) override;
 
 	virtual void DirectionalHit(const FVector& impactPoint) override;
 
@@ -103,9 +103,6 @@ protected :
 
 	UPROPERTY(EditInstanceOnly, Category = " IA Navigation")
 		TArray<AActor*> targetsPatrol;
-
-	UPROPERTY(BlueprintReadOnly, Category = " IA Navigation")
-		AActor* combatTarget;
 
 	FTimerHandle attackTimer;
 

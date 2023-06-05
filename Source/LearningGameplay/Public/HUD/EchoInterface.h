@@ -47,9 +47,6 @@ private :
 		UProgressBar* manaBar;
 
 	UPROPERTY(meta = (BindWidget))
-		UProgressBar* XPBar;
-
-	UPROPERTY(meta = (BindWidget))
 		UTextBlock* potions;
 
 	UPROPERTY(meta = (BindWidget))

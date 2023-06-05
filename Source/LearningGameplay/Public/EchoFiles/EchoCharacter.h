@@ -130,7 +130,7 @@ protected:
 
 	bool canSheathe();
 
-	virtual void getHit_Implementation(const FVector& impactPoint) override;
+	virtual void getHit_Implementation(const FVector& impactPoint, AActor* hitter) override;
 
 	virtual void DirectionalHit(const FVector& impactPoint) override;
 

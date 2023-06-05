@@ -24,5 +24,5 @@ class LEARNINGGAMEPLAY_API IIHitInterface
 public:
 
 	UFUNCTION(BlueprintNativeEvent)
-	void getHit(const FVector& impactPoint);
+	void getHit(const FVector& impactPoint, AActor* hitter);
 };

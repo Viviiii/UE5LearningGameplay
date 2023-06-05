@@ -41,6 +41,27 @@ void ABaseCharacter::disableSwordCollision(ECollisionEnabled::Type CollisionEnab
 {
 }
 
+FVector ABaseCharacter::GetTranslationWarpTarget()
+{
+	if (combatTarget == nullptr) return FVector();
+
+	const FVector CombatTargetLocation = combatTarget->GetActorLocation();
+	const FVector Location = GetActorLocation();
+	FVector TargetToMe = (CombatTargetLocation - Location).GetSafeNormal();
+	TargetToMe *= WarpTargetDistance;
+
+	return CombatTargetLocation + TargetToMe;
+}
+
+//FVector ABaseCharacter::GetRotationWarpTarget()
+//{
+//	if (CombatTarget == nullptr) return FVector();
+//
+//	const FVector CombatTargetRotation = CombatTarget->GetActorRotation();
+//	const FVector Location = GetActorRotation();
+//	return CombatTargetLocation - Location;
+//}
+
 void ABaseCharacter::Attack()
 {
 }
@@ -104,8 +125,9 @@ void ABaseCharacter::PlaySound(const FVector& impactPoint)
 	}
 }
 
-void ABaseCharacter::getHit_Implementation(const FVector& impactPoint)
+void ABaseCharacter::getHit_Implementation(const FVector& impactPoint, AActor* hitter)
 {
+
 }
 
 float ABaseCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)

@@ -29,18 +29,18 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 		if (GetOwner()->ActorHasTag("Enemy") && boxHit.GetActor()->ActorHasTag("EchoCharacter")) {
 			/*BoxTraceWeapon(boxHit);*/
 			UGameplayStatics::ApplyDamage(boxHit.GetActor(), Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
-			ExecuteHit(boxHit.GetActor(), boxHit);
+			ExecuteHit(boxHit.GetActor(), boxHit, GetOwner());
 		}
 		if (GetOwner()->ActorHasTag("EchoCharacter") && OtherActor->ActorHasTag("Enemy")) {
 			BoxTraceWeapon(boxHit);
 			UGameplayStatics::ApplyDamage(boxHit.GetActor(), Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
-			ExecuteHit(boxHit.GetActor(), boxHit);
+			ExecuteHit(boxHit.GetActor(), boxHit, GetOwner());
 		}
 		if (GetOwner()->ActorHasTag("EchoCharacter") && OtherActor->ActorHasTag("Breakable")) {
 
 			BoxTraceWeapon(boxHit);
 			//UGameplayStatics::ApplyDamage(OtherActor, Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
-			ExecuteHit(OtherActor, boxHit);
+			ExecuteHit(OtherActor, boxHit, GetOwner());
 			createField(boxHit.ImpactPoint);
 		}
 	}
@@ -63,12 +63,13 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 	}*/
 	
 }
-void AWeapon::ExecuteHit(AActor* OtherActor, FHitResult& boxHit)
+
+void AWeapon::ExecuteHit(AActor* OtherActor, FHitResult& boxHit, AActor* hitter)
 {
 	IIHitInterface* interfaceHit = Cast<IIHitInterface>(/*boxHit.GetActor()*/OtherActor);
 	if (interfaceHit) {
 
-		interfaceHit->getHit_Implementation(boxHit.ImpactPoint);
+		interfaceHit->getHit_Implementation(boxHit.ImpactPoint, GetOwner());
 
 	}
 }

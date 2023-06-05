@@ -36,7 +36,7 @@ protected :
 	UFUNCTION()
 		void OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-	void ExecuteHit(AActor* OtherActor, FHitResult& boxHit);
+	void ExecuteHit(AActor* OtherActor, FHitResult& boxHit, AActor* hitter);
 
 	void BoxTraceWeapon(FHitResult& boxHit);
 

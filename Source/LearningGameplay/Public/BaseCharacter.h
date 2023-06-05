@@ -70,8 +70,14 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Enemy Hit")
 		UParticleSystem* bloodEffect;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Combat")
+		AActor* combatTarget;
+
+	UPROPERTY(EditAnywhere, Category = "Enemy Hit")
+		double WarpTargetDistance =75.f;
+
 	/* Attack and hit functions*/
-	virtual void getHit_Implementation(const FVector& impactPoint) override;
+	virtual void getHit_Implementation(const FVector& impactPoint, AActor* hitter) override;
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
 
@@ -89,6 +95,10 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 		virtual void disableSwordCollision(ECollisionEnabled::Type CollisionEnabled);
+
+	FVector GetTranslationWarpTarget();
+
+	FVector GetRotationWarpTarget();
 
 	/*Called for attacking (with montage)*/
 	virtual void Attack();
