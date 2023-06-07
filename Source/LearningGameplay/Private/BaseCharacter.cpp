@@ -53,14 +53,14 @@ FVector ABaseCharacter::GetTranslationWarpTarget()
 	return CombatTargetLocation + TargetToMe;
 }
 
-//FVector ABaseCharacter::GetRotationWarpTarget()
-//{
-//	if (CombatTarget == nullptr) return FVector();
-//
-//	const FVector CombatTargetRotation = CombatTarget->GetActorRotation();
-//	const FVector Location = GetActorRotation();
-//	return CombatTargetLocation - Location;
-//}
+FVector ABaseCharacter::GetRotationWarpTarget()
+{
+	if (combatTarget)
+	{
+		return combatTarget->GetActorLocation();
+	}
+	return FVector();
+}
 
 void ABaseCharacter::Attack()
 {
