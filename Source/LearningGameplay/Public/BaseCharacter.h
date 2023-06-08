@@ -74,7 +74,7 @@ protected:
 		AActor* combatTarget;
 
 	UPROPERTY(EditAnywhere, Category = "Enemy Hit")
-		double WarpTargetDistance =75.f;
+		double WarpTargetDistance = 100.f;
 
 	/* Attack and hit functions*/
 	virtual void getHit_Implementation(const FVector& impactPoint, AActor* hitter) override;
@@ -96,8 +96,10 @@ protected:
 	UFUNCTION(BlueprintCallable)
 		virtual void disableSwordCollision(ECollisionEnabled::Type CollisionEnabled);
 
+	UFUNCTION(BlueprintCallable)
 	FVector GetTranslationWarpTarget();
 
+	UFUNCTION(BlueprintCallable)
 	FVector GetRotationWarpTarget();
 
 	/*Called for attacking (with montage)*/
