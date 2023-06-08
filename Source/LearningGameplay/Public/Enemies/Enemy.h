@@ -152,7 +152,7 @@ private :
 		double combatRadius = 1000.f;
 
 	UPROPERTY(EditAnywhere)
-		double attackRadius = 250.f;
+		double attackRadius = 400.f;
 
 	UPROPERTY(EditAnywhere)
 		double patrolRadius = 5000.f;

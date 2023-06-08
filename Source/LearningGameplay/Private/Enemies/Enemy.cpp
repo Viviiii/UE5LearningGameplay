@@ -318,6 +318,7 @@ void AEnemy::CheckCombatTarget()
 	}
 	/* Enemies too far to attack so goes back to chasing*/
 	else if (IsOutsideAttackRadius() && !IsChasing()) {
+		GEngine->AddOnScreenDebugMessage(2, 1.f, FColor::Black, FString("Outside"));
 		ChaseTarget();
 	}
 	/* Enemies ATTAAAAAAAAAAAAACK*/
@@ -330,7 +331,7 @@ void AEnemy::CheckCombatTarget()
 
 void AEnemy::Attack() {
 	//Super::Attack();
-	GEngine->AddOnScreenDebugMessage(1, 0.5f, FColor::Purple, FString("Attackkkk"));
+	GEngine->AddOnScreenDebugMessage(1, 0.1f, FColor::Purple, FString("Attackkkk"));
 	GetCharacterMovement()->MaxWalkSpeed = 0.f;
 	actionState = EActionState::EAS_Attacking;
 	//UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.2);
