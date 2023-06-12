@@ -24,7 +24,7 @@ class LEARNINGGAMEPLAY_API UEchoInterface : public UUserWidget
 public : 
 	void setPercentHealth(float HP);
 
-	void setPercentMana(float Mana);
+	void setPercentStamina(float stamina);
 
 	void addPotions();
 
@@ -44,7 +44,7 @@ private :
 		UProgressBar* healthBar;
 
 	UPROPERTY(meta = (BindWidget))
-		UProgressBar* manaBar;
+		UProgressBar* staminaBar;
 
 	UPROPERTY(meta = (BindWidget))
 		UTextBlock* potions;

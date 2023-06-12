@@ -92,6 +92,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 		class UInputAction* WeaponAction;
 
+	/** Draw/Sheathe Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+		class UInputAction* DodgeAction;
+
 	/* SFX */
 	UPROPERTY(EditAnywhere, Category = "Weapon Property")
 		USoundBase* equipSound;
@@ -99,6 +103,10 @@ protected:
 	/* Ability montage */
 	UPROPERTY(EditDefaultsOnly, Category = "Montages | Abilities")
 		UAnimMontage* abilitiesMontage;
+
+	/* Dodge montage */
+	UPROPERTY(EditDefaultsOnly, Category = "Montages | Dodge")
+		UAnimMontage* dodgeMontage;
 
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
@@ -109,8 +117,13 @@ protected:
 	/*Called for interacting*/
 	void Interact();
 
-	/*Called for interacting*/
+	/*Called for ability1*/
 	void Ability1();
+
+	/*Called for dodging*/
+	void Dodge();
+
+	void PlayDodgeMontage();
 
 	/*Anim notify functions*/
 
@@ -119,6 +132,11 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 		void hitReactionEnd();
+
+	UFUNCTION(BlueprintCallable)
+		void dodgeEnd();
+
+	void StopDodgeMontage();
 	
 	/*Draw/Sheathe weapon */
 	void UnarmWeapon();

@@ -37,9 +37,24 @@ void UEchoAttributes::ReceiveDamage(float Damage)
 	health = FMath::Clamp(health - Damage, 0.f, maxHealth);
 }
 
+void UEchoAttributes::useStamina(float staminaAmount)
+{
+	stamina = FMath::Clamp(stamina - staminaAmount, 0.f, maxStamina);
+}
+
 float UEchoAttributes::getHealth()
 {
 	return health/maxHealth;
+}
+
+float UEchoAttributes::getStamina()
+{
+	return stamina / maxStamina;
+}
+
+void UEchoAttributes::setStamina(float staminaAmount)
+{
+	stamina += staminaAmount;
 }
 
 bool UEchoAttributes::isAlive()

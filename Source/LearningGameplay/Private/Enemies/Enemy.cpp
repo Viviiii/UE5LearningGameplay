@@ -54,7 +54,7 @@ void AEnemy::BeginPlay()
 
 	SpawnDefaultWeapon();
 	
-	GetWorld()->GetTimerManager().SetTimer(patrolTimer, this, &AEnemy::patrolTimerFinished, 5.f, true);
+	GetWorld()->GetTimerManager().SetTimer(patrolTimer, this, &AEnemy::patrolTimerFinished, FMath::RandRange(2.f, 5.5f), true);
 
 }
 
@@ -296,7 +296,7 @@ void AEnemy::ChaseTarget()
 void AEnemy::StartPatrolling()
 {
 	enemyState = EEnemyState::EES_Patrol;
-	GetCharacterMovement()->MaxWalkSpeed = 300.f;
+	GetCharacterMovement()->MaxWalkSpeed = 250.f;
 	MoveToTarget(targetPatrol);
 }
 
@@ -313,25 +313,30 @@ void AEnemy::CheckCombatTarget()
 {
 	/*Ennemies lose interest, go back to patrolling*/
 	if (IsOutsideCombatRadius()) {
+		GEngine->AddOnScreenDebugMessage(3, 1.f, FColor::Red, FString("Patrol	"));
 		LoseInterest();
 		StartPatrolling();
 	}
 	/* Enemies too far to attack so goes back to chasing*/
 	else if (IsOutsideAttackRadius() && !IsChasing()) {
-		GEngine->AddOnScreenDebugMessage(2, 1.f, FColor::Black, FString("Outside"));
+		if (IsAttacking()) {
+			StopAttackMontage();
+		}
+		GEngine->AddOnScreenDebugMessage(2, 1.f, FColor::Red, FString("Chase"));
 		ChaseTarget();
 	}
 	/* Enemies ATTAAAAAAAAAAAAACK*/
 	else if (!IsOutsideAttackRadius() /*&& !IsAttacking()*/ && bCanAttack()) {
+		/* If during attack, player too far, he misses, or stop attacking*/
 		/*enemyState =  EEnemyState::EES_Attacking;
 		Attack();*/
+		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString("Attack"));
 		startAttackTimer();
 	}
 }
 
 void AEnemy::Attack() {
 	//Super::Attack();
-	GEngine->AddOnScreenDebugMessage(1, 0.1f, FColor::Purple, FString("Attackkkk"));
 	GetCharacterMovement()->MaxWalkSpeed = 0.f;
 	actionState = EActionState::EAS_Attacking;
 	//UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.2);
@@ -342,7 +347,7 @@ void AEnemy::Attack() {
 void AEnemy::startAttackTimer()
 {
 	enemyState = EEnemyState::EES_Attacking;
-	GetWorld()->GetTimerManager().SetTimer(attackTimer, this, &AEnemy::Attack, 2.5f, true, 0.2f);
+	GetWorld()->GetTimerManager().SetTimer(attackTimer, this, &AEnemy::Attack, FMath::RandRange(2.f,4.5f), true, 0.2f);
 }
 
 bool AEnemy::isTargetInRange(AActor* target, double radius)

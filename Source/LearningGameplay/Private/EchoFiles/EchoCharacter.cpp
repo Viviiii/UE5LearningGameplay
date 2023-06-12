@@ -89,20 +89,25 @@ void AEchoCharacter::BeginPlay()
 			echoInterface = echoHUD->GetEchoInterface();
 			if (echoInterface) {
 				echoInterface->setPercentHealth(1.f);
-				echoInterface->setPercentMana(0.8f);
+				echoInterface->setPercentStamina(1.f);
+				GEngine->AddOnScreenDebugMessage(1, 1.5f, FColor::Blue, FString::Printf(TEXT("Beginning Stamina : %f"), Attributes->getStamina()));
 			}
 		}
-		
 	}
-
 	Tags.Add(FName("EchoCharacter"));
-	
 }
 
 // Called every frame
 void AEchoCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (actionState == EActionState::EAS_Unoccupied && Attributes->getStamina() < 1) {
+		if (Attributes && echoInterface) {
+			Attributes->setStamina(Attributes->getStamina() + 0.1);
+			echoInterface->setPercentStamina(Attributes->getStamina() + 0.0001);
+		}
+	}
 
 }
 
@@ -131,6 +136,9 @@ void AEchoCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 		//Abilities Actions
 		EnhancedInputComponent->BindAction(Ability1Action, ETriggerEvent::Triggered, this, &AEchoCharacter::Ability1);
+
+		//Abilities Actions
+		EnhancedInputComponent->BindAction(DodgeAction, ETriggerEvent::Triggered, this, &AEchoCharacter::Dodge);
 
 	}
 }
@@ -200,6 +208,27 @@ void AEchoCharacter::Ability1()
 	}
 }
 
+void AEchoCharacter::Dodge()
+{
+	if (actionState != EActionState::EAS_Unoccupied || Attributes->getStamina()<0.15) return;
+		PlayDodgeMontage();
+		actionState = EActionState::EAS_Dodge;
+		if (Attributes && echoInterface) {
+			Attributes->useStamina(15);
+			GEngine->AddOnScreenDebugMessage(2, 1.5f, FColor::Blue, FString::Printf(TEXT("Stamina dodge: %f"), Attributes->getStamina()));
+			echoInterface->setPercentStamina(Attributes->getStamina());
+		}
+}
+
+void AEchoCharacter::PlayDodgeMontage()
+{
+	UAnimInstance* montageDodge = GetMesh()->GetAnimInstance();
+	if (montageDodge && dodgeMontage) {
+		montageDodge->Montage_Play(dodgeMontage);
+		montageDodge->Montage_JumpToSection("Dodging", dodgeMontage);
+	}
+}
+
 int32 AEchoCharacter::PlayAttackMontage()
 {
 	return PlayRandomMontageSection(attackMontage, AttackMontageSections);
@@ -241,9 +270,17 @@ void AEchoCharacter::PlayUnarmMontage(FName sectionName)
 }
 void AEchoCharacter::Attack()
 {
-	if (characterState == ECharacterState::ECS_equippedWeapon && actionState == EActionState::EAS_Unoccupied) {
+	float actualStamina = Attributes->getStamina();
+	if (characterState == ECharacterState::ECS_equippedWeapon && actionState == EActionState::EAS_Unoccupied && Attributes->getStamina() > 0.2) {
 		PlayAttackMontage();
 		actionState = EActionState::EAS_Attacking;
+		if (Attributes) {
+			GEngine->AddOnScreenDebugMessage(2, 1.5f, FColor::Blue, FString::Printf(TEXT("Stamina attack : %f"), Attributes->getStamina()));
+			Attributes->useStamina(20);
+		}
+		if (echoInterface) {
+			echoInterface->setPercentStamina(Attributes->getStamina());
+		}
 		
 	}
 }
@@ -263,6 +300,19 @@ void AEchoCharacter::disarmSword()
 void AEchoCharacter::hitReactionEnd()
 {
 	actionState = EActionState::EAS_Unoccupied;
+}
+
+void AEchoCharacter::dodgeEnd()
+{
+	actionState = EActionState::EAS_Unoccupied;
+}
+
+void AEchoCharacter::StopDodgeMontage()
+{
+	UAnimInstance* montageDodge = GetMesh()->GetAnimInstance();
+	if (montageDodge) {
+		montageDodge->Montage_Stop(0.25f, dodgeMontage);
+	}
 }
 
 void AEchoCharacter::enableSwordCollision(ECollisionEnabled::Type CollisionEnabled)
@@ -332,6 +382,7 @@ void AEchoCharacter::getHit_Implementation(const FVector& impactPoint, AActor* h
 	PlaySound(impactPoint);
 	PlayVFX(impactPoint);
 	StopAttackMontage();
+	StopDodgeMontage();	
 	if (IsAlive() && hitter) {
 		DirectionalHit(impactPoint);
 		disableSwordCollision(ECollisionEnabled::NoCollision);

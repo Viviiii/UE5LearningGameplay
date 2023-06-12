@@ -15,14 +15,10 @@ void UEchoInterface::setPercentHealth(float HP)
 	}
 }
 
-void UEchoInterface::setPercentMana(float Mana)
+void UEchoInterface::setPercentStamina(float stamina)
 {
-	/*if (manaBarEchoW == nullptr) {
-		manaBarEchoW = Cast<UEchoInterface>(GetUserWidgetObject());
-
-	}*/
-	if (manaBar) {
-		manaBar->SetPercent(Mana);
+	if (staminaBar) {
+		staminaBar->SetPercent(stamina);
 	}
 }
 
