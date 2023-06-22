@@ -5,7 +5,9 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/ProgressBar.h"
+#include "Components/TextBlock.h"
 #include "EchoInterface.generated.h"
+
 
 
 /**
@@ -13,20 +15,54 @@
  */
 
 class UProgressBar;
+class STextBlock;
 UCLASS()
 class LEARNINGGAMEPLAY_API UEchoInterface : public UUserWidget
 {
 	GENERATED_BODY()
 
-public:
+public : 
+	void setPercentHealth(float HP);
+
+	void setPercentStamina(float stamina);
+
+	void addPotions();
+
+	void removePotions();
+
+	void addCoins(int amount);
+
+	void addKills();
+
+	void setKills();
+
+	UPROPERTY(BlueprintReadWrite)
+		int potionsNbr;
+
+	UPROPERTY(BlueprintReadWrite)
+		int coinNbr;
+
+	UPROPERTY(BlueprintReadWrite)
+		int killNbr;
+
+
+private :
 	UPROPERTY(meta = (BindWidget))
 		UProgressBar* healthBar;
 
 	UPROPERTY(meta = (BindWidget))
-		UProgressBar* manaBar;
+		UProgressBar* staminaBar;
 
 	UPROPERTY(meta = (BindWidget))
-		UProgressBar* XPBar;
+		UTextBlock* potions;
+
+	UPROPERTY(meta = (BindWidget))
+		UTextBlock* coins;
+
+	UPROPERTY(meta = (BindWidget))
+		UTextBlock* kills;
+
+
 	
 	
 };

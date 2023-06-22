@@ -6,7 +6,7 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/StaticMeshComponent.h"
-#include "IHitInterface.h"
+#include "Interfaces/IHitInterface.h"
 #include "Sound/SoundWave.h"
 #include "AIController.h"
 #include "EchoFiles/EchoAttributes.h"
@@ -27,6 +27,8 @@ class UHealthBar;
 class AAIController;
 class UPawnSensingComponent;
 class AObjects;
+class AEchoCharacter;
+class ASkulls;
 
 UCLASS()
 class LEARNINGGAMEPLAY_API AEnemy : public ABaseCharacter
@@ -43,9 +45,29 @@ public:
 
 	virtual void Destroyed() override;
 
-	virtual void getHit_Implementation(const FVector& impactPoint) override;
+	virtual void getHit_Implementation(const FVector& impactPoint, AActor* hitter) override;
 
 	virtual void DirectionalHit(const FVector& impactPoint) override;
+
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<AEnemy> enemyClass;
+
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<AObjects> skullClass;
+
+
+	void MoveToRandomLocation();
+
+	/* To improve */
+	bool IsAlive();
+
+	int enemyNbr;
+
+	int getEnemyNbr();
+
+	void setEnemyNbr(int value);
+
+	AEchoCharacter* echo;
 
 protected :
 
@@ -65,16 +87,11 @@ protected :
 
 	void MoveToTarget(AActor* target);
 
-	UFUNCTION()
-		void patrolTimerFinished();
-
 	AActor* choosingTarget();
 
 	bool IsAttacking();
 
 	bool IsChasing();
-
-	bool IsAlive();
 
 	bool IsOutsideAttackRadius();
 
@@ -90,13 +107,19 @@ protected :
 
 	void startAttackTimer();
 
+	void patrolTimerFinished();
+
+	void respawnEnemyTimer();
+
 	UPROPERTY(BlueprintReadOnly, Category = "Death")
 		TEnumAsByte<EDeathState> deathPose = EDeathState::ECS_Alive;
 
-	FTimerHandle patrolTimer;
+	UPROPERTY(BlueprintReadOnly, Category = "Idle")
+		TEnumAsByte<EEnemyIdleState> idlePose = EEnemyIdleState::EEIS_Idle1;
 
 	UPROPERTY()
 		AAIController* AIenemy;
+	
 
 	UPROPERTY(EditInstanceOnly, Category = " IA Navigation", BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		AActor* targetPatrol;
@@ -104,17 +127,20 @@ protected :
 	UPROPERTY(EditInstanceOnly, Category = " IA Navigation")
 		TArray<AActor*> targetsPatrol;
 
-	UPROPERTY(EditInstanceOnly, Category = " IA Navigation")
-		AActor* combatTarget;
+	FTimerHandle patrolTimer;
 
 	FTimerHandle attackTimer;
+
+	FTimerHandle respawnTimer;
+
+	FTimerHandle randomPatrolTimer;
 
 	UFUNCTION()
 		void pawnSeen(APawn* pawn);
 
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<AWeapon> weaponClass;
-
+	
 	UPROPERTY(EditAnywhere)
 		UPawnSensingComponent* pawnSensing;
 
@@ -125,7 +151,7 @@ protected :
 	/* Montages and sections played*/
 	virtual void PlayHitMontage(FName Section) override;
 
-	virtual void PlayIdleMontage() override;
+	virtual int32 PlayIdleMontage() override;
 
 	/* Call attack montage*/
 	virtual int32 PlayAttackMontage() override;
@@ -150,12 +176,11 @@ private :
 
 	/* Chasing + attacks*/
 
-	
-	UPROPERTY(EditAnywhere)
-		double combatRadius = 1000.f;
+	UPROPERTY(EditAnywhere)	
+		double combatRadius = 800.f;
 
 	UPROPERTY(EditAnywhere)
-		double attackRadius = 200.f;
+		double attackRadius = 350.f;
 
 	UPROPERTY(EditAnywhere)
 		double patrolRadius = 5000.f;

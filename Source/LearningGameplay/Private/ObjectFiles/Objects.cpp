@@ -6,6 +6,7 @@
 #include "ObjectFiles/WeaponStateEnum.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Interfaces/PickUpInterface.h"
 
 // Sets default values
 AObjects::AObjects()
@@ -50,17 +51,25 @@ void AObjects::Tick(float DeltaTime)
 
 void AObjects::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	AEchoCharacter* echoCharacter = Cast<AEchoCharacter>(OtherActor);
+	IPickUpInterface* pickUpInterface = Cast<IPickUpInterface>(OtherActor);
+	if (pickUpInterface) {
+		pickUpInterface->setOverlappingItem(this);
+	}
+	/*AEchoCharacter* echoCharacter = Cast<AEchoCharacter>(OtherActor);
 	if (echoCharacter) {
 		echoCharacter->setOverlappingObject(this);
-	}
+	}*/
 }
 
 void AObjects::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	AEchoCharacter* echoCharacter = Cast<AEchoCharacter>(OtherActor);
+	/*AEchoCharacter* echoCharacter = Cast<AEchoCharacter>(OtherActor);
 	if (echoCharacter) {
 		echoCharacter->setOverlappingObject(nullptr);
+	}*/
+	IPickUpInterface* pickUpInterface = Cast<IPickUpInterface>(OtherActor);
+	if (pickUpInterface) {
+		pickUpInterface->setOverlappingItem(nullptr);
 	}
 }
 

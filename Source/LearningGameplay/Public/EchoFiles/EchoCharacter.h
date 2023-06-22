@@ -7,8 +7,12 @@
 #include "BaseCharacter.h"
 #include "InputActionValue.h"
 #include "CharacterStateEnum.h"
+#include "Interfaces/PickUpInterface.h"
 #include "HUD/EchoInterfaceComp.h"
+#include "ObjectFiles/Treasure.h"
+#include "ObjectFiles/Potions.h"
 #include "EchoCharacter.generated.h"
+
 
 
 class USkeletalMeshComponent;
@@ -20,9 +24,10 @@ class AObjects;
 class UAnimMontage;
 class AWeapon;
 class UEchoInterfaceComp;
+class IPickUpInterface;
 
 UCLASS()
-class LEARNINGGAMEPLAY_API AEchoCharacter : public ABaseCharacter
+class LEARNINGGAMEPLAY_API AEchoCharacter : public ABaseCharacter, public IPickUpInterface
 {
 	GENERATED_BODY()
 
@@ -41,6 +46,12 @@ public:
 	}
 
 	EActionState actionState = EActionState::EAS_Unoccupied;
+
+
+	UPROPERTY(VisibleAnywhere)
+		UEchoInterfaceComp* echoWidget;
+
+	virtual void setKillNumber() override;
 
 protected:
 	// Called when the game starts or when spawned
@@ -71,13 +82,33 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 		class UInputAction* AttackAction;
 
+	/** Ability1 Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+		class UInputAction* Ability1Action;
+
+	/** Ability2 Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+		class UInputAction* Ability2Action;
+
 	/** Draw/Sheathe Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 		class UInputAction* WeaponAction;
 
+	/** Draw/Sheathe Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+		class UInputAction* DodgeAction;
+
 	/* SFX */
 	UPROPERTY(EditAnywhere, Category = "Weapon Property")
 		USoundBase* equipSound;
+
+	/* Ability montage */
+	UPROPERTY(EditDefaultsOnly, Category = "Montages | Abilities")
+		UAnimMontage* abilitiesMontage;
+
+	/* Dodge montage */
+	UPROPERTY(EditDefaultsOnly, Category = "Montages | Dodge")
+		UAnimMontage* dodgeMontage;
 
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
@@ -88,11 +119,26 @@ protected:
 	/*Called for interacting*/
 	void Interact();
 
+	/*Called for ability1*/
+	void Ability1();
+
+	/*Called for dodging*/
+	void Dodge();
+
+	void PlayDodgeMontage();
+
 	/*Anim notify functions*/
 
 	UFUNCTION(BlueprintCallable)
 		void disarmSword();
 
+	UFUNCTION(BlueprintCallable)
+		void hitReactionEnd();
+
+	UFUNCTION(BlueprintCallable)
+		void dodgeEnd();
+
+	void StopDodgeMontage();
 	
 	/*Draw/Sheathe weapon */
 	void UnarmWeapon();
@@ -104,7 +150,14 @@ protected:
 
 	bool canSheathe();
 
-	virtual void getHit_Implementation(const FVector& impactPoint) override;
+	/*UPROPERTY(BlueprintReadWrite)
+		int killNumber;*/
+
+	//Sint getKillNumber();
+
+	
+
+	virtual void getHit_Implementation(const FVector& impactPoint, AActor* hitter) override;
 
 	virtual void DirectionalHit(const FVector& impactPoint) override;
 
@@ -125,13 +178,55 @@ private :
 
 	virtual int32 PlayDeathMontage() override;
 
-	UPROPERTY(VisibleAnywhere)
-		UEchoInterfaceComp* echoWidget;
-
-
 	virtual int32 PlayAttackMontage() override;
 
-	virtual void PlayIdleMontage() override;
+	virtual int32 PlayIdleMontage() override;
+
+
+	/* Overlapping objects*/
+	UPROPERTY(VisibleInstanceOnly)
+		AObjects* overlappedObjects;
+
+	/*UEchoInterface* echoInterface;*/
+
+	//Enum charac states
+
+	ECharacterState characterState = ECharacterState::ECS_Unequipped;
+
+	/* Animation montages*/
+
+	UPROPERTY(EditDefaultsOnly, Category = "Montages | Unarm")
+		UAnimMontage* unarmMontage;
+
+
+public:	
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	// Called to bind functionality to input
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	/*Anim notify functions*/
+	virtual void attackEnd() override;
+	virtual void enableSwordCollision(ECollisionEnabled::Type CollisionEnabled) override;
+	virtual void disableSwordCollision(ECollisionEnabled::Type CollisionEnabled) override;
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
+	
+	
+	virtual void setOverlappingItem(AObjects* item) override;
+	virtual void addCoins(ATreasure* treasure) override;
+	virtual void addPotion(APotions* potion) override;
+	virtual void addKills(ASkulls* skull) override;
+
+	int getKillNumber();
+
+	/*Sounds*/
+	UPROPERTY(EditAnywhere, Category = "Game Music")
+		USoundBase* musicGame;
+
+
+private:
+
 
 	/* Used with camera*/
 	UPROPERTY(VisibleAnywhere)
@@ -148,35 +243,6 @@ private :
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, Category = "Hair")
 		class UGroomComponent* Eyesbrows;
-
-	/* Overlapping objects*/
-	UPROPERTY(VisibleInstanceOnly)
-		AObjects* overlappedObjects;
-
-	//Enum charac states
-
-	ECharacterState characterState = ECharacterState::ECS_Unequipped;
-
-	/* Animation montages*/
-
-	UPROPERTY(EditDefaultsOnly, Category = "Montages | Unarm")
-		UAnimMontage* unarmMontage;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	/*Anim notify functions*/
-	virtual void attackEnd() override;
-	virtual void enableSwordCollision(ECollisionEnabled::Type CollisionEnabled) override;
-	virtual void disableSwordCollision(ECollisionEnabled::Type CollisionEnabled) override;
-	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
-	/*virtual void ReduceHealth(float dmgAmount);*/
-
-private:
 
 	void echoDeath();
 };

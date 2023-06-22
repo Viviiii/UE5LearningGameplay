@@ -10,6 +10,7 @@
 #include "ObjectFiles/Objects.h"
 #include "ObjectFiles/Weapon.h"
 #include "ObjectFiles/Door.h"
+#include "HUD/EchoHUD.h"
 #include "Animation/AnimMontage.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -40,7 +41,7 @@ AEchoCharacter::AEchoCharacter()
 	//Attach between character and camera
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(GetRootComponent());
-	SpringArm->TargetArmLength = 300.f;
+	SpringArm->TargetArmLength = 700.f;
 
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	FollowCamera->SetupAttachment(SpringArm);
@@ -54,8 +55,8 @@ AEchoCharacter::AEchoCharacter()
 	Eyesbrows->AttachmentName = FString("head");
 
 	Attributes = CreateDefaultSubobject<UEchoAttributes>(TEXT("EchoAttributes"));
-	echoWidget = CreateDefaultSubobject<UEchoInterfaceComp>(TEXT("HealthBar"));
-	echoWidget->SetupAttachment(GetRootComponent());
+	/*echoWidget = CreateDefaultSubobject<UEchoInterfaceComp>(TEXT("HealthBar"));
+	echoWidget->SetupAttachment(GetRootComponent());*/
 
 
 
@@ -68,28 +69,50 @@ void AEchoCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if (echoWidget) {
+	/*if (echoWidget) {
 		echoWidget->setPercentHealth(1.f);
 		echoWidget->setPercentMana(0.8f);
 		echoWidget->addXP(0.f);
-	}
+		echoWidget->addPotions();
+		echoWidget->addCoins(5);
 
+	}*/
+	
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
+		AEchoHUD* echoHUD = Cast<AEchoHUD>(PlayerController->GetHUD());
+		if (echoHUD) {
+			echoInterface = echoHUD->GetEchoInterface();
+			if (echoInterface) {
+				echoInterface->setPercentHealth(1.f);
+				echoInterface->setPercentStamina(1.f);
+				echoInterface->setKills();
+			}
+		}
 	}
 
+
+	/*if (musicGame) {
+		UGameplayStatics::PlaySoundAtLocation(this, musicGame, GetActorLocation());
+	}*/
 	Tags.Add(FName("EchoCharacter"));
-	
 }
 
 // Called every frame
 void AEchoCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (actionState == EActionState::EAS_Unoccupied && Attributes->getStamina() < 1) {
+		if (Attributes && echoInterface) {
+			Attributes->setStamina(Attributes->getStamina() + 0.1);
+			echoInterface->setPercentStamina(Attributes->getStamina() + 0.0001);
+		}
+	}
 
 }
 
@@ -115,6 +138,12 @@ void AEchoCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		
 		//Sword Actions
 		EnhancedInputComponent->BindAction(WeaponAction, ETriggerEvent::Triggered, this, &AEchoCharacter::UnarmWeapon);
+
+		//Abilities Actions
+		EnhancedInputComponent->BindAction(Ability1Action, ETriggerEvent::Triggered, this, &AEchoCharacter::Ability1);
+
+		//Abilities Actions
+		EnhancedInputComponent->BindAction(DodgeAction, ETriggerEvent::Triggered, this, &AEchoCharacter::Dodge);
 
 	}
 }
@@ -173,6 +202,37 @@ void AEchoCharacter::Interact()
 
 }
 
+void AEchoCharacter::Ability1()
+{
+	GetCharacterMovement()->MaxWalkSpeed = 600.f;
+	UAnimInstance* animInstance = GetMesh()->GetAnimInstance();
+	if (animInstance && abilitiesMontage) {
+		animInstance->Montage_Play(abilitiesMontage);	
+		animInstance->Montage_JumpToSection("Ability2", abilitiesMontage);
+
+	}
+}
+
+void AEchoCharacter::Dodge()
+{
+	if (actionState != EActionState::EAS_Unoccupied || Attributes->getStamina()<0.15) return;
+		PlayDodgeMontage();
+		actionState = EActionState::EAS_Dodge;
+		if (Attributes && echoInterface) {
+			Attributes->useStamina(15);
+			echoInterface->setPercentStamina(Attributes->getStamina());
+		}
+}
+
+void AEchoCharacter::PlayDodgeMontage()
+{
+	UAnimInstance* montageDodge = GetMesh()->GetAnimInstance();
+	if (montageDodge && dodgeMontage) {
+		montageDodge->Montage_Play(dodgeMontage);
+		montageDodge->Montage_JumpToSection("Dodging", dodgeMontage);
+	}
+}
+
 int32 AEchoCharacter::PlayAttackMontage()
 {
 	return PlayRandomMontageSection(attackMontage, AttackMontageSections);
@@ -199,8 +259,9 @@ int32 AEchoCharacter::PlayAttackMontage()
 	}*/
 }
 
-void AEchoCharacter::PlayIdleMontage()
+int32 AEchoCharacter::PlayIdleMontage()
 {
+	return PlayRandomMontageSection(idleMontage, IdleMontageSections);
 }
 
 void AEchoCharacter::PlayUnarmMontage(FName sectionName)
@@ -214,9 +275,16 @@ void AEchoCharacter::PlayUnarmMontage(FName sectionName)
 }
 void AEchoCharacter::Attack()
 {
-	if (characterState == ECharacterState::ECS_equippedWeapon && actionState == EActionState::EAS_Unoccupied) {
+	float actualStamina = Attributes->getStamina();
+	if (characterState == ECharacterState::ECS_equippedWeapon && actionState == EActionState::EAS_Unoccupied && Attributes->getStamina() > 0.2) {
 		PlayAttackMontage();
 		actionState = EActionState::EAS_Attacking;
+		if (Attributes) {
+			Attributes->useStamina(20);
+		}
+		if (echoInterface) {
+			echoInterface->setPercentStamina(Attributes->getStamina());
+		}
 		
 	}
 }
@@ -224,12 +292,31 @@ void AEchoCharacter::Attack()
 void AEchoCharacter::attackEnd()
 {
 	actionState = EActionState::EAS_Unoccupied;
+
 }
 
 void AEchoCharacter::disarmSword()
 {
 	if(weaponEquipped)
 	weaponEquipped->AttachMeshToComponent(GetMesh(), FName("WeaponSheathedSocket"));
+}
+
+void AEchoCharacter::hitReactionEnd()
+{
+	actionState = EActionState::EAS_Unoccupied;
+}
+
+void AEchoCharacter::dodgeEnd()
+{
+	actionState = EActionState::EAS_Unoccupied;
+}
+
+void AEchoCharacter::StopDodgeMontage()
+{
+	UAnimInstance* montageDodge = GetMesh()->GetAnimInstance();
+	if (montageDodge) {
+		montageDodge->Montage_Stop(0.25f, dodgeMontage);
+	}
 }
 
 void AEchoCharacter::enableSwordCollision(ECollisionEnabled::Type CollisionEnabled)
@@ -251,10 +338,33 @@ void AEchoCharacter::disableSwordCollision(ECollisionEnabled::Type CollisionEnab
 float AEchoCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	Super::ReduceHealth(DamageAmount);
-	if (echoWidget) {
-		echoWidget->setPercentHealth(Attributes->getHealth());
+	
+	if (echoInterface) {
+		echoInterface->setPercentHealth(Attributes->getHealth());
 	}
 	return DamageAmount;
+}
+
+void AEchoCharacter::setOverlappingItem(AObjects* item)
+{
+	overlappedObjects = item;
+}
+
+void AEchoCharacter::addCoins(ATreasure* treasure)
+{
+	echoInterface->addCoins(treasure->coin);
+}
+
+void AEchoCharacter::addPotion(APotions* potion)
+{
+	echoInterface->addPotions();
+}
+
+void AEchoCharacter::addKills(ASkulls* skull)
+{
+	echoInterface->addKills();
+	killNumber++;
+
 }
 
 void AEchoCharacter::echoDeath()
@@ -278,13 +388,26 @@ bool AEchoCharacter::canSheathe() {
 	return actionState == EActionState::EAS_Unoccupied && characterState != ECharacterState::ECS_Unequipped && unarmMontage && weaponEquipped;
 }
 
-void AEchoCharacter::getHit_Implementation(const FVector& impactPoint)
+int AEchoCharacter::getKillNumber()
+{
+	return killNumber;
+}
+
+void AEchoCharacter::setKillNumber()
+{
+	killNumber++;
+}
+
+void AEchoCharacter::getHit_Implementation(const FVector& impactPoint, AActor* hitter)
 {
 	PlaySound(impactPoint);
 	PlayVFX(impactPoint);
-
-	if (IsAlive()) {
+	StopAttackMontage();
+	StopDodgeMontage();	
+	if (IsAlive() && hitter) {
 		DirectionalHit(impactPoint);
+		disableSwordCollision(ECollisionEnabled::NoCollision);
+		actionState = EActionState::EAS_HitReaction;
 		
 	}
 	if (equipSound) {
@@ -309,15 +432,15 @@ void AEchoCharacter::DirectionalHit(const FVector& impactPoint)
 		theta *= -1.f;
 	}
 
-	FName Section("RightHit");
+	FName Section("FromBack");
 
 	if (theta <= 45.f && theta >= -45.f) {
 
-		Section = FName("RightHit");
+		Section = FName("FrontHit");
 	}
 	else if (theta >= -100.f && theta <= -45.f) {
 
-		Section = FName("RightHit");
+		Section = FName("LeftHit");
 	}
 	else if (theta <= 100.f && theta >= 45.f) {
 
@@ -325,7 +448,7 @@ void AEchoCharacter::DirectionalHit(const FVector& impactPoint)
 	}
 	else if (theta >= 100.f || theta <= -100.f) {
 
-		Section = FName("RightHit");
+		Section = FName("BackHit");
 	}
 	PlayHitMontage(Section);
 }

@@ -7,7 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "EchoFiles/EchoCharacter.h"
 #include "Components/BoxComponent.h"
-#include "IHitInterface.h"
+#include "Interfaces/IHitInterface.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 void AWeapon::BeginPlay()
@@ -23,19 +23,29 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 {
 	FHitResult boxHit;
 	/* Echo hitted and the enemy or breakable is target, or enemy hitted and echo is target*/
+	BoxTraceWeapon(boxHit);
 	
-	if (GetOwner()->ActorHasTag("Enemy") && OtherActor->ActorHasTag("EchoCharacter")) {
-		//GEngine->AddOnScreenDebugMessage(1, 1.5f, FColor::Red, FString(OtherActor->GetName()));
-		BoxTraceWeapon(boxHit);
-		UGameplayStatics::ApplyDamage(OtherActor, Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
-		ExecuteHit(OtherActor, boxHit);
-	}	
-	if (GetOwner()->ActorHasTag("EchoCharacter") && OtherActor->ActorHasTag("Enemy")) {
-		//GEngine->AddOnScreenDebugMessage(1, 1.5f, FColor::Red, FString(OtherActor->GetName()));
-		BoxTraceWeapon(boxHit);
-		UGameplayStatics::ApplyDamage(OtherActor, Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
-		ExecuteHit(OtherActor, boxHit);
+	if (boxHit.GetActor()) {
+		if (GetOwner()->ActorHasTag("Enemy") && boxHit.GetActor()->ActorHasTag("EchoCharacter")) {
+			/*BoxTraceWeapon(boxHit);*/
+			UGameplayStatics::ApplyDamage(boxHit.GetActor(), Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
+			ExecuteHit(boxHit.GetActor(), boxHit, GetOwner());
+		}
+		if (GetOwner()->ActorHasTag("EchoCharacter") && OtherActor->ActorHasTag("Enemy")) {
+			BoxTraceWeapon(boxHit);
+			UGameplayStatics::ApplyDamage(boxHit.GetActor(), Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
+			ExecuteHit(boxHit.GetActor(), boxHit, GetOwner());
+		}
+		if (GetOwner()->ActorHasTag("EchoCharacter") && OtherActor->ActorHasTag("Breakable")) {
+
+			BoxTraceWeapon(boxHit);
+			//UGameplayStatics::ApplyDamage(OtherActor, Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
+			ExecuteHit(OtherActor, boxHit, GetOwner());
+			createField(boxHit.ImpactPoint);
+		}
 	}
+	
+
 	//if ((GetOwner()->ActorHasTag("EchoCharacter") && (OtherActor->ActorHasTag("Enemy") || OtherActor->ActorHasTag("Breakable")))
 	//	|| (GetOwner()->ActorHasTag("Enemy") && OtherActor->ActorHasTag("EchoCharacter"))) {
 	//	BoxTraceWeapon(boxHit);
@@ -53,12 +63,13 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 	}*/
 	
 }
-void AWeapon::ExecuteHit(AActor* OtherActor, FHitResult& boxHit)
+
+void AWeapon::ExecuteHit(AActor* OtherActor, FHitResult& boxHit, AActor* hitter)
 {
 	IIHitInterface* interfaceHit = Cast<IIHitInterface>(/*boxHit.GetActor()*/OtherActor);
 	if (interfaceHit) {
 
-		interfaceHit->getHit_Implementation(boxHit.ImpactPoint);
+		interfaceHit->getHit_Implementation(boxHit.ImpactPoint, GetOwner());
 
 	}
 }
@@ -67,22 +78,22 @@ void AWeapon::BoxTraceWeapon(FHitResult& boxHit)
 	const FVector endTrace = BoxTraceEnd->GetComponentLocation();
 	const FVector startTrace = BoxTraceStart->GetComponentLocation();
 	TArray<AActor*> ActorsToIgnore;
-	ActorsToIgnore.Add(this);
+	ActorsToIgnore.Add(GetOwner());
 
 
-	for (AActor* Actors : IgnoreActors) {
+	/*for (AActor* Actors : IgnoreActors) {
 		ActorsToIgnore.AddUnique(Actors);
-	}
+	}*/
 	/*It should only be working when the player is attacking*/
 	UKismetSystemLibrary::BoxTraceSingle(this,
 		startTrace,
 		endTrace,
-		FVector(1.5f, 1.5f, 1.5f),
+		FVector(5.5f, 5.5f, 5.5f),
 		BoxTraceStart->GetComponentRotation(),
 		ETraceTypeQuery::TraceTypeQuery1,
 		false,
 		ActorsToIgnore,
-		EDrawDebugTrace::ForDuration,
+		EDrawDebugTrace::ForOneFrame,
 		boxHit,
 		true);
 }

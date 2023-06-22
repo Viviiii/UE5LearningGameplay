@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Sound/SoundWave.h"
-#include "IHitInterface.h"
+#include "Interfaces/IHitInterface.h"
 #include "Treasure.h"
 #include "Breakable.generated.h"
 
@@ -31,7 +31,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void getHit_Implementation(const FVector& impactPoint);
+	virtual void getHit_Implementation(const FVector& impactPoint, AActor* hitter);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		UCapsuleComponent* capsule;

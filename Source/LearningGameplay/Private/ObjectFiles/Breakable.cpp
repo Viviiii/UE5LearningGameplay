@@ -2,7 +2,7 @@
 
 
 #include "ObjectFiles/Breakable.h"
-#include "IHitInterface.h"
+#include "Interfaces/IHitInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/CapsuleComponent.h"
 #include "GeometryCollection/GeometryCollectionComponent.h"
@@ -42,14 +42,18 @@ void ABreakable::Tick(float DeltaTime)
 
 }
 
-void ABreakable::getHit_Implementation(const FVector& impactPoint)
+void ABreakable::getHit_Implementation(const FVector& impactPoint,AActor* hitter)
 {
 	if (broken) return;	
 	broken = true;
 	if (treasureClasses.Num() > 0 && GetWorld()) {
+		GEngine->AddOnScreenDebugMessage(2, 1.5f, FColor::Blue, FString("dzqdzqdqz"));
 		FVector Location = GetActorLocation();
 		Location.Z += 70.f;
 		int Selection = FMath::RandRange(0, treasureClasses.Num() - 1);
+		SetLifeSpan(4.f);
+		capsule->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+		
 		GetWorld()->SpawnActor<ATreasure>(treasureClasses[Selection], Location, GetActorRotation());
 		if (breakSound) {
 			UGameplayStatics::PlaySoundAtLocation(this, breakSound, GetActorLocation());

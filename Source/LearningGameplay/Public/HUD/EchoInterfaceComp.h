@@ -18,17 +18,37 @@ class LEARNINGGAMEPLAY_API UEchoInterfaceComp : public UWidgetComponent
 	GENERATED_BODY()
 	
 public:
-	void setPercentHealth(float HP);
+	/*void setPercentHealth(float HP);
 
 	void setPercentMana(float Mana);
 
 	void addXP(float XP);
 
+	void addPotions();
+
+	void removePotions();
+
+	void addCoins(int amount);
+
+	UPROPERTY(BlueprintReadWrite)
+		int potions;
+
+	UPROPERTY(BlueprintReadWrite)
+		int coin;
+
+	UEchoInterface* potionsW;
+
+	UEchoInterface* coinsW;*/
+
 private:
-		UEchoInterface* healthBarEchoW;
+		/*UEchoInterface* healthBarEchoW;
 
 		UEchoInterface* manaBarEchoW;
 
-		UEchoInterface* XPBarW;
+		UEchoInterface* XPBarW;*/
+
+		
+
+		
 
 };

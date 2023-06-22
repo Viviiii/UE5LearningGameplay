@@ -25,9 +25,17 @@ public:
 
 	void ReceiveDamage(float Damage);
 
+	void useStamina(float staminaAmount);
+
 	float getHealth();
 
+	float getStamina();
+
+	void setStamina(float staminaAmount);
+
 	bool isAlive();
+
+	int getKillNumber();
 
 private :
 	UPROPERTY(EditAnywhere, Category = "Echo Attributes")
@@ -41,5 +49,14 @@ private :
 
 	UPROPERTY(EditAnywhere, Category = "Echo Attributes")
 		int level;
+
+	UPROPERTY(EditAnywhere, Category = "Echo Attributes")
+		float stamina;
+
+	UPROPERTY(EditAnywhere, Category = "Echo Attributes")
+		float maxStamina;
 		
+	UPROPERTY(EditAnywhere, Category = "Echo Attributes")
+		float killNumber;
+
 };

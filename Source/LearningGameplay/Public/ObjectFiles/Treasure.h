@@ -9,7 +9,10 @@
 /**
  * 
  */
+
+class UEchoInterfaceComp;
 UCLASS()
+
 class LEARNINGGAMEPLAY_API ATreasure : public AObjects
 {
 	GENERATED_BODY()
@@ -19,8 +22,9 @@ private :
 	
 	UPROPERTY(EditAnywhere, Category = "PickCoin")
 		USoundBase* pickCoin;
+	
+public :
 
 	UPROPERTY(EditAnywhere, Category = "Gold")
-		int32 Coin;
-	
+		int32 coin;
 };

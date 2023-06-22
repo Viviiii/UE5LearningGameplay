@@ -16,7 +16,8 @@ ABaseCharacter::ABaseCharacter()
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	killNumber = 0;
 }
 
 void ABaseCharacter::PlayHitMontage(FName Section)
@@ -39,6 +40,27 @@ void ABaseCharacter::enableSwordCollision(ECollisionEnabled::Type CollisionEnabl
 
 void ABaseCharacter::disableSwordCollision(ECollisionEnabled::Type CollisionEnabled)
 {
+}
+
+FVector ABaseCharacter::GetTranslationWarpTarget()
+{
+	if (combatTarget == nullptr) return FVector();
+
+	const FVector CombatTargetLocation = combatTarget->GetActorLocation();
+	const FVector Location = GetActorLocation();
+	FVector TargetToMe = (CombatTargetLocation - Location).GetSafeNormal();
+	TargetToMe *= WarpTargetDistance;
+
+	return CombatTargetLocation + TargetToMe;
+}
+
+FVector ABaseCharacter::GetRotationWarpTarget()
+{
+	if (combatTarget)
+	{
+		return combatTarget->GetActorLocation();
+	}
+	return FVector();
 }
 
 void ABaseCharacter::Attack()
@@ -73,13 +95,35 @@ int32 ABaseCharacter::PlayAttackMontage()
 	return PlayRandomMontageSection(attackMontage, AttackMontageSections);
 }
 
-void ABaseCharacter::PlayIdleMontage()
+int32 ABaseCharacter::PlayIdleMontage()
 {
+	return PlayRandomMontageSection(idleMontage, IdleMontageSections);
+}
+
+void ABaseCharacter::StopAttackMontage()
+{
+	UAnimInstance* montageAttack = GetMesh()->GetAnimInstance();
+	if (montageAttack) {
+		montageAttack->Montage_Stop(0.25f, attackMontage);
+	}
+}
+
+void ABaseCharacter::StopIdleMontage()
+{
+	UAnimInstance* montageIdle = GetMesh()->GetAnimInstance();
+	if (montageIdle) {
+		montageIdle->Montage_Stop(0.25f, idleMontage);
+	}
 }
 
 bool ABaseCharacter::IsAlive()
 {
 	return Attributes && Attributes->isAlive();
+}
+
+void ABaseCharacter::setKillNumber()
+{
+	killNumber++;
 }
 
 void ABaseCharacter::PlayVFX(const FVector& impactPoint)
@@ -96,8 +140,9 @@ void ABaseCharacter::PlaySound(const FVector& impactPoint)
 	}
 }
 
-void ABaseCharacter::getHit_Implementation(const FVector& impactPoint)
+void ABaseCharacter::getHit_Implementation(const FVector& impactPoint, AActor* hitter)
 {
+
 }
 
 float ABaseCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
