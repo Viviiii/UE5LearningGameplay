@@ -77,7 +77,7 @@ void AEchoCharacter::BeginPlay()
 		echoWidget->addCoins(5);
 
 	}*/
-
+	
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
@@ -90,10 +90,15 @@ void AEchoCharacter::BeginPlay()
 			if (echoInterface) {
 				echoInterface->setPercentHealth(1.f);
 				echoInterface->setPercentStamina(1.f);
-				GEngine->AddOnScreenDebugMessage(1, 1.5f, FColor::Blue, FString::Printf(TEXT("Beginning Stamina : %f"), Attributes->getStamina()));
+				echoInterface->setKills();
 			}
 		}
 	}
+
+
+	/*if (musicGame) {
+		UGameplayStatics::PlaySoundAtLocation(this, musicGame, GetActorLocation());
+	}*/
 	Tags.Add(FName("EchoCharacter"));
 }
 
@@ -215,7 +220,6 @@ void AEchoCharacter::Dodge()
 		actionState = EActionState::EAS_Dodge;
 		if (Attributes && echoInterface) {
 			Attributes->useStamina(15);
-			GEngine->AddOnScreenDebugMessage(2, 1.5f, FColor::Blue, FString::Printf(TEXT("Stamina dodge: %f"), Attributes->getStamina()));
 			echoInterface->setPercentStamina(Attributes->getStamina());
 		}
 }
@@ -255,8 +259,9 @@ int32 AEchoCharacter::PlayAttackMontage()
 	}*/
 }
 
-void AEchoCharacter::PlayIdleMontage()
+int32 AEchoCharacter::PlayIdleMontage()
 {
+	return PlayRandomMontageSection(idleMontage, IdleMontageSections);
 }
 
 void AEchoCharacter::PlayUnarmMontage(FName sectionName)
@@ -275,7 +280,6 @@ void AEchoCharacter::Attack()
 		PlayAttackMontage();
 		actionState = EActionState::EAS_Attacking;
 		if (Attributes) {
-			GEngine->AddOnScreenDebugMessage(2, 1.5f, FColor::Blue, FString::Printf(TEXT("Stamina attack : %f"), Attributes->getStamina()));
 			Attributes->useStamina(20);
 		}
 		if (echoInterface) {
@@ -356,6 +360,13 @@ void AEchoCharacter::addPotion(APotions* potion)
 	echoInterface->addPotions();
 }
 
+void AEchoCharacter::addKills(ASkulls* skull)
+{
+	echoInterface->addKills();
+	killNumber++;
+
+}
+
 void AEchoCharacter::echoDeath()
 {
 	/*enemyState = EEnemyState::EES_Dead;
@@ -375,6 +386,16 @@ bool AEchoCharacter::canDraw() {
 bool AEchoCharacter::canSheathe() {
 
 	return actionState == EActionState::EAS_Unoccupied && characterState != ECharacterState::ECS_Unequipped && unarmMontage && weaponEquipped;
+}
+
+int AEchoCharacter::getKillNumber()
+{
+	return killNumber;
+}
+
+void AEchoCharacter::setKillNumber()
+{
+	killNumber++;
 }
 
 void AEchoCharacter::getHit_Implementation(const FVector& impactPoint, AActor* hitter)

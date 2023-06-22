@@ -16,3 +16,7 @@ void IPickUpInterface::addCoins(ATreasure* treasure)
 void IPickUpInterface::addPotion(APotions* potion)
 {
 }
+
+void IPickUpInterface::addKills(ASkulls* skull)
+{
+}

@@ -51,6 +51,8 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		UEchoInterfaceComp* echoWidget;
 
+	virtual void setKillNumber() override;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -148,6 +150,13 @@ protected:
 
 	bool canSheathe();
 
+	/*UPROPERTY(BlueprintReadWrite)
+		int killNumber;*/
+
+	//Sint getKillNumber();
+
+	
+
 	virtual void getHit_Implementation(const FVector& impactPoint, AActor* hitter) override;
 
 	virtual void DirectionalHit(const FVector& impactPoint) override;
@@ -169,18 +178,16 @@ private :
 
 	virtual int32 PlayDeathMontage() override;
 
-
-
 	virtual int32 PlayAttackMontage() override;
 
-	virtual void PlayIdleMontage() override;
+	virtual int32 PlayIdleMontage() override;
 
 
 	/* Overlapping objects*/
 	UPROPERTY(VisibleInstanceOnly)
 		AObjects* overlappedObjects;
 
-	UEchoInterface* echoInterface;
+	/*UEchoInterface* echoInterface;*/
 
 	//Enum charac states
 
@@ -190,6 +197,7 @@ private :
 
 	UPROPERTY(EditDefaultsOnly, Category = "Montages | Unarm")
 		UAnimMontage* unarmMontage;
+
 
 public:	
 	// Called every frame
@@ -208,6 +216,14 @@ public:
 	virtual void setOverlappingItem(AObjects* item) override;
 	virtual void addCoins(ATreasure* treasure) override;
 	virtual void addPotion(APotions* potion) override;
+	virtual void addKills(ASkulls* skull) override;
+
+	int getKillNumber();
+
+	/*Sounds*/
+	UPROPERTY(EditAnywhere, Category = "Game Music")
+		USoundBase* musicGame;
+
 
 private:
 

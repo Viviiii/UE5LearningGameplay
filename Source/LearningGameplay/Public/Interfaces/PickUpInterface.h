@@ -27,4 +27,5 @@ public:
 	virtual void setOverlappingItem(class AObjects* item);
 	virtual void addCoins(class ATreasure* treasure);
 	virtual void addPotion(class APotions* potion);
+	virtual void addKills(class ASkulls* skull);
 };

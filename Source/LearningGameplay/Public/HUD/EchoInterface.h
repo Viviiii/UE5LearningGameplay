@@ -32,11 +32,18 @@ public :
 
 	void addCoins(int amount);
 
+	void addKills();
+
+	void setKills();
+
 	UPROPERTY(BlueprintReadWrite)
 		int potionsNbr;
 
 	UPROPERTY(BlueprintReadWrite)
 		int coinNbr;
+
+	UPROPERTY(BlueprintReadWrite)
+		int killNbr;
 
 
 private :
@@ -51,6 +58,11 @@ private :
 
 	UPROPERTY(meta = (BindWidget))
 		UTextBlock* coins;
+
+	UPROPERTY(meta = (BindWidget))
+		UTextBlock* kills;
+
+
 	
 	
 };

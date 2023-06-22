@@ -8,7 +8,9 @@
 #include "Interfaces/IHitInterface.h"
 #include "ObjectFiles/Weapon.h"
 #include "EchoFiles/EchoAttributes.h"
+#include "HUD/EchoInterface.h"
 #include "BaseCharacter.generated.h"
+
 
 
 
@@ -25,6 +27,8 @@ public:
 	// Sets default values for this character's properties
 	ABaseCharacter();
 
+	UEchoInterface* echoInterface;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -36,6 +40,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 		UHealthBar* widgetHealth;
+
+
+
 
 	/* Use weapon equipped*/
 
@@ -61,6 +68,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Montage Sections")
 		TArray<FName> DeathMontageSections;
+
+	UPROPERTY(EditAnywhere, Category = "Montage Sections")
+		TArray<FName> IdleMontageSections;
 
 	/*Sounds*/
 	UPROPERTY(EditAnywhere, Category = "Enemy Hit")
@@ -116,13 +126,19 @@ protected:
 
 	virtual int32 PlayDeathMontage();
 
-	virtual int32 PlayAttackMontage();
+	virtual int32 PlayIdleMontage();
 
-	virtual void PlayIdleMontage();
+	virtual int32 PlayAttackMontage();
 
 	virtual void StopAttackMontage();
 
+	virtual void StopIdleMontage();
+
 	virtual bool IsAlive();
+
+	virtual void setKillNumber();
+
+	int killNumber;
 
 	/* VFX & SFX*/
 

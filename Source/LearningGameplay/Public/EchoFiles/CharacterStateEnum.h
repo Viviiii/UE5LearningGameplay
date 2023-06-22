@@ -43,3 +43,10 @@ enum class EEnemyState : uint8 {
 	EES_Engaged UMETA(DisplayName = "Engaged"),
 	EES_NoState UMETA(DisplayName = "NoState"),
 };
+
+UENUM(BlueprintType)
+enum EEnemyIdleState{
+	EEIS_Idle1 UMETA(DisplayName = "Idle1"),
+	EEIS_Idle2 UMETA(DisplayName = "Idle2"),
+	EEIS_Idle3 UMETA(DisplayName = "Idle3"),
+};

@@ -16,7 +16,8 @@ ABaseCharacter::ABaseCharacter()
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	killNumber = 0;
 }
 
 void ABaseCharacter::PlayHitMontage(FName Section)
@@ -94,8 +95,9 @@ int32 ABaseCharacter::PlayAttackMontage()
 	return PlayRandomMontageSection(attackMontage, AttackMontageSections);
 }
 
-void ABaseCharacter::PlayIdleMontage()
+int32 ABaseCharacter::PlayIdleMontage()
 {
+	return PlayRandomMontageSection(idleMontage, IdleMontageSections);
 }
 
 void ABaseCharacter::StopAttackMontage()
@@ -106,9 +108,22 @@ void ABaseCharacter::StopAttackMontage()
 	}
 }
 
+void ABaseCharacter::StopIdleMontage()
+{
+	UAnimInstance* montageIdle = GetMesh()->GetAnimInstance();
+	if (montageIdle) {
+		montageIdle->Montage_Stop(0.25f, idleMontage);
+	}
+}
+
 bool ABaseCharacter::IsAlive()
 {
 	return Attributes && Attributes->isAlive();
+}
+
+void ABaseCharacter::setKillNumber()
+{
+	killNumber++;
 }
 
 void ABaseCharacter::PlayVFX(const FVector& impactPoint)

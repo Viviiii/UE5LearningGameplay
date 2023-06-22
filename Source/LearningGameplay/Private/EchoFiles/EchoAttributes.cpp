@@ -62,5 +62,10 @@ bool UEchoAttributes::isAlive()
 	return health >0.f;
 }
 
+int UEchoAttributes::getKillNumber()
+{
+	return killNumber;
+}
+
 
 

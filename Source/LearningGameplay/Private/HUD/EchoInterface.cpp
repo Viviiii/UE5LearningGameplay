@@ -43,3 +43,21 @@ void UEchoInterface::addCoins(int amount)
 
 	}
 }
+
+void UEchoInterface::addKills()
+{
+	if (kills) {
+		killNbr++;
+		GEngine->AddOnScreenDebugMessage(2, 1.5f, FColor::Red, FString::Printf(TEXT("Kill number : %d"),killNbr));
+		kills->SetText(FText::AsNumber(killNbr));
+
+	}
+}
+
+void UEchoInterface::setKills()
+{
+	if (kills) {
+		killNbr = 0;
+		kills->SetText(FText::AsNumber(killNbr));
+	}
+}

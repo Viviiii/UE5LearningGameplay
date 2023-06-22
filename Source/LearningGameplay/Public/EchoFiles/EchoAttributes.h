@@ -35,6 +35,8 @@ public:
 
 	bool isAlive();
 
+	int getKillNumber();
+
 private :
 	UPROPERTY(EditAnywhere, Category = "Echo Attributes")
 		float health;
@@ -54,4 +56,7 @@ private :
 	UPROPERTY(EditAnywhere, Category = "Echo Attributes")
 		float maxStamina;
 		
+	UPROPERTY(EditAnywhere, Category = "Echo Attributes")
+		float killNumber;
+
 };
