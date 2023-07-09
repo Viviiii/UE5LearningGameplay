@@ -18,7 +18,7 @@ UEchoAttributes::UEchoAttributes()
 void UEchoAttributes::BeginPlay()
 {
 	Super::BeginPlay();
-
+	name = FName("Raptor");
 	// ...
 	
 }
@@ -65,6 +65,16 @@ bool UEchoAttributes::isAlive()
 int UEchoAttributes::getKillNumber()
 {
 	return killNumber;
+}
+
+FName UEchoAttributes::getName()
+{
+	return name;
+}
+
+void UEchoAttributes::setName(FName newName)
+{
+	name = newName;
 }
 
 

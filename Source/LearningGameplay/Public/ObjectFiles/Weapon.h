@@ -82,6 +82,12 @@ private :
 	UPROPERTY(VisibleAnywhere)
 		USceneComponent* BoxTraceEnd;
 
+	/*UPROPERTY(VisibleAnywhere)
+		UBoxComponent* BoxTraceStart;
+
+	UPROPERTY(VisibleAnywhere)
+		UBoxComponent* BoxTraceEnd;*/
+
 	UPROPERTY(EditAnywhere, Category = "Visual Effects")
 		UNiagaraComponent* VFX;
 

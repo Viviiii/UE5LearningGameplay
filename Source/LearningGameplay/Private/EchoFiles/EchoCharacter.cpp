@@ -69,15 +69,6 @@ void AEchoCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	/*if (echoWidget) {
-		echoWidget->setPercentHealth(1.f);
-		echoWidget->setPercentMana(0.8f);
-		echoWidget->addXP(0.f);
-		echoWidget->addPotions();
-		echoWidget->addCoins(5);
-
-	}*/
-	
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
@@ -204,11 +195,18 @@ void AEchoCharacter::Interact()
 
 void AEchoCharacter::Ability1()
 {
-	GetCharacterMovement()->MaxWalkSpeed = 600.f;
+	/*GetCharacterMovement()->MaxWalkSpeed = 600.f;
 	UAnimInstance* animInstance = GetMesh()->GetAnimInstance();
 	if (animInstance && abilitiesMontage) {
 		animInstance->Montage_Play(abilitiesMontage);	
 		animInstance->Montage_JumpToSection("Ability2", abilitiesMontage);
+
+	}*/
+	GetCharacterMovement()->MaxWalkSpeed = 600.f;
+	UAnimInstance* animInstance = GetMesh()->GetAnimInstance();
+	if (animInstance && attackMontage) {
+		animInstance->Montage_Play(attackMontage);
+		animInstance->Montage_JumpToSection("Attack6", attackMontage);
 
 	}
 }
@@ -363,7 +361,7 @@ void AEchoCharacter::addPotion(APotions* potion)
 void AEchoCharacter::addKills(ASkulls* skull)
 {
 	echoInterface->addKills();
-	killNumber++;
+	//killNumber++;
 
 }
 
@@ -400,8 +398,8 @@ void AEchoCharacter::setKillNumber()
 
 void AEchoCharacter::getHit_Implementation(const FVector& impactPoint, AActor* hitter)
 {
-	PlaySound(impactPoint);
-	PlayVFX(impactPoint);
+	PlaySound(impactPoint, hitSound);
+	PlayVFX(impactPoint, bloodEffect);
 	StopAttackMontage();
 	StopDodgeMontage();	
 	if (IsAlive() && hitter) {
@@ -410,8 +408,8 @@ void AEchoCharacter::getHit_Implementation(const FVector& impactPoint, AActor* h
 		actionState = EActionState::EAS_HitReaction;
 		
 	}
-	if (equipSound) {
-		UGameplayStatics::PlaySoundAtLocation(this, equipSound, GetActorLocation());
+	if (hurtSound) {
+		UGameplayStatics::PlaySoundAtLocation(this, hurtSound, GetActorLocation());
 	}
 }
 

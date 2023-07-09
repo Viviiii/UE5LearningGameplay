@@ -8,7 +8,7 @@
 #include "EchoFiles/EchoCharacter.h"
 #include "LoadLevel.generated.h"
 
-
+class UParticleSystem;
 /**
  * 
  */
@@ -24,23 +24,35 @@ private :
 		TArray<TSubclassOf<AEnemy>> enemyClass;
 
 	UFUNCTION()
-		void respawn(AEnemy* newEnemy);
+		void respawn();
+
+	void respawnPaladins();
+
+	void respawnFG();
 
 	FTimerHandle respawnTimer;
 	
 	FTimerDelegate respawnParam;
 
-	int killNumber=0;
+	void PlayVFX(FVector Location, UParticleSystem* FX);
+
+	/*VFX*/
+	UPROPERTY(EditAnywhere, Category = "Spawn FX")
+		UParticleSystem* spawnEffect;
+
+	int enemiesNumber=0;
+
+	TArray<AEnemy*> paladinsTab;
+
+	TArray<AEnemy*> raptorsTab;
+
+	TArray<AEnemy*> FGTab;
+
+
+
 public :
 
-	virtual void BeginPlay() override;
-	virtual void Tick(float DeltaTime) override;
-
-
 	AEnemy* newEnemy;
-
-	UPROPERTY(EditAnywhere)
-		TSubclassOf<ABaseCharacter> echoCharac;
 
 	AEchoCharacter* echo;
 	

@@ -33,11 +33,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-
 	/* Characteristics + HUD Player*/
-	UPROPERTY(EditAnywhere)
-		UEchoAttributes* Attributes;
-
 	UPROPERTY(VisibleAnywhere)
 		UHealthBar* widgetHealth;
 
@@ -72,9 +68,12 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Montage Sections")
 		TArray<FName> IdleMontageSections;
 
-	/*Sounds*/
-	UPROPERTY(EditAnywhere, Category = "Enemy Hit")
+	/* SFX */
+	UPROPERTY(EditAnywhere, Category = "Sound Hit")
 		USoundBase* hitSound;
+	
+	UPROPERTY(EditAnywhere, Category = "Sound hurt")
+		USoundBase* hurtSound;
 
 	/*VFX*/
 	UPROPERTY(EditAnywhere, Category = "Enemy Hit")
@@ -142,9 +141,15 @@ protected:
 
 	/* VFX & SFX*/
 
-	virtual void PlayVFX(const FVector& impactPoint);
+	virtual void PlayVFX(const FVector& impactPoint, UParticleSystem* FX);
 
-	virtual void PlaySound(const FVector& impactPoint);
+	virtual void PlaySound(const FVector& impactPoint, USoundBase* hitSound);
+
+public : 
+
+	/* Characteristics + HUD Player*/
+	UPROPERTY(EditAnywhere)
+		UEchoAttributes* Attributes;
 
 
 

@@ -69,6 +69,10 @@ public:
 
 	AEchoCharacter* echo;
 
+	/*VFX*/
+	UPROPERTY(EditAnywhere, Category = "Enemy Spawn")
+		UParticleSystem* spawnFX;
+
 protected :
 
 	/* Begin Play functions*/
@@ -158,6 +162,8 @@ protected :
 
 	virtual int32 PlayDeathMontage() override;
 
+	void PlaySpawnMontage();
+
 	/*virtual void ReduceHealth(float dmgAmount);*/
 
 	/*Attacking */
@@ -168,6 +174,17 @@ protected :
 
 	virtual void Attack() override;
 
+	UPROPERTY(BlueprintReadOnly)
+		float maxSpeed;
+
+	///*Sounds*/
+	//UPROPERTY(EditAnywhere, Category = "Enemy Hit")
+	//	USoundBase* hitSound;
+
+	///*VFX*/
+	//UPROPERTY(EditAnywhere, Category = "Enemy Hit")
+	//	UParticleSystem* bloodEffect;
+
 private : 
 
 	EEnemyState enemyState = EEnemyState::EES_Patrol;
@@ -176,12 +193,18 @@ private :
 
 	/* Chasing + attacks*/
 
-	UPROPERTY(EditAnywhere)	
-		double combatRadius = 800.f;
+	UPROPERTY(EditAnywhere)
+		double combatRadius = 500.f;
 
 	UPROPERTY(EditAnywhere)
 		double attackRadius = 350.f;
 
 	UPROPERTY(EditAnywhere)
 		double patrolRadius = 5000.f;
+
+	UFUNCTION(BlueprintCallable)
+		void destroyActor();
+
+	UPROPERTY(EditDefaultsOnly, Category = "Montages | Spawn")
+		UAnimMontage* spawnMontage;
 };		

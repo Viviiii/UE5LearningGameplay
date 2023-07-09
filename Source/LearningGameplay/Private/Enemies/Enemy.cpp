@@ -53,17 +53,22 @@ void AEnemy::BeginPlay()
 	if (pawnSensing) {
 		pawnSensing->OnSeePawn.AddDynamic(this, &AEnemy::pawnSeen);
 	}
-
+	maxSpeed = GetCharacterMovement()->GetMaxSpeed();
 	SpawnDefaultWeapon();
-	
-	GetWorld()->GetTimerManager().SetTimer(patrolTimer, this, &AEnemy::patrolTimerFinished, FMath::RandRange(5.f, 10.5f), true);
 	echo = Cast<AEchoCharacter>(GetWorld()->GetFirstPlayerController()->GetCharacter());
-	if (!targetPatrol) {
-		GetWorld()->GetTimerManager().SetTimer(randomPatrolTimer, this, &AEnemy::MoveToRandomLocation, FMath::RandRange(5.f, 10.5f), true, 0.2f);
-		//MoveToRandomLocation();
+	if (targetPatrol && AIenemy) {
+		GetWorld()->GetTimerManager().SetTimer(patrolTimer, this, &AEnemy::patrolTimerFinished, FMath::RandRange(5.f, 10.5f), true);
 	}
-	//GetWorld()->GetTimerManager().SetTimer(respawnTimer, this, &AEnemy::respawnEnemyTimer, FMath::RandRange(5.f, 10.5f), true);
+	else if(AIenemy){
 
+		combatRadius = 5000.f;
+		combatTarget = echo;
+		ChaseTarget();
+	}
+	if (spawnMontage) {
+		GetCharacterMovement()->MaxWalkSpeed = 0.f;
+		PlaySpawnMontage();
+	}
 }
 
 void AEnemy::StartHealth()
@@ -87,12 +92,13 @@ void AEnemy::SpawnDefaultWeapon()
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
 	/*IA Attack*/
-	if (enemyState > EEnemyState::EES_Patrol) {
-			
+	if (enemyState > EEnemyState::EES_Patrol && AIenemy) {
+
 		CheckCombatTarget();
 	}
+
 }
 
 void AEnemy::getHit_Implementation(const FVector& impactPoint, AActor* hitter)	
@@ -102,10 +108,13 @@ void AEnemy::getHit_Implementation(const FVector& impactPoint, AActor* hitter)
 	GetWorld()->GetTimerManager().ClearTimer(patrolTimer);
 	StopAttackMontage();
 	disableSwordCollision(ECollisionEnabled::NoCollision);
-	PlaySound(impactPoint);
-	PlayVFX(impactPoint);
+	PlaySound(impactPoint, hitSound);
+	PlayVFX(impactPoint, bloodEffect);
 	if (IsAlive()) {
 		DirectionalHit(impactPoint); 
+		if (hurtSound) {
+			UGameplayStatics::PlaySoundAtLocation(this, hurtSound, GetActorLocation());
+		}
 	}
 	else {
 		EnemyDeath();
@@ -126,9 +135,7 @@ int AEnemy::getEnemyNbr()
 
 void AEnemy::setEnemyNbr(int value)
 {
-	//GEngine->AddOnScreenDebugMessage(3, 1.5f, FColor::Red, FString::Printf(TEXT("Number of enemies : %d"), enemyNbr));
 	enemyNbr = enemyNbr + value;
-	//GEngine->AddOnScreenDebugMessage(2, 1.5f, FColor::Red, FString::Printf(TEXT("Number of enemies after: %d"), enemyNbr));
 }
 
 void AEnemy::ShowHealth()
@@ -224,9 +231,6 @@ void AEnemy::PlayHitMontage(FName Section)
 	}
 }
 
-
-
-
 /*IA attacks */
 void AEnemy::enableSwordCollision(ECollisionEnabled::Type CollisionEnabled)
 {
@@ -280,10 +284,11 @@ bool AEnemy::bCanAttack()
 /* IA Navigation */
 void AEnemy::ChaseTarget()
 {
+
 	GetWorld()->GetTimerManager().ClearTimer(attackTimer);
 	actionState = EActionState::EAS_Unoccupied;
 	enemyState = EEnemyState::EES_Chasing;
-	GetCharacterMovement()->MaxWalkSpeed = 450.f;
+	GetCharacterMovement()->MaxWalkSpeed = maxSpeed;
 	MoveToTarget(combatTarget);
 }
 
@@ -313,11 +318,14 @@ void AEnemy::CheckCombatTarget()
 {
 	/*Ennemies lose interest, go back to patrolling*/
 	if (IsOutsideCombatRadius()) {
+
 		LoseInterest();
 		StartPatrolling();
+
 	}
 	/* Enemies too far to attack so goes back to chasing*/
 	else if (IsOutsideAttackRadius() && !IsChasing()) {
+		
 		if (IsAttacking()) {
 			StopAttackMontage();
 		}
@@ -328,6 +336,7 @@ void AEnemy::CheckCombatTarget()
 		/* If during attack, player too far, he misses, or stop attacking*/
 		startAttackTimer();
 	}
+	
 }
 
 void AEnemy::Attack() {
@@ -339,10 +348,16 @@ void AEnemy::Attack() {
 
 }
 
+void AEnemy::destroyActor()
+{
+	Destroy();	
+}
+
 void AEnemy::startAttackTimer()
 {
+
 	enemyState = EEnemyState::EES_Attacking;
-	GetWorld()->GetTimerManager().SetTimer(attackTimer, this, &AEnemy::Attack, FMath::RandRange(2.f,4.5f), true, 0.2f);
+	GetWorld()->GetTimerManager().SetTimer(attackTimer, this, &AEnemy::Attack, FMath::RandRange(3.f,6.5f), true, 0.2f);
 }
 
 bool AEnemy::isTargetInRange(AActor* target, double radius)
@@ -359,6 +374,7 @@ void AEnemy::MoveToTarget(AActor* target)
 		moveReq.SetAcceptanceRadius(10.f);
 		FNavPathSharedPtr navPath;
 		AIenemy->MoveTo(moveReq, &navPath);
+
 	}
 	if (target == nullptr) {
 		return;
@@ -368,7 +384,7 @@ void AEnemy::MoveToTarget(AActor* target)
 
 void AEnemy::MoveToRandomLocation()
 {
-	GetWorld()->GetTimerManager().ClearTimer(patrolTimer);
+	//GetWorld()->GetTimerManager().ClearTimer(patrolTimer);
 
 	FAIMoveRequest moveReq;
 
@@ -376,12 +392,12 @@ void AEnemy::MoveToRandomLocation()
 		FMath::RandRange(-18770, -13140), 
 		FMath::RandRange(-770, -6450),
 		630);
+
 	moveReq.SetGoalLocation(locationTarget);
 	moveReq.SetAcceptanceRadius(10.f);
 	FNavPathSharedPtr navPath;
-	if (AIenemy) {
-		AIenemy->MoveTo(moveReq, &navPath);
-	}
+	AIenemy->MoveTo(moveReq, &navPath);
+
 	
 }
 
@@ -394,17 +410,18 @@ void AEnemy::patrolTimerFinished()
 		MoveToRandomLocation();
 	}
 	else {
+		
 		MoveToTarget(targetPatrol);
 	}
 	
 }
 
-void AEnemy::respawnEnemyTimer()
-{
-	GEngine->AddOnScreenDebugMessage(2, 1.5f, FColor::Red, FString("Respaaaawn"));
-	FVector spawnLocation = FVector(-530, -860, 110);
-	GetWorld()->SpawnActor<AEnemy>(enemyClass, spawnLocation, GetActorRotation());
-}
+//void AEnemy::respawnEnemyTimer()
+//{
+//	GEngine->AddOnScreenDebugMessage(2, 1.5f, FColor::Red, FString("Respaaaawn"));
+//	FVector spawnLocation = FVector(-530, -860, 110);
+//	GetWorld()->SpawnActor<AEnemy>(enemyClass, spawnLocation, GetActorRotation());
+//}
 
 AActor* AEnemy::choosingTarget()
 {
@@ -424,99 +441,32 @@ AActor* AEnemy::choosingTarget()
 int32 AEnemy::PlayAttackMontage()
 {
 	return PlayRandomMontageSection(attackMontage, AttackMontageSections);
-	/*UAnimInstance* montageAttack = GetMesh()->GetAnimInstance();
-	if (montageAttack) {
-		montageAttack->Montage_Play(attackMontage);
-		int32 random = FMath::RandRange(0, 2);
-		FName selection = FName();
-		switch (random) {
-		case 0:
-			selection = FName("Attack");
-			break;
-
-		case 1:
-			selection = FName("Attack1");
-			break;
-
-		case 2:
-			selection = FName("Attack2");
-			break;
-
-		default:
-			break;
-		}
-		montageAttack->Montage_JumpToSection(selection, attackMontage);
-	}*/
+	
 }
 
 /* Working differently*/
 int32 AEnemy::PlayDeathMontage()
 {
-	//PlayRandomMontageSection(deathMontage, DeathMontageSections);
 	const int32 selection = Super::PlayDeathMontage();
 	TEnumAsByte<EDeathState> Pose(selection);
 	deathPose = Pose;	
 	return selection;
-	/*UAnimInstance* montageDeath = GetMesh()->GetAnimInstance();
-	if (montageDeath) {
-		montageDeath->Montage_Play(deathMontage);
-		int32 random = FMath::RandRange(0, 3);
-		FName selection = FName();
-		switch (random) {
-		case 0:
-			selection = FName("Death");
-			deathState = EDeathState::ECS_Dead;
-			break;
+}
 
-		case 1:
-			selection = FName("DeathBis");
-			deathState = EDeathState::ECS_Dead1;
-			break;
+void AEnemy::PlaySpawnMontage()
+{
+	UAnimInstance* animInstance = GetMesh()->GetAnimInstance();
+	if (animInstance) {
+		animInstance->Montage_Play(spawnMontage);
+		animInstance->Montage_JumpToSection(FName("Spawn"), spawnMontage);
 
-		case 2:
-			selection = FName("DeathForward");
-			deathState = EDeathState::ECS_Dead2;
-			break;
-
-		case 3:
-			selection = FName("DeathLeft");
-			deathState = EDeathState::ECS_Dead3;
-			break;
-
-		default:
-			break;
-		}
-		montageDeath->Montage_JumpToSection(selection, deathMontage);
-	}*/
+	}
 }
 
 int32 AEnemy::PlayIdleMontage()
 {
-	/*UAnimInstance* montageIdle = GetMesh()->GetAnimInstance();
-	if (montageIdle) {
-		montageIdle->Montage_Play(hitMontage);
-		int32 random = FMath::RandRange(0, 3);
-		FName selection = FName();
-		switch (random) {
-		case 0:
-			selection = FName("IdleRoar");
-			break;
-
-		case 1:
-			selection = FName("IdleFlexing");
-			break;
-
-		case 2:
-			selection = FName("IdleChill");
-			break;
-
-		default:
-			break;
-		}
-		montageIdle->Montage_JumpToSection(selection, idleMontage);
-	}*/
+	
 	const int32 selection = Super::PlayIdleMontage();
-	//GEngine->AddOnScreenDebugMessage(2, 1.5f, FColor::Blue, FString::Printf(TEXT("Numero : %d"), selection));
 	TEnumAsByte<EEnemyIdleState> Pose(selection);
 	idlePose = Pose;
 	return selection;
@@ -532,9 +482,8 @@ void AEnemy::EnemyDeath()
 	widgetHealth->DestroyComponent();
 	disableSwordCollision(ECollisionEnabled::NoCollision);
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	SetLifeSpan(3.5f);
 	if (!targetPatrol) {
-		setEnemyNbr(-1);
+		//setEnemyNbr(-1);
 		GetWorld()->SpawnActor<AObjects>(skullClass, GetActorLocation(), GetActorRotation());
 	}
 }

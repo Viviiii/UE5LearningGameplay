@@ -37,6 +37,10 @@ public:
 
 	int getKillNumber();
 
+	FName getName();
+
+	void setName(FName newName);
+
 private :
 	UPROPERTY(EditAnywhere, Category = "Echo Attributes")
 		float health;
@@ -58,5 +62,8 @@ private :
 		
 	UPROPERTY(EditAnywhere, Category = "Echo Attributes")
 		float killNumber;
+
+	UPROPERTY(EditAnywhere, Category = "Echo Attributes")
+		FName name;
 
 };

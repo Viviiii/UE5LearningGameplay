@@ -24,44 +24,29 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 	FHitResult boxHit;
 	/* Echo hitted and the enemy or breakable is target, or enemy hitted and echo is target*/
 	BoxTraceWeapon(boxHit);
-	
 	if (boxHit.GetActor()) {
+		BoxTraceWeapon(boxHit);
 		if (GetOwner()->ActorHasTag("Enemy") && boxHit.GetActor()->ActorHasTag("EchoCharacter")) {
 			/*BoxTraceWeapon(boxHit);*/
 			UGameplayStatics::ApplyDamage(boxHit.GetActor(), Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
 			ExecuteHit(boxHit.GetActor(), boxHit, GetOwner());
 		}
 		if (GetOwner()->ActorHasTag("EchoCharacter") && OtherActor->ActorHasTag("Enemy")) {
-			BoxTraceWeapon(boxHit);
+			//BoxTraceWeapon(boxHit);
+			
+			
 			UGameplayStatics::ApplyDamage(boxHit.GetActor(), Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
 			ExecuteHit(boxHit.GetActor(), boxHit, GetOwner());
+			createField(boxHit.ImpactPoint);
 		}
 		if (GetOwner()->ActorHasTag("EchoCharacter") && OtherActor->ActorHasTag("Breakable")) {
 
-			BoxTraceWeapon(boxHit);
+			//BoxTraceWeapon(boxHit);
 			//UGameplayStatics::ApplyDamage(OtherActor, Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
 			ExecuteHit(OtherActor, boxHit, GetOwner());
 			createField(boxHit.ImpactPoint);
 		}
 	}
-	
-
-	//if ((GetOwner()->ActorHasTag("EchoCharacter") && (OtherActor->ActorHasTag("Enemy") || OtherActor->ActorHasTag("Breakable")))
-	//	|| (GetOwner()->ActorHasTag("Enemy") && OtherActor->ActorHasTag("EchoCharacter"))) {
-	//	BoxTraceWeapon(boxHit);
-	//	GEngine->AddOnScreenDebugMessage(1, 1.5f, FColor::Red, FString(OtherActor->GetName()));
-	//	/*if (boxHit.GetActor() != nullptr && (boxHit.GetActor()->ActorHasTag(FName("Breakable")) || boxHit.GetActor()->ActorHasTag(FName("Enemy")))) {*/
-	//	UGameplayStatics::ApplyDamage(OtherActor, Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
-	//	ExecuteHit(OtherActor, boxHit);
-	//	createField(boxHit.ImpactPoint);
-	//	IgnoreActors.AddUnique(boxHit.GetActor());
-	//	//}	
-
-	//}
-	/*if (OtherActor->ActorHasTag("Enemy") || OtherActor->ActorHasTag("Breakable")) {
-	
-	}*/
-	
 }
 
 void AWeapon::ExecuteHit(AActor* OtherActor, FHitResult& boxHit, AActor* hitter)
@@ -81,6 +66,7 @@ void AWeapon::BoxTraceWeapon(FHitResult& boxHit)
 	ActorsToIgnore.Add(GetOwner());
 
 
+
 	/*for (AActor* Actors : IgnoreActors) {
 		ActorsToIgnore.AddUnique(Actors);
 	}*/
@@ -88,12 +74,12 @@ void AWeapon::BoxTraceWeapon(FHitResult& boxHit)
 	UKismetSystemLibrary::BoxTraceSingle(this,
 		startTrace,
 		endTrace,
-		FVector(5.5f, 5.5f, 5.5f),
+		FVector(15.5f, 15.5f, 15.5f),
 		BoxTraceStart->GetComponentRotation(),
 		ETraceTypeQuery::TraceTypeQuery1,
 		false,
 		ActorsToIgnore,
-		EDrawDebugTrace::ForOneFrame,
+		EDrawDebugTrace::None,
 		boxHit,
 		true);
 }

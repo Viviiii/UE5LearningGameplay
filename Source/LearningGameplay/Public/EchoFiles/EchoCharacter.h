@@ -98,9 +98,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 		class UInputAction* DodgeAction;
 
-	/* SFX */
-	UPROPERTY(EditAnywhere, Category = "Weapon Property")
-		USoundBase* equipSound;
+	///* SFX */
+	//UPROPERTY(EditAnywhere, Category = "Sound hurt")
+	//	USoundBase* hurtSound;
 
 	/* Ability montage */
 	UPROPERTY(EditDefaultsOnly, Category = "Montages | Abilities")

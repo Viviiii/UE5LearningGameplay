@@ -126,17 +126,17 @@ void ABaseCharacter::setKillNumber()
 	killNumber++;
 }
 
-void ABaseCharacter::PlayVFX(const FVector& impactPoint)
+void ABaseCharacter::PlayVFX(const FVector& impactPoint, UParticleSystem* FX)
 {
-	if (bloodEffect) {
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bloodEffect, impactPoint);
+	if (FX) {
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), FX, impactPoint);
 	}
 }
 
-void ABaseCharacter::PlaySound(const FVector& impactPoint)
+void ABaseCharacter::PlaySound(const FVector& impactPoint, USoundBase* sound)
 {
-	if (hitSound) {
-		UGameplayStatics::PlaySoundAtLocation(this, hitSound, impactPoint);
+	if (sound) {
+		UGameplayStatics::PlaySoundAtLocation(this, sound, impactPoint);
 	}
 }
 
