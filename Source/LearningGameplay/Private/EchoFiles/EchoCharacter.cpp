@@ -361,7 +361,7 @@ void AEchoCharacter::addPotion(APotions* potion)
 void AEchoCharacter::addKills(ASkulls* skull)
 {
 	echoInterface->addKills();
-	//killNumber++;
+	killNumber++;
 
 }
 

@@ -25,7 +25,7 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 	/* Echo hitted and the enemy or breakable is target, or enemy hitted and echo is target*/
 	BoxTraceWeapon(boxHit);
 	if (boxHit.GetActor()) {
-		BoxTraceWeapon(boxHit);
+		//BoxTraceWeapon(boxHit);
 		if (GetOwner()->ActorHasTag("Enemy") && boxHit.GetActor()->ActorHasTag("EchoCharacter")) {
 			/*BoxTraceWeapon(boxHit);*/
 			UGameplayStatics::ApplyDamage(boxHit.GetActor(), Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
@@ -33,7 +33,7 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 		}
 		if (GetOwner()->ActorHasTag("EchoCharacter") && OtherActor->ActorHasTag("Enemy")) {
 			//BoxTraceWeapon(boxHit);
-			
+			GEngine->AddOnScreenDebugMessage(3, 0.1f, FColor::Blue, FString(OtherActor->GetName()));
 			
 			UGameplayStatics::ApplyDamage(boxHit.GetActor(), Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
 			ExecuteHit(boxHit.GetActor(), boxHit, GetOwner());

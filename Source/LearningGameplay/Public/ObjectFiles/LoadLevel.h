@@ -24,7 +24,7 @@ private :
 		TArray<TSubclassOf<AEnemy>> enemyClass;
 
 	UFUNCTION()
-		void respawn();
+		void respawn(AEchoCharacter* echo);
 
 	void respawnPaladins();
 

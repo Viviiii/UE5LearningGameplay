@@ -482,6 +482,7 @@ void AEnemy::EnemyDeath()
 	widgetHealth->DestroyComponent();
 	disableSwordCollision(ECollisionEnabled::NoCollision);
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	if (!targetPatrol) {
 		//setEnemyNbr(-1);
 		GetWorld()->SpawnActor<AObjects>(skullClass, GetActorLocation(), GetActorRotation());

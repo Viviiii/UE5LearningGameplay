@@ -24,9 +24,9 @@ void ALoadLevel::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 		900);
 	if (OtherActor == echo) {
 		SetActorLocation(changeLocation);
-		/*respawnParam.BindUFunction(this, FName("respawn"), newEnemy);
-		GetWorld()->GetTimerManager().SetTimer(respawnTimer, respawnParam, 10.f, true);*/
-		GetWorld()->GetTimerManager().SetTimer(respawnTimer, this, &ALoadLevel::respawn, 10.f, true,0.1f);
+		respawnParam.BindUFunction(this, FName("respawn"), echo);
+		GetWorld()->GetTimerManager().SetTimer(respawnTimer, respawnParam, 10.f, true, 0.1f);
+		//GetWorld()->GetTimerManager().SetTimer(respawnTimer, this, &ALoadLevel::respawn, 10.f, true,0.1f);
 	}
 	
 	
@@ -43,7 +43,7 @@ void ALoadLevel::respawnPaladins()
 		/*newEnemy->setEnemyNbr(1);
 		enemiesNumber++;*/
 		paladinsTab.Add(newEnemy);
-		GEngine->AddOnScreenDebugMessage(4, 1.5f, FColor::Blue, FString::Printf(TEXT("Paladins number after: %d"), paladinsTab.Num()));
+		GEngine->AddOnScreenDebugMessage(2, 1.5f, FColor::Blue, FString::Printf(TEXT("Paladins number after: %d"), paladinsTab.Num()));
 
 		/**/
 }
@@ -87,18 +87,18 @@ void ALoadLevel::respawnFG()
 	
 }
 
-void ALoadLevel::respawn()
+void ALoadLevel::respawn(AEchoCharacter* echoCharac)
 {
-		echo = Cast<AEchoCharacter>(GetWorld()->GetFirstPlayerController()->GetCharacter());
+		
 		//AEnemy* enemy;
-		GEngine->AddOnScreenDebugMessage(3, 1.5f, FColor::Blue, FString::Printf(TEXT("Paladins number before: %d"), paladinsTab.Num()));
+		GEngine->AddOnScreenDebugMessage(1, 1.5f, FColor::Blue, FString::Printf(TEXT("FG Time : %d"), echo->getKillNumber()));
 		if (paladinsTab.Num() < 6) {
 			respawnPaladins();
 			
 		}
 
-		else if (echo->getKillNumber() == 5 && paladinsTab.Num() == 5) {
-
+		else if (echo->getKillNumber() == 6) {
+			respawnFG();
 		}
 	//	TArray<AActor*> FoundActors;
 
@@ -142,8 +142,6 @@ void ALoadLevel::respawn()
 
 	//}
 }
-
-
 
 void ALoadLevel::PlayVFX(FVector Location, UParticleSystem* FX)
 {
