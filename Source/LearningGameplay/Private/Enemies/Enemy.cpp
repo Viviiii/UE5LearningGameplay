@@ -117,8 +117,9 @@ void AEnemy::getHit_Implementation(const FVector& impactPoint, AActor* hitter)
 		}
 	}
 	else {
+		GEngine->AddOnScreenDebugMessage(2, 1.5f, FColor::Red, FString("OverlappedComponent->GetName()"));
 		EnemyDeath();
-	}
+	}        
 	
 }
 

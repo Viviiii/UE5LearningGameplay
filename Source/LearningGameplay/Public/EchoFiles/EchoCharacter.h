@@ -217,6 +217,7 @@ public:
 	virtual void addCoins(ATreasure* treasure) override;
 	virtual void addPotion(APotions* potion) override;
 	virtual void addKills(ASkulls* skull) override;
+	virtual void addFGKills(ASkulls* FG) override;
 
 	int getKillNumber();
 

@@ -23,16 +23,31 @@ private :
 	UPROPERTY(EditAnywhere)
 		TArray<TSubclassOf<AEnemy>> enemyClass;
 
-	UFUNCTION()
 		void respawn(AEchoCharacter* echo);
 
-	void respawnPaladins();
+	void respawnPaladins(int number);
+
+	UFUNCTION()
+		void newPaladin(int paladinNumber, int echoKillNbr);
 
 	void respawnFG();
 
+	UFUNCTION()
+		void respawnRaptors(TArray<AEnemy*> fireGiantArray, int raptorsNbr);
+
+	void roundOne();
+
+	void roundTwo();
+
+	void nextRound();
+
+	//FTimerHandle respawnTimer(int paladinNumber, int echoKillNbr, float delay);
+
 	FTimerHandle respawnTimer;
-	
+
 	FTimerDelegate respawnParam;
+
+	FTimerManager* MyTimerManager;
 
 	void PlayVFX(FVector Location, UParticleSystem* FX);
 
@@ -47,6 +62,10 @@ private :
 	TArray<AEnemy*> raptorsTab;
 
 	TArray<AEnemy*> FGTab;
+
+	int raptorsNbr;
+
+	int paladinsNbr;
 
 
 

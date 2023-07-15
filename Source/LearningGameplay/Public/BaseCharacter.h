@@ -139,6 +139,7 @@ protected:
 
 	int killNumber;
 
+	int FGKillNumber;
 	/* VFX & SFX*/
 
 	virtual void PlayVFX(const FVector& impactPoint, UParticleSystem* FX);

@@ -20,3 +20,7 @@ void IPickUpInterface::addPotion(APotions* potion)
 void IPickUpInterface::addKills(ASkulls* skull)
 {
 }
+
+void IPickUpInterface::addFGKills(class ASkulls* FG)
+{
+}

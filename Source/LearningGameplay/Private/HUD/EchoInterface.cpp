@@ -53,6 +53,15 @@ void UEchoInterface::addKills()
 	}
 }
 
+void UEchoInterface::addFGKills()
+{
+	if (FGkills) {
+		FGkillNbr++;
+		FGkills->SetText(FText::AsNumber(FGkillNbr));
+
+	}
+}
+
 void UEchoInterface::setKills()
 {
 	if (kills) {

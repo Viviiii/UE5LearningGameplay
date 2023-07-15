@@ -365,6 +365,13 @@ void AEchoCharacter::addKills(ASkulls* skull)
 
 }
 
+void AEchoCharacter::addFGKills(ASkulls* FG)
+{
+	echoInterface->addFGKills();
+	Attributes->setKillFG();
+	FGKillNumber++;
+}
+
 void AEchoCharacter::echoDeath()
 {
 	/*enemyState = EEnemyState::EES_Dead;

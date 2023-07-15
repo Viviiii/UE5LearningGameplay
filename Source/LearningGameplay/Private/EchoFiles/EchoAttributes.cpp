@@ -67,6 +67,16 @@ int UEchoAttributes::getKillNumber()
 	return killNumber;
 }
 
+void UEchoAttributes::setKillFG()
+{
+	killFG++;
+}
+
+int UEchoAttributes::getKillFG()
+{
+	return killFG;
+}
+
 FName UEchoAttributes::getName()
 {
 	return name;

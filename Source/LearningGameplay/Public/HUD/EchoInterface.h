@@ -34,6 +34,8 @@ public :
 
 	void addKills();
 
+	void addFGKills();
+
 	void setKills();
 
 	UPROPERTY(BlueprintReadWrite)
@@ -44,6 +46,9 @@ public :
 
 	UPROPERTY(BlueprintReadWrite)
 		int killNbr;
+
+	UPROPERTY(BlueprintReadWrite)
+		int FGkillNbr;
 
 
 private :
@@ -62,6 +67,8 @@ private :
 	UPROPERTY(meta = (BindWidget))
 		UTextBlock* kills;
 
+	UPROPERTY(meta = (BindWidget))
+		UTextBlock* FGkills;
 
 	
 	
