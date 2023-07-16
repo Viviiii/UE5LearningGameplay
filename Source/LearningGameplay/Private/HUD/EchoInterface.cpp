@@ -69,3 +69,16 @@ void UEchoInterface::setKills()
 		kills->SetText(FText::AsNumber(killNbr));
 	}
 }
+
+void UEchoInterface::setRound()
+{
+	if (roundNbr) {
+		roundNumber ++;
+		roundNbr->SetText(FText::AsNumber(roundNumber));
+	}
+}
+
+int UEchoInterface::getRound()
+{
+	return roundNumber;
+}

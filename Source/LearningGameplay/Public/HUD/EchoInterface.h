@@ -38,6 +38,10 @@ public :
 
 	void setKills();
 
+	void setRound();
+
+	int getRound();
+
 	UPROPERTY(BlueprintReadWrite)
 		int potionsNbr;
 
@@ -49,6 +53,9 @@ public :
 
 	UPROPERTY(BlueprintReadWrite)
 		int FGkillNbr;
+
+	UPROPERTY(BlueprintReadWrite)
+		int roundNumber;
 
 
 private :
@@ -69,6 +76,9 @@ private :
 
 	UPROPERTY(meta = (BindWidget))
 		UTextBlock* FGkills;
+
+	UPROPERTY(meta = (BindWidget))
+		UTextBlock* roundNbr;
 
 	
 	

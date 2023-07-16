@@ -39,6 +39,10 @@ private :
 
 	void roundTwo();
 
+	void roundThree();
+
+	void roundThreeBis();
+
 	void nextRound();
 
 	//FTimerHandle respawnTimer(int paladinNumber, int echoKillNbr, float delay);

@@ -18,6 +18,7 @@ void ALoadLevel::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 	/*  Move to random location */
 	//newEnemy->MoveToRandomLocation();
 	echo = Cast<AEchoCharacter>(GetWorld()->GetFirstPlayerController()->GetCharacter());
+	echo->echoInterface->setRound();
 	FVector changeLocation = FVector(
 		FMath::RandRange(-18770, -13140),
 		FMath::RandRange(-770, -6450),
@@ -36,13 +37,6 @@ void ALoadLevel::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 	
 }
 
-//FTimerHandle ALoadLevel::respawnTimer(int paladinNumber, int echoKillNbr, float delay)
-//{
-//	FTimerHandle TimerHandle;
-//	MyTimerManager->SetTimer(TimerHandle, FTimerDelegate::CreateUObject(this, &ALoadLevel::newPaladin, paladinNumber, echoKillNbr), delay, true);
-//	return TimerHandle;
-//}
-
 //Respawn x paladins depending on the round
 void ALoadLevel::respawnPaladins(int paladinNumber)
 {
@@ -50,8 +44,6 @@ void ALoadLevel::respawnPaladins(int paladinNumber)
 	GEngine->AddOnScreenDebugMessage(4, 1.5f, FColor::Blue, FString::Printf(TEXT("raptors number : %d"), raptorsNbr));
 
 	//Spawn all paladins depending on round
-	//respawnParam.BindUFunction(this, FName("newPaladin"), paladinNumber);
-	//respawnParam.BindUFunction(this, FName("newPaladin"), echo->getKillNumber());
 	respawnParam = FTimerDelegate::CreateUObject(this, &ALoadLevel::newPaladin, paladinNumber, echo->getKillNumber());
 	//respawnTimer(paladinNumber, echo->getKillNumber(), FMath::RandRange(2.5f, 10.f));
 	GetWorld()->GetTimerManager().SetTimer(respawnTimer, respawnParam, FMath::RandRange(2.5f, 10.f), true, 0.1f);
@@ -93,7 +85,7 @@ void ALoadLevel::respawnFG()
 	}
 	respawnParam = FTimerDelegate::CreateUObject(this, &ALoadLevel::respawnRaptors, FGTab, raptorsNbr);
 	//respawnParam.BindUFunction(this, FName("respawnRaptors"), FGTab);
-	GetWorld()->GetTimerManager().SetTimer(respawnTimer, respawnParam, FMath::RandRange(6.5f, 10.f), true, 0.1f);
+	GetWorld()->GetTimerManager().SetTimer(respawnTimer, respawnParam, FMath::RandRange(10.5f, 15.f), true, 0.1f);
 
 	//GetWorld()->GetTimerManager().SetTimer(respawnTimer, this, &ALoadLevel::respawnRaptors, FMath::RandRange(20.f, 45.f), true, 0.1f);
 }
@@ -127,7 +119,7 @@ void ALoadLevel::respawnRaptors(TArray<AEnemy*> FireGiantArray, int raptors)
 void ALoadLevel::roundOne()
 {
 	//Call the respawn
-	paladinsNbr = 1;
+	paladinsNbr = 5;
 	raptorsNbr = 3;
 	respawnPaladins(paladinsNbr);
 	
@@ -135,8 +127,14 @@ void ALoadLevel::roundOne()
 
 void ALoadLevel::roundTwo()
 {	
-	paladinsNbr = 10;
+	paladinsNbr = 7;
 	raptorsNbr = 4;
+	respawnPaladins(paladinsNbr);
+}
+
+void ALoadLevel::roundThree()
+{
+	paladinsNbr = 10;
 	respawnPaladins(paladinsNbr);
 }
 
@@ -146,8 +144,13 @@ void ALoadLevel::nextRound()
 		roundOne();
 	}
 	else if (echo->Attributes->getKillFG() == 1) {
+		echo->echoInterface->setRound();
 		roundTwo();
-		//Second round
+
+	}
+	else if (echo->Attributes->getKillFG() == 2) {
+		echo->echoInterface->setRound();
+		roundThree();
 	}
 }
 
