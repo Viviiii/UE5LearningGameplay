@@ -73,6 +73,8 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Enemy Spawn")
 		UParticleSystem* spawnFX;
 
+	AWeapon* getWeapon();
+
 protected :
 
 	/* Begin Play functions*/

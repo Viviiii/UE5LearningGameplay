@@ -26,7 +26,8 @@ class LEARNINGGAMEPLAY_API IPickUpInterface
 public:
 	virtual void setOverlappingItem(class AObjects* item);
 	virtual void addCoins(class ATreasure* treasure);
-	virtual void addPotion(class APotions* potion);
+	virtual void getHeal(class APotions* potion);
 	virtual void addKills(class ASkulls* skull);
 	virtual void addFGKills(class ASkulls* FG);
+	virtual void getStamina(class APotions* potion);
 };

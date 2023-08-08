@@ -22,27 +22,28 @@ void UEchoInterface::setPercentStamina(float stamina)
 	}
 }
 
-void UEchoInterface::addPotions()
+void UEchoInterface::getHeal(float addHP)
 {
-	if (potions) {
-		potionsNbr++;
-		potions->SetText(FText::AsNumber(potionsNbr));
-
+	if (healthBar) {
+		healthBar->SetPercent(addHP);
 	}
 }
 
-void UEchoInterface::removePotions()
+void UEchoInterface::getStamina(float addStamina)
 {
-}
-
-void UEchoInterface::addCoins(int amount)
-{
-	if (coins) {
-		coinNbr = coinNbr + amount;
-		coins->SetText(FText::AsNumber(coinNbr));
-
+	if (staminaBar) {
+		staminaBar->SetPercent(addStamina);
 	}
 }
+
+//void UEchoInterface::addCoins(int amount)
+//{
+//	if (coins) {
+//		coinNbr = coinNbr + amount;
+//		coins->SetText(FText::AsNumber(coinNbr));
+//
+//	}
+//}
 
 void UEchoInterface::addKills()
 {

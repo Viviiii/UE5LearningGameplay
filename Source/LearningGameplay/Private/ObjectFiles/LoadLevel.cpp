@@ -40,9 +40,7 @@ void ALoadLevel::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 //Respawn x paladins depending on the round
 void ALoadLevel::respawnPaladins(int paladinNumber)
 {
-	GEngine->AddOnScreenDebugMessage(3, 1.5f, FColor::Blue, FString::Printf(TEXT("Paladins number : %d"), paladinNumber));
-	GEngine->AddOnScreenDebugMessage(4, 1.5f, FColor::Blue, FString::Printf(TEXT("raptors number : %d"), raptorsNbr));
-
+	
 	//Spawn all paladins depending on round
 	respawnParam = FTimerDelegate::CreateUObject(this, &ALoadLevel::newPaladin, paladinNumber, echo->getKillNumber());
 	//respawnTimer(paladinNumber, echo->getKillNumber(), FMath::RandRange(2.5f, 10.f));
@@ -53,15 +51,20 @@ void ALoadLevel::respawnPaladins(int paladinNumber)
 void ALoadLevel::newPaladin(int paladinNumber, int echoKillNumber)
 {
 	//Add VFX ?
-	
+	spawnBonusRandom();
 	FVector spawnLocation = FVector(
-		FMath::RandRange(-18770, -13140),
-		FMath::RandRange(-770, -6450),
+		FMath::RandRange(-15920, -15921),
+		FMath::RandRange(- 2449, -2550),
 		630);
 	if (paladinsTab.Num() < paladinNumber) {
 		newEnemy = GetWorld()->SpawnActor<AEnemy>(enemyClass[0], spawnLocation, GetActorRotation());
 		paladinsTab.Add(newEnemy);
 
+		/* Damage increase just for one round = fourth round*/
+		if (echo->echoInterface->getRound() == 4) {
+			weapon = newEnemy->getWeapon();
+			weapon->setDmg(1.3);
+		}
 	}
 	else if (echo->getKillNumber() == paladinNumber + echoKillNumber) {
 		GetWorld()->GetTimerManager().ClearTimer(respawnTimer);
@@ -83,6 +86,13 @@ void ALoadLevel::respawnFG()
 	if (newEnemy->spawnFX) {
 		PlayVFX(spawnLocationFG, newEnemy->spawnFX);
 	}
+	if (echo->echoInterface->getRound() % 5 == 0) {
+		newEnemy = GetWorld()->SpawnActor<AEnemy>(enemyClass[1], spawnLocationFG, GetActorRotation());
+		FGTab.Add(newEnemy);
+		if (newEnemy->spawnFX) {
+			PlayVFX(spawnLocationFG, newEnemy->spawnFX);
+		}
+	}
 	respawnParam = FTimerDelegate::CreateUObject(this, &ALoadLevel::respawnRaptors, FGTab, raptorsNbr);
 	//respawnParam.BindUFunction(this, FName("respawnRaptors"), FGTab);
 	GetWorld()->GetTimerManager().SetTimer(respawnTimer, respawnParam, FMath::RandRange(10.5f, 15.f), true, 0.1f);
@@ -92,13 +102,18 @@ void ALoadLevel::respawnFG()
 
 void ALoadLevel::respawnRaptors(TArray<AEnemy*> FireGiantArray, int raptors)
 {
-	if (FireGiantArray[0]->Attributes->getHealth() == 0) {	
-		GetWorld()->GetTimerManager().ClearTimer(respawnTimer);
-		FGTab.Empty();
-		nextRound();
-		
+	for (int i = 0; i < FireGiantArray.Num() - 1; i++) {
+		if (FireGiantArray[i]->Attributes->getHealth() == 0) {
+			GetWorld()->GetTimerManager().ClearTimer(respawnTimer);
+			FGTab.Empty();
+			nextRound();
+
+		}
+		else {
+			break;
+		}
 	}
-	else {
+		spawnBonusRandom();
 		FVector spawnLocationR = FVector(
 			-15054,
 			-4239,
@@ -113,7 +128,6 @@ void ALoadLevel::respawnRaptors(TArray<AEnemy*> FireGiantArray, int raptors)
 				PlayVFX(spawnLocationR, newEnemy->spawnFX);
 			}
 		}
-	}
 }
 
 void ALoadLevel::roundOne()
@@ -127,30 +141,99 @@ void ALoadLevel::roundOne()
 
 void ALoadLevel::roundTwo()
 {	
+	//Increase number of paladins + minions
 	paladinsNbr = 7;
-	raptorsNbr = 4;
+	raptorsNbr = 3;
 	respawnPaladins(paladinsNbr);
 }
 
 void ALoadLevel::roundThree()
 {
+	//Increase number of paladins + minions
 	paladinsNbr = 10;
+	raptorsNbr = 4;
+	respawnPaladins(paladinsNbr);
+}
+
+void ALoadLevel::roundFour()
+{
+	//Increase number of paladins + minions + dmg
+	paladinsNbr = 13;
+	raptorsNbr = 4;
+	//dmgUp(weapon, 1.3f);
+	respawnPaladins(paladinsNbr);
+}
+
+void ALoadLevel::roundFive()
+{
+	//Increase number of FG = *2
+	paladinsNbr = 0;
+	raptorsNbr = 0;
 	respawnPaladins(paladinsNbr);
 }
 
 void ALoadLevel::nextRound()
 {
 	if (echo->Attributes->getKillFG() == 0) {
+		spawnBonus();
 		roundOne();
 	}
 	else if (echo->Attributes->getKillFG() == 1) {
+		spawnBonus();
 		echo->echoInterface->setRound();
 		roundTwo();
 
 	}
 	else if (echo->Attributes->getKillFG() == 2) {
+		spawnBonus();
 		echo->echoInterface->setRound();
 		roundThree();
+	}
+	else if (echo->Attributes->getKillFG() == 3) {
+		spawnBonus();
+		echo->echoInterface->setRound();
+		roundFour();
+	}
+	else if (echo->Attributes->getKillFG() == 4) {
+		spawnBonus();
+		echo->echoInterface->setRound();
+		roundFive();
+	}
+}
+
+void ALoadLevel::spawnBonus()
+{
+	
+	for (int i = 0; i < 4; i++) {
+		FVector spawnLocation = FVector(
+			FMath::RandRange(-18770, -13140),
+			FMath::RandRange(-770, -6450),
+			660);
+		GetWorld()->SpawnActor<APotions>(potionsClass[0], spawnLocation, GetActorRotation());
+		
+	}
+	//GetWorld()->SpawnActor<APotions>(potionsClass[0], spawnLocation, GetActorRotation());
+}
+
+void ALoadLevel::dmgUp(AWeapon* weap, float multiplier)
+{
+	if (weap) {
+		weap->setDmg(multiplier);
+	}
+	
+}
+
+void ALoadLevel::spawnBonusRandom()
+{
+	int rand = FMath::RandRange(0, 1);
+	if (rand == 1) {
+		for (int i = 0; i < 4; i++) {
+			FVector spawnLocation = FVector(
+				FMath::RandRange(-18770, -13140),
+				FMath::RandRange(-770, -6450),
+				660);
+			GetWorld()->SpawnActor<APotions>(potionsClass[1], spawnLocation, GetActorRotation());
+		}
 	}
 }
 

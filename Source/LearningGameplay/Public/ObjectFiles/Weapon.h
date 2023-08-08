@@ -52,6 +52,8 @@ public :
 	void unEquip(USceneComponent* weap, FName socketName);
 	void Sheathe(USceneComponent* weap, FName socketName);
 
+	void setDmg(float multi);
+
 	FORCEINLINE UBoxComponent* getBoxCollision() {
 		return Box;
 	}
@@ -70,7 +72,7 @@ private :
 	USoundBase* equipSound;
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Property")
-		float Damage = 20.f;
+		float Damage;
 
 
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Property")

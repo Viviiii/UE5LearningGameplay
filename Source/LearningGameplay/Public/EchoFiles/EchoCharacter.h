@@ -214,8 +214,9 @@ public:
 	
 	
 	virtual void setOverlappingItem(AObjects* item) override;
-	virtual void addCoins(ATreasure* treasure) override;
-	virtual void addPotion(APotions* potion) override;
+	//virtual void addCoins(ATreasure* treasure) override;
+	virtual void getHeal(APotions* potion) override;
+	virtual void getStamina(APotions* potion) override;
 	virtual void addKills(ASkulls* skull) override;
 	virtual void addFGKills(ASkulls* FG) override;
 
