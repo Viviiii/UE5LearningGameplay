@@ -75,6 +75,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Sound hurt")
 		USoundBase* hurtSound;
 
+
 	/*VFX*/
 	UPROPERTY(EditAnywhere, Category = "Enemy Hit")
 		UParticleSystem* bloodEffect;

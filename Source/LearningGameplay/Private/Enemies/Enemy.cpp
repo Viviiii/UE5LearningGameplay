@@ -366,7 +366,7 @@ void AEnemy::startAttackTimer()
 {
 
 	enemyState = EEnemyState::EES_Attacking;
-	GetWorld()->GetTimerManager().SetTimer(attackTimer, this, &AEnemy::Attack, FMath::RandRange(3.f,6.5f), true, 0.2f);
+	GetWorld()->GetTimerManager().SetTimer(attackTimer, this, &AEnemy::Attack, FMath::RandRange(attackIntMin, attackIntMax), true, 0.2f);
 }
 
 bool AEnemy::isTargetInRange(AActor* target, double radius)
