@@ -18,37 +18,41 @@ void AWeapon::BeginPlay()
 	
 }
 
-/* Not actually using the boxHit, to rework !*/
 void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	FHitResult boxHit;
+	GEngine->AddOnScreenDebugMessage(1, 0.5f, FColor::Blue, FString("Collision"));
+
 	/* Echo hitted and the enemy or breakable is target, or enemy hitted and echo is target*/
 	BoxTraceWeapon(boxHit);
 	if (boxHit.GetActor()) {
-		BoxTraceWeapon(boxHit);
+		//BoxTraceWeapon(boxHit);
+		GEngine->AddOnScreenDebugMessage(2, 0.5f, FColor::Blue, FString("BoxHit"));
+
+		/* Enemy hit the player*/
 		if (GetOwner()->ActorHasTag("Enemy") && boxHit.GetActor()->ActorHasTag("EchoCharacter")) {
-			/*BoxTraceWeapon(boxHit);*/
+			GEngine->AddOnScreenDebugMessage(2, 1.f, FColor::Blue, FString::Printf(TEXT("Damage %f") , Damage));
 			UGameplayStatics::ApplyDamage(boxHit.GetActor(), Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
 			ExecuteHit(boxHit.GetActor(), boxHit, GetOwner());
 		}
+
+		/* Player hit the enemy*/
 		if (GetOwner()->ActorHasTag("EchoCharacter") && OtherActor->ActorHasTag("Enemy")) {
-			//BoxTraceWeapon(boxHit);
-			
 			
 			UGameplayStatics::ApplyDamage(boxHit.GetActor(), Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
 			ExecuteHit(boxHit.GetActor(), boxHit, GetOwner());
-			createField(boxHit.ImpactPoint);
 		}
+
+		/*Player hit a breakable*/
 		if (GetOwner()->ActorHasTag("EchoCharacter") && OtherActor->ActorHasTag("Breakable")) {
 
-			//BoxTraceWeapon(boxHit);
-			//UGameplayStatics::ApplyDamage(OtherActor, Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
 			ExecuteHit(OtherActor, boxHit, GetOwner());
 			createField(boxHit.ImpactPoint);
 		}
 	}
 }
 
+/* if weapon hit Character, then function called*/
 void AWeapon::ExecuteHit(AActor* OtherActor, FHitResult& boxHit, AActor* hitter)
 {
 	IIHitInterface* interfaceHit = Cast<IIHitInterface>(/*boxHit.GetActor()*/OtherActor);
@@ -58,6 +62,8 @@ void AWeapon::ExecuteHit(AActor* OtherActor, FHitResult& boxHit, AActor* hitter)
 
 	}
 }
+
+
 void AWeapon::BoxTraceWeapon(FHitResult& boxHit)
 {
 	const FVector endTrace = BoxTraceEnd->GetComponentLocation();
@@ -87,13 +93,11 @@ void AWeapon::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 {
 	Super::OnSphereOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
 	
-	
 }
 
 void AWeapon::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	Super::OnSphereEndOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex);
-
 }
 
 AWeapon::AWeapon()
@@ -141,4 +145,9 @@ void AWeapon::unEquip(USceneComponent* weap, FName socketName)
 {
 	const FAttachmentTransformRules attachmentRules(EAttachmentRule::SnapToTarget, true);
 	ItemMesh->AttachToComponent(weap, attachmentRules, socketName);
+}
+
+void AWeapon::setDmg(float multi)
+{
+	Damage *= multi;
 }

@@ -43,6 +43,14 @@ AEnemy::AEnemy()
 
 }
 
+AWeapon* AEnemy::getWeapon()
+{
+	if (weaponEquipped) {
+		return weaponEquipped;
+	}
+	return nullptr;
+}
+
 // Called when the game starts or when spawned
 void AEnemy::BeginPlay()
 {
@@ -117,8 +125,9 @@ void AEnemy::getHit_Implementation(const FVector& impactPoint, AActor* hitter)
 		}
 	}
 	else {
+		GEngine->AddOnScreenDebugMessage(2, 1.5f, FColor::Red, FString("OverlappedComponent->GetName()"));
 		EnemyDeath();
-	}
+	}        
 	
 }
 
@@ -357,7 +366,7 @@ void AEnemy::startAttackTimer()
 {
 
 	enemyState = EEnemyState::EES_Attacking;
-	GetWorld()->GetTimerManager().SetTimer(attackTimer, this, &AEnemy::Attack, FMath::RandRange(3.f,6.5f), true, 0.2f);
+	GetWorld()->GetTimerManager().SetTimer(attackTimer, this, &AEnemy::Attack, FMath::RandRange(attackIntMin, attackIntMax), true, 0.2f);
 }
 
 bool AEnemy::isTargetInRange(AActor* target, double radius)
@@ -482,6 +491,7 @@ void AEnemy::EnemyDeath()
 	widgetHealth->DestroyComponent();
 	disableSwordCollision(ECollisionEnabled::NoCollision);
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	if (!targetPatrol) {
 		//setEnemyNbr(-1);
 		GetWorld()->SpawnActor<AObjects>(skullClass, GetActorLocation(), GetActorRotation());

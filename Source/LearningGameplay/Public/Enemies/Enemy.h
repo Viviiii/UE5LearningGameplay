@@ -73,6 +73,8 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Enemy Spawn")
 		UParticleSystem* spawnFX;
 
+	AWeapon* getWeapon();
+
 protected :
 
 	/* Begin Play functions*/
@@ -103,6 +105,7 @@ protected :
 
 	bool bCanAttack();
 
+	UFUNCTION(BlueprintCallable)
 	void ChaseTarget();
 
 	void StartPatrolling();
@@ -202,9 +205,18 @@ private :
 	UPROPERTY(EditAnywhere)
 		double patrolRadius = 5000.f;
 
+	UPROPERTY(EditAnywhere, Category = "Combat")
+		float attackIntMin = 1.5f;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+		float attackIntMax = 5.5f;
+
+
 	UFUNCTION(BlueprintCallable)
 		void destroyActor();
 
 	UPROPERTY(EditDefaultsOnly, Category = "Montages | Spawn")
 		UAnimMontage* spawnMontage;
+
+
 };		

@@ -37,6 +37,10 @@ public:
 
 	int getKillNumber();
 
+	void setKillFG();
+
+	int getKillFG();
+
 	FName getName();
 
 	void setName(FName newName);
@@ -61,7 +65,10 @@ private :
 		float maxStamina;
 		
 	UPROPERTY(EditAnywhere, Category = "Echo Attributes")
-		float killNumber;
+		int killNumber;
+
+	UPROPERTY(EditAnywhere, Category = "Echo Attributes")
+		float killFG;
 
 	UPROPERTY(EditAnywhere, Category = "Echo Attributes")
 		FName name;

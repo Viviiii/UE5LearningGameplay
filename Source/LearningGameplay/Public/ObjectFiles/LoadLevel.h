@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "ObjectFiles/Objects.h"
+//#include "ObjectFiles/Breakable.h"
+#include "ObjectFiles/Potions.h"
+#include "ObjectFiles/Weapon.h"
 #include "Enemies/Enemy.h"
 #include "EchoFiles/EchoCharacter.h"
 #include "LoadLevel.generated.h"
@@ -23,16 +26,50 @@ private :
 	UPROPERTY(EditAnywhere)
 		TArray<TSubclassOf<AEnemy>> enemyClass;
 
-	UFUNCTION()
-		void respawn();
+	/*UPROPERTY(EditAnywhere)
+		TArray<TSubclassOf<AActor>> breakableClass;*/
 
-	void respawnPaladins();
+	UPROPERTY(EditAnywhere)
+		TArray<TSubclassOf<AActor>> potionsClass;
+
+	void respawn(AEchoCharacter* echo);
+
+	void respawnPaladins(int number);
+
+	UFUNCTION()
+		void newPaladin(int paladinNumber, int echoKillNbr);
 
 	void respawnFG();
 
+	UFUNCTION()
+		void respawnRaptors(TArray<AEnemy*> fireGiantArray, int raptorsNbr);
+
+	void roundOne();
+
+	void roundTwo();
+
+	void roundThree();
+
+	void roundFour();
+
+	void roundFive();
+
+	void roundThreeBis();
+
+	void nextRound();
+
+	void spawnBonus();
+
+	void dmgUp(AWeapon* weapon, float multiplier);
+
+	void spawnBonusRandom();
+	//FTimerHandle respawnTimer(int paladinNumber, int echoKillNbr, float delay);
+
 	FTimerHandle respawnTimer;
-	
+
 	FTimerDelegate respawnParam;
+
+	FTimerManager* MyTimerManager;
 
 	void PlayVFX(FVector Location, UParticleSystem* FX);
 
@@ -48,7 +85,11 @@ private :
 
 	TArray<AEnemy*> FGTab;
 
+	int raptorsNbr;
 
+	int paladinsNbr;
+
+	AWeapon* weapon;
 
 public :
 

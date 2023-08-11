@@ -9,9 +9,16 @@ void APotions::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 	if (pickPotion) {
 		UGameplayStatics::PlaySoundAtLocation(this, pickPotion, GetActorLocation());
 	}
-	IPickUpInterface* pickUpInterface = Cast<IPickUpInterface>(OtherActor);
-	if (pickUpInterface) {
-		pickUpInterface->addPotion(this);
+	if (OtherActor->ActorHasTag("EchoCharacter")) {
+		IPickUpInterface* pickUpInterface = Cast<IPickUpInterface>(OtherActor);
+		if (pickUpInterface && ActorHasTag("HealPotion")) {
+			pickUpInterface->getHeal(this);
+		}
+		else {
+			pickUpInterface->getStamina(this);
+		}
+		
 	}
 	Destroy();
+	
 }

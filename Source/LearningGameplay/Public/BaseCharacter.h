@@ -75,6 +75,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Sound hurt")
 		USoundBase* hurtSound;
 
+
 	/*VFX*/
 	UPROPERTY(EditAnywhere, Category = "Enemy Hit")
 		UParticleSystem* bloodEffect;
@@ -139,6 +140,7 @@ protected:
 
 	int killNumber;
 
+	int FGKillNumber;
 	/* VFX & SFX*/
 
 	virtual void PlayVFX(const FVector& impactPoint, UParticleSystem* FX);

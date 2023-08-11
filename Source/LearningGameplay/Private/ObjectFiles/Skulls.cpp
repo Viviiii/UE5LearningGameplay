@@ -8,9 +8,14 @@ void ASkulls::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 {
 	if (OtherActor->ActorHasTag("EchoCharacter")) {
 		IPickUpInterface* pickUpInterface = Cast<IPickUpInterface>(OtherActor);
-		if (pickUpInterface) {
+		if (pickUpInterface && ActorHasTag("Paladin")) {
+			
 			pickUpInterface->addKills(this);
 		}
+		else {
+			pickUpInterface->addFGKills(this);
+		}
+		
 		Destroy();
 	}
 	

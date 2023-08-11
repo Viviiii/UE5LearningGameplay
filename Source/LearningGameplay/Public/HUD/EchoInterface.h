@@ -26,24 +26,36 @@ public :
 
 	void setPercentStamina(float stamina);
 
-	void addPotions();
+	void getHeal(float addHP);
 
-	void removePotions();
+	void getStamina(float addStamina);
 
-	void addCoins(int amount);
+	//void addCoins(int amount);
 
 	void addKills();
 
+	void addFGKills();
+
 	void setKills();
 
-	UPROPERTY(BlueprintReadWrite)
+	void setRound();
+
+	int getRound();
+
+	/*UPROPERTY(BlueprintReadWrite)
 		int potionsNbr;
 
 	UPROPERTY(BlueprintReadWrite)
-		int coinNbr;
+		int coinNbr;*/
 
 	UPROPERTY(BlueprintReadWrite)
 		int killNbr;
+
+	UPROPERTY(BlueprintReadWrite)
+		int FGkillNbr;
+
+	UPROPERTY(BlueprintReadWrite)
+		int roundNumber;
 
 
 private :
@@ -53,15 +65,20 @@ private :
 	UPROPERTY(meta = (BindWidget))
 		UProgressBar* staminaBar;
 
-	UPROPERTY(meta = (BindWidget))
+	/*UPROPERTY(meta = (BindWidget))
 		UTextBlock* potions;
 
 	UPROPERTY(meta = (BindWidget))
-		UTextBlock* coins;
+		UTextBlock* coins;*/
 
 	UPROPERTY(meta = (BindWidget))
 		UTextBlock* kills;
 
+	UPROPERTY(meta = (BindWidget))
+		UTextBlock* FGkills;
+
+	UPROPERTY(meta = (BindWidget))
+		UTextBlock* roundNbr;
 
 	
 	

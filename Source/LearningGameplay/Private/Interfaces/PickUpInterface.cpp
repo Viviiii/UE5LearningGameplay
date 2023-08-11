@@ -13,10 +13,18 @@ void IPickUpInterface::addCoins(ATreasure* treasure)
 {
 }
 
-void IPickUpInterface::addPotion(APotions* potion)
+void IPickUpInterface::getHeal(APotions* potion)
 {
 }
 
 void IPickUpInterface::addKills(ASkulls* skull)
+{
+}
+
+void IPickUpInterface::addFGKills(class ASkulls* FG)
+{
+}
+
+void IPickUpInterface::getStamina(APotions* potion)
 {
 }

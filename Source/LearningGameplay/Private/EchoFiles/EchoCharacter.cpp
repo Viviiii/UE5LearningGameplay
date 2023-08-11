@@ -195,13 +195,6 @@ void AEchoCharacter::Interact()
 
 void AEchoCharacter::Ability1()
 {
-	/*GetCharacterMovement()->MaxWalkSpeed = 600.f;
-	UAnimInstance* animInstance = GetMesh()->GetAnimInstance();
-	if (animInstance && abilitiesMontage) {
-		animInstance->Montage_Play(abilitiesMontage);	
-		animInstance->Montage_JumpToSection("Ability2", abilitiesMontage);
-
-	}*/
 	GetCharacterMovement()->MaxWalkSpeed = 600.f;
 	UAnimInstance* animInstance = GetMesh()->GetAnimInstance();
 	if (animInstance && attackMontage) {
@@ -348,21 +341,33 @@ void AEchoCharacter::setOverlappingItem(AObjects* item)
 	overlappedObjects = item;
 }
 
-void AEchoCharacter::addCoins(ATreasure* treasure)
+//void AEchoCharacter::addCoins(ATreasure* treasure)
+//{
+//	echoInterface->addCoins(treasure->coin);
+//}
+
+void AEchoCharacter::getHeal(APotions* potion)
 {
-	echoInterface->addCoins(treasure->coin);
+	echoInterface->getHeal(Attributes->getHealth() + 25);
 }
 
-void AEchoCharacter::addPotion(APotions* potion)
+void AEchoCharacter::getStamina(APotions* potion)
 {
-	echoInterface->addPotions();
+	echoInterface->getStamina(Attributes->getStamina() + 25);
 }
 
 void AEchoCharacter::addKills(ASkulls* skull)
 {
 	echoInterface->addKills();
-	//killNumber++;
+	killNumber++;
 
+}
+
+void AEchoCharacter::addFGKills(ASkulls* FG)
+{
+	echoInterface->addFGKills();
+	Attributes->setKillFG();
+	FGKillNumber++;
 }
 
 void AEchoCharacter::echoDeath()
