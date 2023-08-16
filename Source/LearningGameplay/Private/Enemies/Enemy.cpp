@@ -62,13 +62,15 @@ void AEnemy::BeginPlay()
 		pawnSensing->OnSeePawn.AddDynamic(this, &AEnemy::pawnSeen);
 	}
 	maxSpeed = GetCharacterMovement()->GetMaxSpeed();
+	
 	SpawnDefaultWeapon();
 	echo = Cast<AEchoCharacter>(GetWorld()->GetFirstPlayerController()->GetCharacter());
 	if (targetPatrol && AIenemy) {
+		MoveToRandomLocation();
 		GetWorld()->GetTimerManager().SetTimer(patrolTimer, this, &AEnemy::patrolTimerFinished, FMath::RandRange(5.f, 10.5f), true);
 	}
 	else if(AIenemy){
-
+		
 		combatRadius = 5000.f;
 		combatTarget = echo;
 		ChaseTarget();
@@ -125,7 +127,7 @@ void AEnemy::getHit_Implementation(const FVector& impactPoint, AActor* hitter)
 		}
 	}
 	else {
-		GEngine->AddOnScreenDebugMessage(2, 1.5f, FColor::Red, FString("OverlappedComponent->GetName()"));
+		
 		EnemyDeath();
 	}        
 	
@@ -187,7 +189,7 @@ void AEnemy::pawnSeen(APawn* pawn)
 		&& pawn->ActorHasTag(FName("EchoCharacter"));
 
 	if (shouldChaseTarget) {
-		GEngine->AddOnScreenDebugMessage(2, 1.5f, FColor::Red, FString("I see you "));
+		
 		combatTarget = pawn;
 		ChaseTarget();
 	}
@@ -283,7 +285,7 @@ bool AEnemy::IsOutsideAttackRadius()
 
 bool AEnemy::IsOutsideCombatRadius()
 {
-	return !isTargetInRange(combatTarget, combatRadius);
+		return !isTargetInRange(combatTarget, combatRadius);
 }
 
 bool AEnemy::bCanAttack()
@@ -294,7 +296,6 @@ bool AEnemy::bCanAttack()
 /* IA Navigation */
 void AEnemy::ChaseTarget()
 {
-	GEngine->AddOnScreenDebugMessage(1, 1.5f, FColor::Red, FString("Chasiiiing"));
 	GetWorld()->GetTimerManager().ClearTimer(attackTimer);
 	actionState = EActionState::EAS_Unoccupied;
 	enemyState = EEnemyState::EES_Chasing;
@@ -310,6 +311,7 @@ void AEnemy::StartPatrolling()
 		MoveToRandomLocation();
 	}
 	else {
+		
 		MoveToTarget(targetPatrol);
 	}
 
@@ -328,7 +330,6 @@ void AEnemy::CheckCombatTarget()
 {
 	/*Ennemies lose interest, go back to patrolling*/
 	if (IsOutsideCombatRadius()) {
-
 		LoseInterest();
 		StartPatrolling();
 
@@ -372,21 +373,30 @@ void AEnemy::startAttackTimer()
 
 bool AEnemy::isTargetInRange(AActor* target, double radius)
 {
-	const double distanceTarget = (target->GetActorLocation() - GetActorLocation()).Size();
-	return (distanceTarget <= radius);
+	if (target) {
+		const double distanceTarget = (target->GetActorLocation() - GetActorLocation()).Size();
+		return (distanceTarget <= radius);
+	}
+	else {
+		return false;
+	}
+	
 }
 
 void AEnemy::MoveToTarget(AActor* target)
 {
 	if (target != nullptr) {
+		
 		FAIMoveRequest moveReq;
+		GEngine->AddOnScreenDebugMessage(1, 1.5f, FColor::Red, FString(target->GetName()));
 		moveReq.SetGoalActor(target);
 		moveReq.SetAcceptanceRadius(10.f);
 		FNavPathSharedPtr navPath;
-		AIenemy->MoveTo(moveReq, &navPath);
-
+		AIenemy->MoveTo(moveReq, &navPath);	
+			
 	}
 	if (target == nullptr) {
+		GEngine->AddOnScreenDebugMessage(2, 1.5f, FColor::Red, FString("NOOOOOOOOOOOOOOOOO"));
 		return;
 	}
 
@@ -416,6 +426,7 @@ void AEnemy::patrolTimerFinished()
 	PlayIdleMontage();
 	targetPatrol = choosingTarget();
 	StopIdleMontage();
+	
 	if (!targetPatrol) {
 		MoveToRandomLocation();
 	}
