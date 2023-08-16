@@ -187,6 +187,7 @@ void AEnemy::pawnSeen(APawn* pawn)
 		&& pawn->ActorHasTag(FName("EchoCharacter"));
 
 	if (shouldChaseTarget) {
+		GEngine->AddOnScreenDebugMessage(2, 1.5f, FColor::Red, FString("I see you "));
 		combatTarget = pawn;
 		ChaseTarget();
 	}
@@ -293,7 +294,7 @@ bool AEnemy::bCanAttack()
 /* IA Navigation */
 void AEnemy::ChaseTarget()
 {
-
+	GEngine->AddOnScreenDebugMessage(1, 1.5f, FColor::Red, FString("Chasiiiing"));
 	GetWorld()->GetTimerManager().ClearTimer(attackTimer);
 	actionState = EActionState::EAS_Unoccupied;
 	enemyState = EEnemyState::EES_Chasing;
