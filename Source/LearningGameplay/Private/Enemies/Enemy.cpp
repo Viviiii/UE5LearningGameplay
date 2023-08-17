@@ -65,8 +65,7 @@ void AEnemy::BeginPlay()
 	
 	SpawnDefaultWeapon();
 	echo = Cast<AEchoCharacter>(GetWorld()->GetFirstPlayerController()->GetCharacter());
-	if (targetPatrol && AIenemy) {
-		MoveToRandomLocation();
+	if (targetPatrol && AIenemy) {	
 		GetWorld()->GetTimerManager().SetTimer(patrolTimer, this, &AEnemy::patrolTimerFinished, FMath::RandRange(5.f, 10.5f), true);
 	}
 	else if(AIenemy){
@@ -296,10 +295,12 @@ bool AEnemy::bCanAttack()
 /* IA Navigation */
 void AEnemy::ChaseTarget()
 {
+	
 	GetWorld()->GetTimerManager().ClearTimer(attackTimer);
 	actionState = EActionState::EAS_Unoccupied;
 	enemyState = EEnemyState::EES_Chasing;
 	GetCharacterMovement()->MaxWalkSpeed = maxSpeed;
+	GEngine->AddOnScreenDebugMessage(3,	 1.5f, FColor::Red, FString(combatTarget->GetName()));
 	MoveToTarget(combatTarget);
 }
 
@@ -388,11 +389,12 @@ void AEnemy::MoveToTarget(AActor* target)
 	if (target != nullptr) {
 		
 		FAIMoveRequest moveReq;
-		GEngine->AddOnScreenDebugMessage(1, 1.5f, FColor::Red, FString(target->GetName()));
+		
 		moveReq.SetGoalActor(target);
 		moveReq.SetAcceptanceRadius(10.f);
 		FNavPathSharedPtr navPath;
 		AIenemy->MoveTo(moveReq, &navPath);	
+		GEngine->AddOnScreenDebugMessage(1, 1.5f, FColor::Red, FString("Ouiii"));
 			
 	}
 	if (target == nullptr) {
