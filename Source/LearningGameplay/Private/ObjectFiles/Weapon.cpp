@@ -21,8 +21,6 @@ void AWeapon::BeginPlay()
 void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	FHitResult boxHit;
-	GEngine->AddOnScreenDebugMessage(1, 0.5f, FColor::Blue, FString("Collision"));
-
 	/* Echo hitted and the enemy or breakable is target, or enemy hitted and echo is target*/
 	BoxTraceWeapon(boxHit);
 	if (boxHit.GetActor()) {
@@ -31,7 +29,7 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 
 		/* Enemy hit the player*/
 		if (GetOwner()->ActorHasTag("Enemy") && boxHit.GetActor()->ActorHasTag("EchoCharacter")) {
-			GEngine->AddOnScreenDebugMessage(2, 1.f, FColor::Blue, FString::Printf(TEXT("Damage %f") , Damage));
+			
 			UGameplayStatics::ApplyDamage(boxHit.GetActor(), Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
 			ExecuteHit(boxHit.GetActor(), boxHit, GetOwner());
 		}

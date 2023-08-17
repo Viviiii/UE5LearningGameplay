@@ -58,7 +58,6 @@ void ALoadLevel::newPaladin(int paladinNumber, int echoKillNumber)
 		630);
 
 	if (paladinsTab.Num() < paladinNumber) {
-		GEngine->AddOnScreenDebugMessage(1, 1.5f, FColor::Blue, FString::Printf(TEXT("Y : %f"), spawnLocation.Y));
 		newEnemy = GetWorld()->SpawnActor<AEnemy>(enemyClass[0], spawnLocation, GetActorRotation());
 		paladinsTab.Add(newEnemy);
 		/* Damage increase just for one round = fourth round*/
