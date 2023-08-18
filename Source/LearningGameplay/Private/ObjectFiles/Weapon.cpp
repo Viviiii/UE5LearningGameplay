@@ -24,9 +24,7 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 	/* Echo hitted and the enemy or breakable is target, or enemy hitted and echo is target*/
 	BoxTraceWeapon(boxHit);
 	if (boxHit.GetActor()) {
-		//BoxTraceWeapon(boxHit);
-		GEngine->AddOnScreenDebugMessage(2, 0.5f, FColor::Blue, FString("BoxHit"));
-
+		
 		/* Enemy hit the player*/
 		if (GetOwner()->ActorHasTag("Enemy") && boxHit.GetActor()->ActorHasTag("EchoCharacter")) {
 			

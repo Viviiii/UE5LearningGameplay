@@ -188,7 +188,7 @@ void AEnemy::pawnSeen(APawn* pawn)
 		&& pawn->ActorHasTag(FName("EchoCharacter"));
 
 	if (shouldChaseTarget) {
-		
+		GEngine->AddOnScreenDebugMessage(1, 1.5f, FColor::Red, FString("I see you "));
 		combatTarget = pawn;
 		ChaseTarget();
 	}
@@ -300,7 +300,7 @@ void AEnemy::ChaseTarget()
 	actionState = EActionState::EAS_Unoccupied;
 	enemyState = EEnemyState::EES_Chasing;
 	GetCharacterMovement()->MaxWalkSpeed = maxSpeed;
-	GEngine->AddOnScreenDebugMessage(3,	 1.5f, FColor::Red, FString(combatTarget->GetName()));
+	
 	MoveToTarget(combatTarget);
 }
 
@@ -394,11 +394,8 @@ void AEnemy::MoveToTarget(AActor* target)
 		moveReq.SetAcceptanceRadius(10.f);
 		FNavPathSharedPtr navPath;
 		AIenemy->MoveTo(moveReq, &navPath);	
-		GEngine->AddOnScreenDebugMessage(1, 1.5f, FColor::Red, FString("Ouiii"));
-			
 	}
 	if (target == nullptr) {
-		GEngine->AddOnScreenDebugMessage(2, 1.5f, FColor::Red, FString("NOOOOOOOOOOOOOOOOO"));
 		return;
 	}
 
