@@ -17,6 +17,7 @@ void ALoadLevel::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 	//GEngine->AddOnScreenDebugMessage(3, 1.5f, FColor::Blue, FString::Printf(TEXT("Arena mode : %d"), newEnemy->arenaMode));
 	/*  Move to random location */
 	//newEnemy->MoveToRandomLocation();
+	GEngine->AddOnScreenDebugMessage(1, 1.5f, FColor::Red, FString("Traveeeeeeeel"));
 	echo = Cast<AEchoCharacter>(GetWorld()->GetFirstPlayerController()->GetCharacter());
 	echo->echoInterface->setRound();
 	FVector changeLocation = FVector(
@@ -52,10 +53,15 @@ void ALoadLevel::newPaladin(int paladinNumber, int echoKillNumber)
 {
 	//Add VFX ?
 	
-	FVector spawnLocation = FVector(
+	/*FVector spawnLocation = FVector(
 		FMath::RandRange(-18800.f, -13400.f),
 		FMath::RandRange(- 1700.f, -6550.f),
-		630);
+		630);*/
+
+	FVector spawnLocation = FVector(
+		FMath::RandRange(9120.f, 16767.f),
+		FMath::RandRange(-4424.f, 11685.f),
+		206);
 
 	if (paladinsTab.Num() < paladinNumber) {
 		newEnemy = GetWorld()->SpawnActor<AEnemy>(enemyClass[0], spawnLocation, GetActorRotation());
