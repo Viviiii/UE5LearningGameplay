@@ -393,7 +393,7 @@ void AEnemy::MoveToTarget(AActor* target)
 		moveReq.SetGoalActor(target);
 		moveReq.SetAcceptanceRadius(10.f);
 		FNavPathSharedPtr navPath;
-		AIenemy->MoveTo(moveReq, &navPath);	
+		//AIenemy->MoveTo(moveReq, &navPath);	
 	}
 	if (target == nullptr) {
 		return;
@@ -415,7 +415,7 @@ void AEnemy::MoveToRandomLocation()
 	moveReq.SetGoalLocation(locationTarget);
 	moveReq.SetAcceptanceRadius(10.f);
 	FNavPathSharedPtr navPath;
-	AIenemy->MoveTo(moveReq, &navPath);
+	//AIenemy->MoveTo(moveReq, &navPath);
 
 	
 }
