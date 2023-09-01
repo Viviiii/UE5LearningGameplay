@@ -41,11 +41,15 @@ public:
 	FORCEINLINE ECharacterState getCharacterState() {
 		return characterState;
 	}
+
+	UFUNCTION(BlueprintCallable)
 	FORCEINLINE EActionState getActionState() {
 		return actionState;
 	}
 
-	EActionState actionState = EActionState::EAS_Unoccupied;
+	FORCEINLINE TEnumAsByte<EDeathState> getDeathState() {
+		return deathPose;
+	}
 
 
 	UPROPERTY(VisibleAnywhere)
@@ -57,6 +61,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	void InitOverlay(APlayerController* PlayerController);
+
+	void InitOverlayRound(APlayerController* PlayerController);
 
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -198,7 +205,6 @@ private :
 	UPROPERTY(EditDefaultsOnly, Category = "Montages | Unarm")
 		UAnimMontage* unarmMontage;
 
-
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -225,6 +231,9 @@ public:
 	/*Sounds*/
 	UPROPERTY(EditAnywhere, Category = "Game Music")
 		USoundBase* musicGame;
+
+	UPROPERTY(BlueprintReadOnly)
+		float maxSpeed;
 
 
 private:

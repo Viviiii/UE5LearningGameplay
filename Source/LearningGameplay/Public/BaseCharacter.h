@@ -37,9 +37,11 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 		UHealthBar* widgetHealth;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Death")
+		TEnumAsByte<EDeathState> deathPose;
 
-
-
+	UPROPERTY(BlueprintReadOnly, Category = "Actions")
+		EActionState actionState = EActionState::EAS_Unoccupied;
 	/* Use weapon equipped*/
 
 	UPROPERTY(VisibleInstanceOnly, Category = "Weapon")
@@ -94,6 +96,8 @@ protected:
 	virtual void DirectionalHit(const FVector& impactPoint);
 
 	virtual void ReduceHealth(float dmgAmount);
+
+	virtual void Die();
 
 
 	/*Anim notify functions*/

@@ -55,7 +55,10 @@ public:
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<AObjects> skullClass;
 
-
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE EEnemyState getEnemyState() {
+			return enemyState;
+		}
 	void MoveToRandomLocation();
 
 	/* To improve */
@@ -118,8 +121,8 @@ protected :
 
 	void respawnEnemyTimer();
 
-	UPROPERTY(BlueprintReadOnly, Category = "Death")
-		TEnumAsByte<EDeathState> deathPose = EDeathState::ECS_Alive;
+	/*UPROPERTY(BlueprintReadOnly, Category = "Death")
+		TEnumAsByte<EDeathState> deathPose = EDeathState::ECS_Alive;*/
 
 	UPROPERTY(BlueprintReadOnly, Category = "Idle")
 		TEnumAsByte<EEnemyIdleState> idlePose = EEnemyIdleState::EEIS_Idle1;
@@ -206,7 +209,7 @@ private :
 		double patrolRadius = 5000.f;
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
-		float attackIntMin = 1.5f;
+		float attackIntMin = 3.f;
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 		float attackIntMax = 5.5f;

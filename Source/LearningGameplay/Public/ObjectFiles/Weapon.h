@@ -49,6 +49,8 @@ public :
 
 	void AttachMeshToComponent(USceneComponent* weap, const FName& socketName);
 
+	void dropWeapon(USceneComponent* weap);
+
 	void unEquip(USceneComponent* weap, FName socketName);
 	void Sheathe(USceneComponent* weap, FName socketName);
 

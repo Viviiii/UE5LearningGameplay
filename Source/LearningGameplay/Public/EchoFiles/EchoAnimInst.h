@@ -36,6 +36,12 @@ public :
 	UPROPERTY(BlueprintReadOnly, category = "Character | CharacterState")
 	ECharacterState characterState;
 
+	UPROPERTY(BlueprintReadOnly, category = "Character | ActionState")
+	EActionState actionState;
+
+	UPROPERTY(BlueprintReadOnly, category = "Character | DeathState")
+	TEnumAsByte<EDeathState> deathPose;
+
 	virtual void NativeInitializeAnimation() override;
 
 	virtual void NativeUpdateAnimation(float deltaTime);

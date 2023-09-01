@@ -26,15 +26,17 @@ public :
 
 	void setPercentStamina(float stamina);
 
+	void displayDeath();
+
 	void getHeal(float addHP);
 
 	void getStamina(float addStamina);
 
 	//void addCoins(int amount);
 
-	void addKills();
+	//void addKills();
 
-	void addFGKills();
+	void setFGKills();
 
 	void setKills();
 
@@ -70,6 +72,9 @@ private :
 
 	UPROPERTY(meta = (BindWidget))
 		UTextBlock* coins;*/
+
+	UPROPERTY(meta = (BindWidget))
+		UTextBlock* Death;
 
 	UPROPERTY(meta = (BindWidget))
 		UTextBlock* kills;

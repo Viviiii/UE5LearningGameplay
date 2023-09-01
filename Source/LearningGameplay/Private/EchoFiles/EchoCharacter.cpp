@@ -75,17 +75,9 @@ void AEchoCharacter::BeginPlay()
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
-		AEchoHUD* echoHUD = Cast<AEchoHUD>(PlayerController->GetHUD());
-		if (echoHUD) {
-			echoInterface = echoHUD->GetEchoInterface();
-			if (echoInterface) {
-				echoInterface->setPercentHealth(1.f);
-				echoInterface->setPercentStamina(1.f);
-				echoInterface->setKills();
-			}
-		}
+		InitOverlay(PlayerController);
 	}
-
+	maxSpeed = GetCharacterMovement()->GetMaxSpeed();
 
 	/*if (musicGame) {
 		UGameplayStatics::PlaySoundAtLocation(this, musicGame, GetActorLocation());
@@ -93,11 +85,34 @@ void AEchoCharacter::BeginPlay()
 	Tags.Add(FName("EchoCharacter"));
 }
 
+void AEchoCharacter::InitOverlay(APlayerController* PlayerController)
+{
+	AEchoHUD* echoHUD = Cast<AEchoHUD>(PlayerController->GetHUD());
+	if (echoHUD) {
+		echoInterface = echoHUD->GetEchoInterface();
+		if (echoInterface) {
+			echoInterface->setPercentHealth(1.f);
+			echoInterface->setPercentStamina(1.f);
+			echoInterface->setKills();
+		}
+	}
+}
+
+void AEchoCharacter::InitOverlayRound(APlayerController* PlayerController)
+{
+	AEchoHUD* echoHUD = Cast<AEchoHUD>(PlayerController->GetHUD());
+	if (echoHUD) {
+		echoInterface = echoHUD->GetEchoInterface();
+		if (echoInterface) {
+			echoInterface->setKills();
+		}
+	}
+}
+
 // Called every frame
 void AEchoCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 	if (actionState == EActionState::EAS_Unoccupied && Attributes->getStamina() < 1) {
 		if (Attributes && echoInterface) {
 			Attributes->setStamina(Attributes->getStamina() + 0.1);
@@ -143,7 +158,7 @@ void AEchoCharacter::Move(const FInputActionValue& Value)
 {
 	// input is a Vector2D
 	FVector2D MovementVector = Value.Get<FVector2D>();
-	if (actionState == EActionState::EAS_Attacking) {
+	if (actionState == EActionState::EAS_Attacking || actionState == EActionState::EAS_Dead) {
 		return;
 	}
 	if (Controller != nullptr)
@@ -177,7 +192,14 @@ void AEchoCharacter::Interact()
 {
 	AWeapon* overlappedWeapon = Cast<AWeapon>(overlappedObjects);
 	if (overlappedWeapon) {
-
+		if (weaponEquipped) {
+			/* To improve !! */
+			//weaponEquipped->SetActorLocation(GetActorLocation());
+			weaponEquipped->Destroy();
+			GetWorld()->SpawnActor<AWeapon>(weaponEquipped->GetClass(), GetActorLocation(), GetActorRotation());
+			weaponEquipped = nullptr;
+			
+		}
 		overlappedWeapon->SetOwner(this);
 		overlappedWeapon->SetInstigator(this);
 		overlappedWeapon->equip(GetMesh(), FName("WeaponSocket"), this, this);
@@ -206,7 +228,11 @@ void AEchoCharacter::Ability1()
 
 void AEchoCharacter::Dodge()
 {
-	if (actionState != EActionState::EAS_Unoccupied || Attributes->getStamina()<0.15) return;
+	if (actionState != EActionState::EAS_Unoccupied || Attributes->getStamina() < 0.15) {
+		
+		return;
+	}
+		GetCharacterMovement()->MaxWalkSpeed = maxSpeed + 50;
 		PlayDodgeMontage();
 		actionState = EActionState::EAS_Dodge;
 		if (Attributes && echoInterface) {
@@ -227,27 +253,7 @@ void AEchoCharacter::PlayDodgeMontage()
 int32 AEchoCharacter::PlayAttackMontage()
 {
 	return PlayRandomMontageSection(attackMontage, AttackMontageSections);
-	/*UAnimInstance* montageAttack = GetMesh()->GetAnimInstance();
-	if (montageAttack) {
-		montageAttack->Montage_Play(attackMontage);
-		int32 random = FMath::RandRange(0, 1);
-		FName selection = FName();
-		switch (random) {
-		case 0:
-			selection = FName("Attack1");
-			break;
 
-		case 1:
-			selection = FName("Attack2");
-			break;
-
-		default:
-			break;
-		}
-		montageAttack->Montage_JumpToSection(selection, attackMontage);
-
-
-	}*/
 }
 
 int32 AEchoCharacter::PlayIdleMontage()
@@ -299,6 +305,7 @@ void AEchoCharacter::hitReactionEnd()
 
 void AEchoCharacter::dodgeEnd()
 {
+	GetCharacterMovement()->MaxWalkSpeed = maxSpeed;
 	actionState = EActionState::EAS_Unoccupied;
 }
 
@@ -358,26 +365,31 @@ void AEchoCharacter::getStamina(APotions* potion)
 
 void AEchoCharacter::addKills(ASkulls* skull)
 {
-	echoInterface->addKills();
+	echoInterface->setKills();
 	killNumber++;
 
 }
 
 void AEchoCharacter::addFGKills(ASkulls* FG)
 {
-	echoInterface->addFGKills();
+	echoInterface->setFGKills();
 	Attributes->setKillFG();
 	FGKillNumber++;
 }
 
 void AEchoCharacter::echoDeath()
 {
-	/*enemyState = EEnemyState::EES_Dead;
-	GetCharacterMovement()->MaxWalkSpeed = 0.f;	
-	PlayDeathMontage();
-	widgetHealth->DestroyComponent();
+	Super::Die();
+	/*actionState = EActionState::EAS_Dead;
+	TEnumAsByte<EDeathState> Pose(0);
+
+	deathPose = Pose;*/
+	Tags.Add(FName("Dead"));
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	SetLifeSpan(3.f);*/
+	GetCharacterMovement()->MaxWalkSpeed = 0.f;	
+	if(echoInterface)
+	echoInterface->displayDeath();
+	
 }
 
 bool AEchoCharacter::canDraw() {
@@ -403,19 +415,24 @@ void AEchoCharacter::setKillNumber()
 
 void AEchoCharacter::getHit_Implementation(const FVector& impactPoint, AActor* hitter)
 {
+	/* Simplify the function*/
 	PlaySound(impactPoint, hitSound);
 	PlayVFX(impactPoint, bloodEffect);
 	StopAttackMontage();
 	StopDodgeMontage();	
-	if (IsAlive() && hitter) {
-		DirectionalHit(impactPoint);
-		disableSwordCollision(ECollisionEnabled::NoCollision);
-		actionState = EActionState::EAS_HitReaction;
-		
-	}
 	if (hurtSound) {
 		UGameplayStatics::PlaySoundAtLocation(this, hurtSound, GetActorLocation());
 	}
+	if (IsAlive() && hitter) {
+		DirectionalHit(impactPoint);
+		disableSwordCollision(ECollisionEnabled::NoCollision);
+		
+		actionState = EActionState::EAS_HitReaction;
+	}
+	else {
+		echoDeath();
+	}
+	
 }
 
 void AEchoCharacter::DirectionalHit(const FVector& impactPoint)

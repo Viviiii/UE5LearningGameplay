@@ -22,6 +22,13 @@ void UEchoInterface::setPercentStamina(float stamina)
 	}
 }
 
+void UEchoInterface::displayDeath()
+{
+	if (Death) {
+		Death->SetVisibility(ESlateVisibility::Visible);
+	}
+}
+
 void UEchoInterface::getHeal(float addHP)
 {
 	if (healthBar) {
@@ -45,18 +52,22 @@ void UEchoInterface::getStamina(float addStamina)
 //	}
 //}
 
-void UEchoInterface::addKills()
-{
-	if (kills) {
-		killNbr++;
-		kills->SetText(FText::AsNumber(killNbr));
+//void UEchoInterface::addKills()
+//{
+//	if (kills) {
+//		killNbr++;
+//		kills->SetText(FText::AsNumber(killNbr));
+//
+//	}
+//}
 
-	}
-}
-
-void UEchoInterface::addFGKills()
+void UEchoInterface::setFGKills()
 {
 	if (FGkills) {
+		if (FGkills->GetVisibility() == ESlateVisibility::Hidden) {
+			FGkills->SetVisibility(ESlateVisibility::Visible);
+			FGkillNbr = -1;
+		}
 		FGkillNbr++;
 		FGkills->SetText(FText::AsNumber(FGkillNbr));
 
@@ -66,7 +77,11 @@ void UEchoInterface::addFGKills()
 void UEchoInterface::setKills()
 {
 	if (kills) {
-		killNbr = 0;
+		if (kills->GetVisibility() == ESlateVisibility::Hidden) {
+			kills->SetVisibility(ESlateVisibility::Visible);
+			killNbr = -1;
+		}
+		killNbr++;
 		kills->SetText(FText::AsNumber(killNbr));
 	}
 }
@@ -74,6 +89,9 @@ void UEchoInterface::setKills()
 void UEchoInterface::setRound()
 {
 	if (roundNbr) {
+		if (roundNbr->GetVisibility() == ESlateVisibility::Hidden) {
+			roundNbr->SetVisibility(ESlateVisibility::Visible);
+		}
 		roundNumber ++;
 		roundNbr->SetText(FText::AsNumber(roundNumber));
 	}

@@ -2,6 +2,7 @@
 
 
 #include "ObjectFiles/Skulls.h"
+#include "Kismet/GameplayStatics.h"
 
 
 void ASkulls::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -11,6 +12,10 @@ void ASkulls::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 		if (pickUpInterface && ActorHasTag("Paladin")) {
 			
 			pickUpInterface->addKills(this);
+			if (SFX) {
+				UGameplayStatics::PlaySoundAtLocation(this, SFX, GetActorLocation());
+			}
+			
 		}
 		else {
 			pickUpInterface->addFGKills(this);

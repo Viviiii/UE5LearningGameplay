@@ -23,6 +23,8 @@ void UEchoAnimInst::NativeUpdateAnimation(float deltaTime) {
 		speed = UKismetMathLibrary::VSizeXY(echoCharacterMove->Velocity);
 		isFalling = echoCharacterMove->IsFalling();
 		characterState = echoCharacter->getCharacterState();
+		deathPose = echoCharacter->getDeathState();
+		actionState = echoCharacter->getActionState();
 	}
 	
 }

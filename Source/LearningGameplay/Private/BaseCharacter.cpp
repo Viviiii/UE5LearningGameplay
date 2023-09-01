@@ -80,6 +80,7 @@ void ABaseCharacter::PlayMontageSection(UAnimMontage* montage, const FName& sect
 int32 ABaseCharacter::PlayRandomMontageSection(UAnimMontage* montage, TArray<FName> montageSections)
 {
 	if (montageSections.Num() <= 0) return 0;
+
 	int32 random = FMath::RandRange(0, montageSections.Num() - 1);
 	PlayMontageSection(montage, montageSections[random]);
 	return random;
@@ -87,7 +88,14 @@ int32 ABaseCharacter::PlayRandomMontageSection(UAnimMontage* montage, TArray<FNa
 
 int32 ABaseCharacter::PlayDeathMontage()
 {
-	return PlayRandomMontageSection(deathMontage, DeathMontageSections);
+	
+	const int32 selection =/* PlayRandomMontageSection(deathMontage, DeathMontageSections);*/0;
+	
+	TEnumAsByte<EDeathState> Pose(1);
+	
+	deathPose = Pose;
+	return selection;
+
 }
 
 int32 ABaseCharacter::PlayAttackMontage()
@@ -159,6 +167,17 @@ void ABaseCharacter::ReduceHealth(float dmgAmount)
 	if (Attributes) {
 		Attributes->ReceiveDamage(dmgAmount);
 	}
+}
+
+void ABaseCharacter::Die()
+{
+	//PlayDeathMontage();
+	
+	int32 random = FMath::RandRange(0, 2);
+	TEnumAsByte<EDeathState> Pose(random);
+	deathPose = Pose;
+	actionState = EActionState::EAS_Dead;
+	disableSwordCollision(ECollisionEnabled::NoCollision);
 }
 
 

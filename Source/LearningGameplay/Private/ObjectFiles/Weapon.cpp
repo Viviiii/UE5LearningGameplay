@@ -137,6 +137,12 @@ void AWeapon::AttachMeshToComponent(USceneComponent* weap, const FName& socketNa
 	ItemMesh->AttachToComponent(weap, attachmentRules, socketName);
 }
 
+void AWeapon::dropWeapon(USceneComponent* weap)
+{
+	ItemMesh->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+	ItemMesh->DestroyComponent();
+}
+
 void AWeapon::unEquip(USceneComponent* weap, FName socketName)
 {
 	const FAttachmentTransformRules attachmentRules(EAttachmentRule::SnapToTarget, true);

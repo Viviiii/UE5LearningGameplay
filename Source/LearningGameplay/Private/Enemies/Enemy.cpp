@@ -8,6 +8,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "DrawDebugHelpers.h"
 #include "Components/BoxComponent.h"
+#include "Navigation/PathFollowingComponent.h"
 #include <Kismet/GameplayStatics.h>
 #include <HUD/EchoHUD.h>
 //#include "BaseCharacter.cpp"
@@ -62,7 +63,6 @@ void AEnemy::BeginPlay()
 		pawnSensing->OnSeePawn.AddDynamic(this, &AEnemy::pawnSeen);
 	}
 	maxSpeed = GetCharacterMovement()->GetMaxSpeed();
-	
 	SpawnDefaultWeapon();
 	echo = Cast<AEchoCharacter>(GetWorld()->GetFirstPlayerController()->GetCharacter());
 	if (targetPatrol && AIenemy) {	
@@ -103,7 +103,7 @@ void AEnemy::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	
 	/*IA Attack*/
-	if (enemyState > EEnemyState::EES_Patrol && AIenemy) {
+	if (enemyState > EEnemyState::EES_Patrol && AIenemy && actionState != EActionState::EAS_Dead && enemyState != EEnemyState::EES_Dead) {
 
 		CheckCombatTarget();
 	}
@@ -165,7 +165,7 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 	/*if(IsOutsideAttackRadius()){
 		ChaseTarget();
 	}*/
-	if (enemyState != EEnemyState::EES_Attacking) {
+	if (enemyState != EEnemyState::EES_Attacking && enemyState!= EEnemyState::EES_Dead) {
 		ChaseTarget();
 	}
 	/*enemyState = EEnemyState::EES_Chasing;
@@ -188,7 +188,6 @@ void AEnemy::pawnSeen(APawn* pawn)
 		&& pawn->ActorHasTag(FName("EchoCharacter"));
 
 	if (shouldChaseTarget) {
-		GEngine->AddOnScreenDebugMessage(1, 1.5f, FColor::Red, FString("I see you "));
 		combatTarget = pawn;
 		ChaseTarget();
 	}
@@ -353,6 +352,10 @@ void AEnemy::CheckCombatTarget()
 
 void AEnemy::Attack() {
 	//Super::Attack();
+	if (combatTarget && combatTarget->ActorHasTag("Dead")) {
+		combatTarget = nullptr;
+		return;
+	}
 	GetCharacterMovement()->MaxWalkSpeed = 0.f;
 	actionState = EActionState::EAS_Attacking;
 	//UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.2);
@@ -393,7 +396,7 @@ void AEnemy::MoveToTarget(AActor* target)
 		moveReq.SetGoalActor(target);
 		moveReq.SetAcceptanceRadius(10.f);
 		FNavPathSharedPtr navPath;
-		//AIenemy->MoveTo(moveReq, &navPath);	
+		AIenemy->MoveTo(moveReq, &navPath);	
 	}
 	if (target == nullptr) {
 		return;
@@ -415,7 +418,7 @@ void AEnemy::MoveToRandomLocation()
 	moveReq.SetGoalLocation(locationTarget);
 	moveReq.SetAcceptanceRadius(10.f);
 	FNavPathSharedPtr navPath;
-	//AIenemy->MoveTo(moveReq, &navPath);
+	AIenemy->MoveTo(moveReq, &navPath);
 
 	
 }
@@ -438,7 +441,7 @@ void AEnemy::patrolTimerFinished()
 
 //void AEnemy::respawnEnemyTimer()
 //{
-//	GEngine->AddOnScreenDebugMessage(2, 1.5f, FColor::Red, FString("Respaaaawn"));
+//	
 //	FVector spawnLocation = FVector(-530, -860, 110);
 //	GetWorld()->SpawnActor<AEnemy>(enemyClass, spawnLocation, GetActorRotation());
 //}
@@ -495,12 +498,13 @@ int32 AEnemy::PlayIdleMontage()
 
 void AEnemy::EnemyDeath()
 {
+	Super::Die();
 	enemyState = EEnemyState::EES_Dead;
 	GetCharacterMovement()->MaxWalkSpeed = 0.f;
 	GetWorld()->GetTimerManager().ClearTimer(attackTimer);
-	PlayDeathMontage();
+	//PlayDeathMontage();
 	widgetHealth->DestroyComponent();
-	disableSwordCollision(ECollisionEnabled::NoCollision);
+	//disableSwordCollision(ECollisionEnabled::NoCollision);
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	if (!targetPatrol) {
