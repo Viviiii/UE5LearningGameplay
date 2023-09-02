@@ -42,6 +42,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Actions")
 		EActionState actionState = EActionState::EAS_Unoccupied;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Actions")
+		EEnemyState enemyState;
 	/* Use weapon equipped*/
 
 	UPROPERTY(VisibleInstanceOnly, Category = "Weapon")

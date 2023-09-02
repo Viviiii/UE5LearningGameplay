@@ -72,6 +72,7 @@ void AEnemy::BeginPlay()
 		
 		combatRadius = 5000.f;
 		combatTarget = echo;
+		GEngine->AddOnScreenDebugMessage(4, 1.5f, FColor::Red, FString("Fuuuuuuck"));
 		ChaseTarget();
 	}
 	if (spawnMontage) {
@@ -103,7 +104,7 @@ void AEnemy::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	
 	/*IA Attack*/
-	if (enemyState > EEnemyState::EES_Patrol && AIenemy && actionState != EActionState::EAS_Dead && enemyState != EEnemyState::EES_Dead) {
+	if (enemyState > EEnemyState::EES_Patrol && AIenemy ) {
 
 		CheckCombatTarget();
 	}
@@ -165,7 +166,8 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 	/*if(IsOutsideAttackRadius()){
 		ChaseTarget();
 	}*/
-	if (enemyState != EEnemyState::EES_Attacking && enemyState!= EEnemyState::EES_Dead) {
+	if (enemyState != EEnemyState::EES_Attacking && enemyState != EEnemyState::EES_Dead) {
+		GEngine->AddOnScreenDebugMessage(2, 1.5f, FColor::Red, FString("DAAAAAAAMN"));
 		ChaseTarget();
 	}
 	/*enemyState = EEnemyState::EES_Chasing;
@@ -185,7 +187,8 @@ void AEnemy::pawnSeen(APawn* pawn)
 {
 	bool shouldChaseTarget = !IsAttacking()
 		&& !IsChasing()
-		&& pawn->ActorHasTag(FName("EchoCharacter"));
+		&& pawn->ActorHasTag(FName("EchoCharacter"))
+		&& enemyState != EEnemyState::EES_Dead;
 
 	if (shouldChaseTarget) {
 		combatTarget = pawn;
@@ -340,6 +343,7 @@ void AEnemy::CheckCombatTarget()
 		if (IsAttacking()) {
 			StopAttackMontage();
 		}
+		GEngine->AddOnScreenDebugMessage(3, 1.5f, FColor::Red, FString("No fuckiiiiing"));
 		ChaseTarget();
 	}
 	/* Enemies ATTAAAAAAAAAAAAACK*/
@@ -498,7 +502,10 @@ int32 AEnemy::PlayIdleMontage()
 
 void AEnemy::EnemyDeath()
 {
-	Super::Die();
+	//Super::Die();
+	int32 random = FMath::RandRange(0, 2);
+	TEnumAsByte<EDeathState> Pose(random);
+	deathPose = Pose;
 	enemyState = EEnemyState::EES_Dead;
 	GetCharacterMovement()->MaxWalkSpeed = 0.f;
 	GetWorld()->GetTimerManager().ClearTimer(attackTimer);

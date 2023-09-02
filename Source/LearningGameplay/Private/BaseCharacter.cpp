@@ -89,7 +89,7 @@ int32 ABaseCharacter::PlayRandomMontageSection(UAnimMontage* montage, TArray<FNa
 int32 ABaseCharacter::PlayDeathMontage()
 {
 	
-	const int32 selection =/* PlayRandomMontageSection(deathMontage, DeathMontageSections);*/0;
+	const int32 selection =PlayRandomMontageSection(deathMontage, DeathMontageSections);
 	
 	TEnumAsByte<EDeathState> Pose(1);
 	
@@ -171,12 +171,13 @@ void ABaseCharacter::ReduceHealth(float dmgAmount)
 
 void ABaseCharacter::Die()
 {
-	//PlayDeathMontage();
-	
+	//	PlayDeathMontage();
+	GEngine->AddOnScreenDebugMessage(1, 1.5f, FColor::Blue, FString("Dead"));
 	int32 random = FMath::RandRange(0, 2);
-	TEnumAsByte<EDeathState> Pose(random);
+	TEnumAsByte<EDeathState> Pose(1);
 	deathPose = Pose;
 	actionState = EActionState::EAS_Dead;
+	enemyState = EEnemyState::EES_Dead;
 	disableSwordCollision(ECollisionEnabled::NoCollision);
 }
 
