@@ -172,12 +172,11 @@ void ABaseCharacter::ReduceHealth(float dmgAmount)
 void ABaseCharacter::Die()
 {
 	//	PlayDeathMontage();
-	GEngine->AddOnScreenDebugMessage(1, 1.5f, FColor::Blue, FString("Dead"));
-	int32 random = FMath::RandRange(0, 2);
-	TEnumAsByte<EDeathState> Pose(1);
-	deathPose = Pose;
-	actionState = EActionState::EAS_Dead;
-	enemyState = EEnemyState::EES_Dead;
+	//enemyState = EEnemyState::EES_Dead;
+	GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString("Dead"));
+	int32 random = FMath::RandRange(0, 1);
+	TEnumAsByte<EDeathState> Pose(0);
+	deathPose = Pose;	
 	disableSwordCollision(ECollisionEnabled::NoCollision);
 }
 

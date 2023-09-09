@@ -380,9 +380,8 @@ void AEchoCharacter::addFGKills(ASkulls* FG)
 void AEchoCharacter::echoDeath()
 {
 	Super::Die();
-	/*actionState = EActionState::EAS_Dead;
-	TEnumAsByte<EDeathState> Pose(0);
-
+	actionState = EActionState::EAS_Dead;
+	/*TEnumAsByte<EDeathState> Pose(0);
 	deathPose = Pose;*/
 	Tags.Add(FName("Dead"));
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);

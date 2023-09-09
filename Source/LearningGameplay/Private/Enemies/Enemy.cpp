@@ -72,7 +72,6 @@ void AEnemy::BeginPlay()
 		
 		combatRadius = 5000.f;
 		combatTarget = echo;
-		GEngine->AddOnScreenDebugMessage(4, 1.5f, FColor::Red, FString("Fuuuuuuck"));
 		ChaseTarget();
 	}
 	if (spawnMontage) {
@@ -122,6 +121,9 @@ void AEnemy::getHit_Implementation(const FVector& impactPoint, AActor* hitter)
 	PlayVFX(impactPoint, bloodEffect);
 	if (IsAlive()) {
 		DirectionalHit(impactPoint); 
+		if (!IsOutsideAttackRadius() && !IsChasing()) {
+			Attack();
+		}
 		if (hurtSound) {
 			UGameplayStatics::PlaySoundAtLocation(this, hurtSound, GetActorLocation());
 		}
@@ -167,7 +169,7 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 		ChaseTarget();
 	}*/
 	if (enemyState != EEnemyState::EES_Attacking && enemyState != EEnemyState::EES_Dead) {
-		GEngine->AddOnScreenDebugMessage(2, 1.5f, FColor::Red, FString("DAAAAAAAMN"));
+		
 		ChaseTarget();
 	}
 	/*enemyState = EEnemyState::EES_Chasing;
@@ -343,7 +345,6 @@ void AEnemy::CheckCombatTarget()
 		if (IsAttacking()) {
 			StopAttackMontage();
 		}
-		GEngine->AddOnScreenDebugMessage(3, 1.5f, FColor::Red, FString("No fuckiiiiing"));
 		ChaseTarget();
 	}
 	/* Enemies ATTAAAAAAAAAAAAACK*/
@@ -502,10 +503,12 @@ int32 AEnemy::PlayIdleMontage()
 
 void AEnemy::EnemyDeath()
 {
-	//Super::Die();
-	int32 random = FMath::RandRange(0, 2);
+	Super::Die();
+
+	/*nt32 random = FMath::RandRange(0, 3);
 	TEnumAsByte<EDeathState> Pose(random);
-	deathPose = Pose;
+	GEngine->AddOnScreenDebugMessage(2, 0.5f, FColor::Red, FString("Agai and again"));
+	deathPose = Pose;*/
 	enemyState = EEnemyState::EES_Dead;
 	GetCharacterMovement()->MaxWalkSpeed = 0.f;
 	GetWorld()->GetTimerManager().ClearTimer(attackTimer);
@@ -515,7 +518,7 @@ void AEnemy::EnemyDeath()
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	if (!targetPatrol) {
-		//setEnemyNbr(-1);
+		//setEnemyNbr(-1);        
 		GetWorld()->SpawnActor<AObjects>(skullClass, GetActorLocation(), GetActorRotation());
 	}
 }
