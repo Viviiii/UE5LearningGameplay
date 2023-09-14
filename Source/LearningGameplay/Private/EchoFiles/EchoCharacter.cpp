@@ -78,7 +78,6 @@ void AEchoCharacter::BeginPlay()
 		InitOverlay(PlayerController);
 	}
 	maxSpeed = GetCharacterMovement()->GetMaxSpeed();
-
 	/*if (musicGame) {
 		UGameplayStatics::PlaySoundAtLocation(this, musicGame, GetActorLocation());
 	}*/
@@ -336,9 +335,11 @@ void AEchoCharacter::disableSwordCollision(ECollisionEnabled::Type CollisionEnab
 float AEchoCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	Super::ReduceHealth(DamageAmount);
-	
+	//GEngine->AddOnScreenDebugMessage(3, 3.f, FColor::Red, FString("Damaaaaage"));
+
 	if (echoInterface) {
 		echoInterface->setPercentHealth(Attributes->getHealth());
+		
 	}
 	return DamageAmount;
 }

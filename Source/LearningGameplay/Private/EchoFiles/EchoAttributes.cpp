@@ -34,6 +34,7 @@ void UEchoAttributes::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 
 void UEchoAttributes::ReceiveDamage(float Damage)
 {
+	//GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Before health : %f"), health));
 	health = FMath::Clamp(health - Damage, 0.f, maxHealth);
 }
 

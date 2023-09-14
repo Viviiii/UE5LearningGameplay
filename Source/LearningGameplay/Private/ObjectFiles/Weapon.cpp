@@ -15,6 +15,7 @@ void AWeapon::BeginPlay()
 	Super::BeginPlay();
 	Box->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::OnBoxOverlap);
 	Box->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	IgnoreActors.Empty();
 	
 }
 
@@ -22,12 +23,14 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 {
 	FHitResult boxHit;
 	/* Echo hitted and the enemy or breakable is target, or enemy hitted and echo is target*/
+	if (GetOwner()->ActorHasTag(TEXT("Enemy")) && OtherActor->ActorHasTag(TEXT("Enemy"))) return;
+
 	BoxTraceWeapon(boxHit);
 	if (boxHit.GetActor()) {
-		
+		if (GetOwner()->ActorHasTag(TEXT("Enemy")) && boxHit.GetActor()->ActorHasTag(TEXT("Enemy"))) return;
+
 		/* Enemy hit the player*/
 		if (GetOwner()->ActorHasTag("Enemy") && boxHit.GetActor()->ActorHasTag("EchoCharacter")) {
-			
 			UGameplayStatics::ApplyDamage(boxHit.GetActor(), Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
 			ExecuteHit(boxHit.GetActor(), boxHit, GetOwner());
 		}
@@ -65,13 +68,16 @@ void AWeapon::BoxTraceWeapon(FHitResult& boxHit)
 	const FVector endTrace = BoxTraceEnd->GetComponentLocation();
 	const FVector startTrace = BoxTraceStart->GetComponentLocation();
 	TArray<AActor*> ActorsToIgnore;
+
+	ActorsToIgnore.Add(this);
 	ActorsToIgnore.Add(GetOwner());
+	
+	for (AActor* Actor : IgnoreActors)
+	{
+		ActorsToIgnore.AddUnique(Actor);
+	}
+	//GEngine->AddOnScreenDebugMessage(4, 3.f, FColor::Red, FString::Printf(TEXT("Size : %d"), ActorsToIgnore.Num()));
 
-
-
-	/*for (AActor* Actors : IgnoreActors) {
-		ActorsToIgnore.AddUnique(Actors);
-	}*/
 	/*It should only be working when the player is attacking*/
 	UKismetSystemLibrary::BoxTraceSingle(this,
 		startTrace,
@@ -84,6 +90,15 @@ void AWeapon::BoxTraceWeapon(FHitResult& boxHit)
 		EDrawDebugTrace::None,
 		boxHit,
 		true);
+	IgnoreActors.AddUnique(boxHit.GetActor());
+	/*if (boxHit.GetActor()) {
+		if (!boxHit.GetActor()->ActorHasTag("EchoCharacter")) {
+			GEngine->AddOnScreenDebugMessage(4, 3.f, FColor::Red, FString(boxHit.GetActor()->GetName()));
+
+			ActorsToIgnore.AddUnique(boxHit.GetActor());
+		}
+	}*/
+	
 }
 void AWeapon::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {

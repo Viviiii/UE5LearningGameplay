@@ -121,7 +121,9 @@ void AEnemy::getHit_Implementation(const FVector& impactPoint, AActor* hitter)
 	PlayVFX(impactPoint, bloodEffect);
 	if (IsAlive()) {
 		DirectionalHit(impactPoint); 
-		if (!IsOutsideAttackRadius() && !IsChasing()) {
+		if (!IsOutsideAttackRadius() && !IsAttacking()) {
+			GEngine->AddOnScreenDebugMessage(1, 3.f, FColor::Red, FString("No n o n o n o  n o"));
+
 			Attack();
 		}
 		if (hurtSound) {
@@ -324,6 +326,8 @@ void AEnemy::StartPatrolling()
 
 void AEnemy::LoseInterest()
 {
+	GEngine->AddOnScreenDebugMessage(2, 1.7f, FColor::Red, FString("Lose interest"));
+
 	GetWorld()->GetTimerManager().ClearTimer(attackTimer);
 	combatTarget = nullptr;
 	if (widgetHealth) {
@@ -350,6 +354,8 @@ void AEnemy::CheckCombatTarget()
 	/* Enemies ATTAAAAAAAAAAAAACK*/
 	else if (!IsOutsideAttackRadius() /*&& !IsAttacking()*/ && bCanAttack()) {
 		/* If during attack, player too far, he misses, or stop attacking*/
+		GEngine->AddOnScreenDebugMessage(3, 1.7f, FColor::Red, FString("Ahhhhh"));
+
 		startAttackTimer();
 	}
 	
@@ -357,6 +363,7 @@ void AEnemy::CheckCombatTarget()
 
 void AEnemy::Attack() {
 	//Super::Attack();
+	
 	if (combatTarget && combatTarget->ActorHasTag("Dead")) {
 		combatTarget = nullptr;
 		return;
@@ -514,6 +521,7 @@ void AEnemy::EnemyDeath()
 	GetWorld()->GetTimerManager().ClearTimer(attackTimer);
 	//PlayDeathMontage();
 	widgetHealth->DestroyComponent();
+	SetLifeSpan(4.5f);
 	//disableSwordCollision(ECollisionEnabled::NoCollision);
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
