@@ -44,7 +44,7 @@ void ALoadLevel::respawnPaladins(int paladinNumber)
 	//Spawn all paladins depending on round
 	respawnParam = FTimerDelegate::CreateUObject(this, &ALoadLevel::newPaladin, paladinNumber, echo->getKillNumber());
 	//respawnTimer(paladinNumber, echo->getKillNumber(), FMath::RandRange(2.5f, 10.f));
-	GetWorld()->GetTimerManager().SetTimer(respawnTimer, respawnParam, FMath::RandRange(2.5f, 10.f), true, 0.1f);
+	GetWorld()->GetTimerManager().SetTimer(respawnTimer, respawnParam, FMath::RandRange(5.f, 12.f), true, 0.1f);
 	//GetWorld()->GetTimerManager().SetTimer(respawnTimer, this, &ALoadLevel::newPaladin, FMath::RandRange(2.5f, 10.f), true, 0.1f);
 }
 
@@ -58,8 +58,8 @@ void ALoadLevel::newPaladin(int paladinNumber, int echoKillNumber)
 		630);*/
 
 	FVector spawnLocation = FVector(
-		FMath::RandRange(9351.f, 15491.f),
-		FMath::RandRange(1880.f, 7010.f),
+		FMath::RandRange(9625.f, 15505.f),
+		FMath::RandRange(294.f, 7624.f),
 		206);
 
 	if (paladinsTab.Num() < paladinNumber) {
@@ -84,9 +84,9 @@ void ALoadLevel::newPaladin(int paladinNumber, int echoKillNumber)
 void ALoadLevel::respawnFG()
 {
 	FVector spawnLocationFG = FVector(
-				-16010,
-				-4239,
-				630);
+				12230.f,
+				3770.f,
+				278.f);
 
 	newEnemy = GetWorld()->SpawnActor<AEnemy>(enemyClass[1], spawnLocationFG, GetActorRotation());
 	FGTab.Add(newEnemy);
@@ -102,7 +102,7 @@ void ALoadLevel::respawnFG()
 	}
 	newEnemy = nullptr;
 	respawnParam = FTimerDelegate::CreateUObject(this, &ALoadLevel::respawnRaptors, FGTab, raptorsNbr);
-	GetWorld()->GetTimerManager().SetTimer(respawnTimer, respawnParam, FMath::RandRange(10.5f, 15.f), true, 0.1f);
+	GetWorld()->GetTimerManager().SetTimer(respawnTimer, respawnParam, FMath::RandRange(20.f, 40.f), true, 0.1f);
 	
 	/* Just in case*/
 	//respawnParam.BindUFunction(this, FName("respawnRaptors"), FGTab);
@@ -127,9 +127,9 @@ void ALoadLevel::respawnRaptors(TArray<AEnemy*> FireGiantArray, int raptors)
 	}
 		spawnBonusRandom();
 		FVector spawnLocationR = FVector(
-			-15054,
-			-4239,
-			910);
+			12660,
+			3550,
+			298);
 		for (int i = 0; i < raptors; i++) {
 			newEnemy = GetWorld()->SpawnActor<AEnemy>(enemyClass[2], spawnLocationR, GetActorRotation());
 		}
@@ -218,9 +218,9 @@ void ALoadLevel::spawnBonus()
 	
 	for (int i = 0; i < 4; i++) {
 		FVector spawnLocation = FVector(
-			FMath::RandRange(-18770, -13140),
-			FMath::RandRange(-770, -6450),
-			660);
+			FMath::RandRange(9351.f, 15491.f),
+			FMath::RandRange(1880.f, 7010.f),
+			300.f);
 		GetWorld()->SpawnActor<APotions>(potionsClass[0], spawnLocation, GetActorRotation());
 		
 	}
@@ -241,9 +241,10 @@ void ALoadLevel::spawnBonusRandom()
 	if (rand == 1) {
 		for (int i = 0; i < 4; i++) {
 			FVector spawnLocation = FVector(
-				FMath::RandRange(-18770, -13140),
-				FMath::RandRange(-770, -6450),
-				660);
+				FMath::RandRange(9351.f, 15491.f),
+				FMath::RandRange(1880.f, 7010.f),
+				300.f);
+			GetWorld()->SpawnActor<APotions>(potionsClass[0], spawnLocation, GetActorRotation());
 			GetWorld()->SpawnActor<APotions>(potionsClass[1], spawnLocation, GetActorRotation());
 		}
 	}

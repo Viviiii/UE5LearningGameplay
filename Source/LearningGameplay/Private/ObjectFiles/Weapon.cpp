@@ -27,24 +27,29 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 
 	BoxTraceWeapon(boxHit);
 	if (boxHit.GetActor()) {
+		
+		
 		if (GetOwner()->ActorHasTag(TEXT("Enemy")) && boxHit.GetActor()->ActorHasTag(TEXT("Enemy"))) return;
 
+		GEngine->AddOnScreenDebugMessage(1, 1.5f, FColor::Red, FString(boxHit.GetActor()->GetName()));
+		UGameplayStatics::ApplyDamage(boxHit.GetActor(), Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
+		ExecuteHit(boxHit.GetActor(), boxHit, GetOwner());
 		/* Enemy hit the player*/
-		if (GetOwner()->ActorHasTag("Enemy") && boxHit.GetActor()->ActorHasTag("EchoCharacter")) {
+		/*if (GetOwner()->ActorHasTag("Enemy") && boxHit.GetActor()->ActorHasTag("EchoCharacter")) {
 			UGameplayStatics::ApplyDamage(boxHit.GetActor(), Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
 			ExecuteHit(boxHit.GetActor(), boxHit, GetOwner());
-		}
-
+		}*/
+		
 		/* Player hit the enemy*/
-		if (GetOwner()->ActorHasTag("EchoCharacter") && OtherActor->ActorHasTag("Enemy")) {
-			
+		/*if (GetOwner()->ActorHasTag("EchoCharacter") && OtherActor->ActorHasTag("Enemy")) {
+			GEngine->AddOnScreenDebugMessage(2, 1.5f, FColor::Red, FString("CEST BOOOOOON"));
+		
 			UGameplayStatics::ApplyDamage(boxHit.GetActor(), Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
 			ExecuteHit(boxHit.GetActor(), boxHit, GetOwner());
-		}
+		}*/
 
 		/*Player hit a breakable*/
 		if (GetOwner()->ActorHasTag("EchoCharacter") && OtherActor->ActorHasTag("Breakable")) {
-
 			ExecuteHit(OtherActor, boxHit, GetOwner());
 			createField(boxHit.ImpactPoint);
 		}
@@ -80,7 +85,7 @@ void AWeapon::BoxTraceWeapon(FHitResult& boxHit)
 
 	/*It should only be working when the player is attacking*/
 	UKismetSystemLibrary::BoxTraceSingle(this,
-		startTrace,
+		startTrace, 
 		endTrace,
 		FVector(15.5f, 15.5f, 15.5f),
 		BoxTraceStart->GetComponentRotation(),
@@ -90,6 +95,8 @@ void AWeapon::BoxTraceWeapon(FHitResult& boxHit)
 		EDrawDebugTrace::None,
 		boxHit,
 		true);
+	
+	
 	IgnoreActors.AddUnique(boxHit.GetActor());
 	/*if (boxHit.GetActor()) {
 		if (!boxHit.GetActor()->ActorHasTag("EchoCharacter")) {

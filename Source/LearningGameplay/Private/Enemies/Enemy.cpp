@@ -70,7 +70,7 @@ void AEnemy::BeginPlay()
 	}
 	else if(AIenemy){
 		
-		combatRadius = 5000.f;
+		combatRadius = 10000.f;
 		combatTarget = echo;
 		ChaseTarget();
 	}
@@ -122,8 +122,6 @@ void AEnemy::getHit_Implementation(const FVector& impactPoint, AActor* hitter)
 	if (IsAlive()) {
 		DirectionalHit(impactPoint); 
 		if (!IsOutsideAttackRadius() && !IsAttacking()) {
-			GEngine->AddOnScreenDebugMessage(1, 3.f, FColor::Red, FString("No n o n o n o  n o"));
-
 			Attack();
 		}
 		if (hurtSound) {
@@ -326,7 +324,6 @@ void AEnemy::StartPatrolling()
 
 void AEnemy::LoseInterest()
 {
-	GEngine->AddOnScreenDebugMessage(2, 1.7f, FColor::Red, FString("Lose interest"));
 
 	GetWorld()->GetTimerManager().ClearTimer(attackTimer);
 	combatTarget = nullptr;
@@ -354,8 +351,6 @@ void AEnemy::CheckCombatTarget()
 	/* Enemies ATTAAAAAAAAAAAAACK*/
 	else if (!IsOutsideAttackRadius() /*&& !IsAttacking()*/ && bCanAttack()) {
 		/* If during attack, player too far, he misses, or stop attacking*/
-		GEngine->AddOnScreenDebugMessage(3, 1.7f, FColor::Red, FString("Ahhhhh"));
-
 		startAttackTimer();
 	}
 	
@@ -384,7 +379,7 @@ void AEnemy::startAttackTimer()
 {
 
 	enemyState = EEnemyState::EES_Attacking;
-	GetWorld()->GetTimerManager().SetTimer(attackTimer, this, &AEnemy::Attack, FMath::RandRange(attackIntMin, attackIntMax), true, 0.2f);
+	GetWorld()->GetTimerManager().SetTimer(attackTimer, this, &AEnemy::Attack, FMath::RandRange(attackIntMin, attackIntMax), true, 1.5f);
 }
 
 bool AEnemy::isTargetInRange(AActor* target, double radius)
@@ -514,7 +509,7 @@ void AEnemy::EnemyDeath()
 
 	/*nt32 random = FMath::RandRange(0, 3);
 	TEnumAsByte<EDeathState> Pose(random);
-	GEngine->AddOnScreenDebugMessage(2, 0.5f, FColor::Red, FString("Agai and again"));
+	
 	deathPose = Pose;*/
 	enemyState = EEnemyState::EES_Dead;
 	GetCharacterMovement()->MaxWalkSpeed = 0.f;

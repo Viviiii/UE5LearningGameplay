@@ -235,7 +235,7 @@ void AEchoCharacter::Dodge()
 		PlayDodgeMontage();
 		actionState = EActionState::EAS_Dodge;
 		if (Attributes && echoInterface) {
-			Attributes->useStamina(15);
+			Attributes->useStamina(5);
 			echoInterface->setPercentStamina(Attributes->getStamina());
 		}
 }
@@ -276,7 +276,7 @@ void AEchoCharacter::Attack()
 		PlayAttackMontage();
 		actionState = EActionState::EAS_Attacking;
 		if (Attributes) {
-			Attributes->useStamina(20);
+			Attributes->useStamina(10);
 		}
 		if (echoInterface) {
 			echoInterface->setPercentStamina(Attributes->getStamina());
@@ -335,7 +335,7 @@ void AEchoCharacter::disableSwordCollision(ECollisionEnabled::Type CollisionEnab
 float AEchoCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	Super::ReduceHealth(DamageAmount);
-	//GEngine->AddOnScreenDebugMessage(3, 3.f, FColor::Red, FString("Damaaaaage"));
+	
 
 	if (echoInterface) {
 		echoInterface->setPercentHealth(Attributes->getHealth());
@@ -356,12 +356,18 @@ void AEchoCharacter::setOverlappingItem(AObjects* item)
 
 void AEchoCharacter::getHeal(APotions* potion)
 {
-	echoInterface->getHeal(Attributes->getHealth() + 25);
+	
+	if (echoInterface) {
+		Attributes->setHealth(200);
+		//GEngine->AddOnScreenDebugMessage(3, 1.f, FColor::Red, FString::Printf(TEXT("Health : %f"), Attributes->getHealth()));
+		echoInterface->setPercentHealth(Attributes->getHealth());
+
+	}
 }
 
 void AEchoCharacter::getStamina(APotions* potion)
 {
-	echoInterface->getStamina(Attributes->getStamina() + 25);
+	echoInterface->getStamina(Attributes->getStamina() + 0.25);
 }
 
 void AEchoCharacter::addKills(ASkulls* skull)

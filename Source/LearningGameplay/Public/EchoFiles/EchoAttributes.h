@@ -45,12 +45,14 @@ public:
 
 	void setName(FName newName);
 
+	void setHealth(float HP);
+
 private :
 	UPROPERTY(EditAnywhere, Category = "Echo Attributes")
-		float health;
+		float health = 500.f;
 
 	UPROPERTY(EditAnywhere, Category = "Echo Attributes")
-		float maxHealth;
+		float maxHealth=500.f;
 
 	UPROPERTY(EditAnywhere, Category = "Echo Attributes")
 		int gold;

@@ -15,7 +15,6 @@ void ASkulls::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 			if (SFX) {
 				UGameplayStatics::PlaySoundAtLocation(this, SFX, GetActorLocation());
 			}
-			
 		}
 		else {
 			pickUpInterface->addFGKills(this);

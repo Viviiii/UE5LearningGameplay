@@ -173,7 +173,6 @@ void ABaseCharacter::Die()
 {
 	//	PlayDeathMontage();
 	//enemyState = EEnemyState::EES_Dead;
-	GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString("Dead"));
 	int32 random = FMath::RandRange(0, 1);
 	TEnumAsByte<EDeathState> Pose(0);
 	deathPose = Pose;	

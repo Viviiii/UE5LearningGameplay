@@ -29,12 +29,12 @@ void UEchoInterface::displayDeath()
 	}
 }
 
-void UEchoInterface::getHeal(float addHP)
-{
-	if (healthBar) {
-		healthBar->SetPercent(addHP);
-	}
-}
+//void UEchoInterface::getHeal(float addHP)
+//{
+//	if (healthBar) {
+//		healthBar->SetPercent(addHP);
+//	}
+//}
 
 void UEchoInterface::getStamina(float addStamina)
 {
@@ -92,6 +92,7 @@ void UEchoInterface::setRound()
 		if (roundNbr->GetVisibility() == ESlateVisibility::Hidden) {
 			roundNbr->SetVisibility(ESlateVisibility::Visible);
 		}
+		roundNumber = 0;
 		roundNumber ++;
 		roundNbr->SetText(FText::AsNumber(roundNumber));
 	}

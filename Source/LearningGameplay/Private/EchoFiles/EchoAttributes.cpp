@@ -34,7 +34,6 @@ void UEchoAttributes::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 
 void UEchoAttributes::ReceiveDamage(float Damage)
 {
-	//GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Before health : %f"), health));
 	health = FMath::Clamp(health - Damage, 0.f, maxHealth);
 }
 
@@ -45,6 +44,9 @@ void UEchoAttributes::useStamina(float staminaAmount)
 
 float UEchoAttributes::getHealth()
 {
+	GEngine->AddOnScreenDebugMessage(3, 1.f, FColor::Red, FString::Printf(TEXT("Health : %d"), health));
+	GEngine->AddOnScreenDebugMessage(4, 1.f, FColor::Red, FString::Printf(TEXT("Health : %d"), maxHealth));
+
 	return health/maxHealth;
 }
 
@@ -86,6 +88,12 @@ FName UEchoAttributes::getName()
 void UEchoAttributes::setName(FName newName)
 {
 	name = newName;
+}
+
+void UEchoAttributes::setHealth(float HP)
+{
+	health = FMath::Clamp(health + HP, 0.f, maxHealth);
+	//health = HP;
 }
 
 

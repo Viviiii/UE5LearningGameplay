@@ -19,5 +19,9 @@ private :
 
 	UPROPERTY(EditAnywhere, Category = "PickPotion")
 		USoundBase* pickPotion;
+
+		UPROPERTY(EditAnywhere, Category = "Visual Effects")
+		UParticleSystem* pickPotionVFX;
+
 	
 };
