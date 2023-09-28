@@ -365,7 +365,7 @@ void AEnemy::Attack() {
 	}
 	GetCharacterMovement()->MaxWalkSpeed = 0.f;
 	actionState = EActionState::EAS_Attacking;
-	//UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.2);
+	//UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.6);
 	PlayAttackMontage();
 
 }

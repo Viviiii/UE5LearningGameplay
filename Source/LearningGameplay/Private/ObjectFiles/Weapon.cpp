@@ -22,6 +22,10 @@ void AWeapon::BeginPlay()
 void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	FHitResult boxHit;
+	if (OtherActor->ActorHasTag(TEXT("EchoCharacter"))) {
+		//GEngine->AddOnScreenDebugMessage(1, 1.5f, FColor::Red, FString(OtherActor->GetName()));
+	}	
+	
 	/* Echo hitted and the enemy or breakable is target, or enemy hitted and echo is target*/
 	if (GetOwner()->ActorHasTag(TEXT("Enemy")) && OtherActor->ActorHasTag(TEXT("Enemy"))) return;
 
@@ -31,7 +35,10 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 		
 		if (GetOwner()->ActorHasTag(TEXT("Enemy")) && boxHit.GetActor()->ActorHasTag(TEXT("Enemy"))) return;
 
-		GEngine->AddOnScreenDebugMessage(1, 1.5f, FColor::Red, FString(boxHit.GetActor()->GetName()));
+		if (boxHit.GetActor()->ActorHasTag(TEXT("EchoCharacter"))) {
+			GEngine->AddOnScreenDebugMessage(1, 1.5f, FColor::Red, FString(boxHit.GetActor()->GetName()));
+		}
+		
 		UGameplayStatics::ApplyDamage(boxHit.GetActor(), Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
 		ExecuteHit(boxHit.GetActor(), boxHit, GetOwner());
 		/* Enemy hit the player*/
