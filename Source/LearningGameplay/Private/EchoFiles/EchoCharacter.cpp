@@ -190,12 +190,16 @@ void AEchoCharacter::Look(const FInputActionValue& Value)
 void AEchoCharacter::Interact()
 {
 	AWeapon* overlappedWeapon = Cast<AWeapon>(overlappedObjects);
+	FVector newLocation = FVector(
+		GetActorLocation().X,
+		GetActorLocation().Y + 80.f,
+		GetActorLocation().Z);
 	if (overlappedWeapon) {
 		if (weaponEquipped) {
 			/* To improve !! */
 			//weaponEquipped->SetActorLocation(GetActorLocation());
 			weaponEquipped->Destroy();
-			GetWorld()->SpawnActor<AWeapon>(weaponEquipped->GetClass(), GetActorLocation(), GetActorRotation());
+			GetWorld()->SpawnActor<AWeapon>(weaponEquipped->GetClass(), newLocation, GetActorRotation());
 			weaponEquipped = nullptr;
 			
 		}

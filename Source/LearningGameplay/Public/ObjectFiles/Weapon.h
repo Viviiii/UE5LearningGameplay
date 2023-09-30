@@ -71,14 +71,14 @@ private :
 	AWeapon* weaponEquipped;
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Property")
-	USoundBase* equipSound;
+		USoundBase* equipSound;
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Property")
 		float Damage;
 
 
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Property")
-	UBoxComponent* Box;
+		UBoxComponent* Box;
 
 	UPROPERTY(VisibleAnywhere)
 		USceneComponent* BoxTraceStart;
@@ -94,6 +94,10 @@ private :
 
 	UPROPERTY(EditAnywhere, Category = "Visual Effects")
 		UNiagaraComponent* VFX;
+		
+	UPROPERTY(EditInstanceOnly)
+		bool secretWeapon;
+
 
 	
 };

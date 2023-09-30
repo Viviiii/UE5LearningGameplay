@@ -47,7 +47,6 @@ void ABreakable::getHit_Implementation(const FVector& impactPoint,AActor* hitter
 	if (broken) return;	
 	broken = true;
 	if (treasureClasses.Num() > 0 && GetWorld()) {
-		GEngine->AddOnScreenDebugMessage(2, 1.5f, FColor::Blue, FString("dzqdzqdqz"));
 		FVector Location = GetActorLocation();
 		Location.Z += 70.f;
 		int Selection = FMath::RandRange(0, treasureClasses.Num() - 1);
@@ -61,4 +60,4 @@ void ABreakable::getHit_Implementation(const FVector& impactPoint,AActor* hitter
 	}
 	
 }
-
+	
