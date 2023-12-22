@@ -25,6 +25,7 @@ class UAnimMontage;
 class AWeapon;
 class UEchoInterfaceComp;
 class IPickUpInterface;
+class UWidgetMenu;
 
 UCLASS()
 class LEARNINGGAMEPLAY_API AEchoCharacter : public ABaseCharacter, public IPickUpInterface
@@ -54,6 +55,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 		UEchoInterfaceComp* echoWidget;
+
+	UPROPERTY(VisibleAnywhere)
+		UWidgetMenu* menuWidget;
 
 	virtual void setKillNumber() override;
 
@@ -105,6 +109,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 		class UInputAction* DodgeAction;
 
+	/** Menu Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+		class UInputAction* MenuAction;
+
 	///* SFX */
 	//UPROPERTY(EditAnywhere, Category = "Sound hurt")
 	//	USoundBase* hurtSound;
@@ -131,6 +139,9 @@ protected:
 
 	/*Called for dodging*/
 	void Dodge();
+
+	/*Called for menu*/
+	void Menu();
 
 	void PlayDodgeMontage();
 

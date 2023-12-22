@@ -11,6 +11,7 @@
 #include "ObjectFiles/Weapon.h"
 #include "ObjectFiles/Door.h"
 #include "HUD/EchoHUD.h"
+#include "HUD/WidgetMenu.h"
 #include "Animation/AnimMontage.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -94,6 +95,10 @@ void AEchoCharacter::InitOverlay(APlayerController* PlayerController)
 			echoInterface->setPercentStamina(1.f);
 			echoInterface->setKills();
 		}
+		menuWidget = echoHUD->GetMenuWidget();
+		if (menuWidget) {
+			menuWidget->showMenu();
+		}
 	}
 }
 
@@ -147,8 +152,11 @@ void AEchoCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		//Abilities Actions
 		EnhancedInputComponent->BindAction(Ability1Action, ETriggerEvent::Triggered, this, &AEchoCharacter::Ability1);
 
-		//Abilities Actions
+		//Dodge Actions
 		EnhancedInputComponent->BindAction(DodgeAction, ETriggerEvent::Triggered, this, &AEchoCharacter::Dodge);
+
+		//Menu Actions
+		EnhancedInputComponent->BindAction(MenuAction, ETriggerEvent::Triggered, this, &AEchoCharacter::Menu);
 
 	}
 }
@@ -299,6 +307,19 @@ void AEchoCharacter::disarmSword()
 {
 	if(weaponEquipped)
 	weaponEquipped->AttachMeshToComponent(GetMesh(), FName("WeaponSheathedSocket"));
+}
+
+void AEchoCharacter::Menu()
+{
+	if (menuWidget) {
+		GEngine->AddOnScreenDebugMessage(2, 1.f, FColor::Red, FString("Okay"));
+	}
+	
+	//menuWidget->Get
+	/*if (menuWidget->GetVisibility() == ESlateVisibility::Hidden)
+	
+	else
+		menuWidget->SetVisibility(ESlateVisibility::Hidden);*/
 }
 
 void AEchoCharacter::hitReactionEnd()
