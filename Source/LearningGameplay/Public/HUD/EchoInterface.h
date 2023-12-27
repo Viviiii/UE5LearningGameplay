@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
+#include "Components/CanvasPanel.h"
 #include "EchoInterface.generated.h"
 
 
@@ -16,6 +17,7 @@
 
 class UProgressBar;
 class STextBlock;
+class UCanvasPanel;
 UCLASS()
 class LEARNINGGAMEPLAY_API UEchoInterface : public UUserWidget
 {
@@ -32,6 +34,8 @@ public :
 
 	void getStamina(float addStamina);
 
+	void showHUD();
+
 	//void addCoins(int amount);
 
 	//void addKills();
@@ -41,6 +45,8 @@ public :
 	void setKills();
 
 	void setRound();
+
+	void showEverything();
 
 	int getRound();
 
@@ -85,6 +91,8 @@ private :
 	UPROPERTY(meta = (BindWidget))
 		UTextBlock* roundNbr;
 
+	UPROPERTY(meta = (BindWidget))
+		UCanvasPanel* canvasPanel;
 	
 	
 };

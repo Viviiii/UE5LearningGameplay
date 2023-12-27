@@ -4,11 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/TextBlock.h"
+#include "Components/ProgressBar.h"
 #include "WidgetMenu.generated.h"
 
 
 class UButton;
 class UImage;
+class STextBlock;
+class UProgressBar;
 /**
  * 
  */
@@ -18,15 +22,24 @@ class LEARNINGGAMEPLAY_API UWidgetMenu : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	void showMenu();
+	void showSomething();
+
+	void test();
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* leaveTheGame;
+
+
+	UPROPERTY(meta = (BindWidget))
+	UImage* backGround;
+
+	UPROPERTY(meta = (BindWidget))
+		UProgressBar* testBar;
 
 private: 
-	UPROPERTY(meta = (BindWidget))
-		UButton* leaveTheGame;
+	
 
 	UPROPERTY(meta = (BindWidget))
 		UButton* backToGame;
 
-	UPROPERTY(meta = (BindWidget))
-		UImage* backGround;
 };

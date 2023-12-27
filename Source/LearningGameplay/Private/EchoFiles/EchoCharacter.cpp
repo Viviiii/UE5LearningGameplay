@@ -10,6 +10,8 @@
 #include "ObjectFiles/Objects.h"
 #include "ObjectFiles/Weapon.h"
 #include "ObjectFiles/Door.h"
+#include "Components/Button.h"
+#include "Components/Image.h"
 #include "HUD/EchoHUD.h"
 #include "HUD/WidgetMenu.h"
 #include "Animation/AnimMontage.h"
@@ -94,10 +96,12 @@ void AEchoCharacter::InitOverlay(APlayerController* PlayerController)
 			echoInterface->setPercentHealth(1.f);
 			echoInterface->setPercentStamina(1.f);
 			echoInterface->setKills();
+			echoInterface->showEverything();
 		}
 		menuWidget = echoHUD->GetMenuWidget();
 		if (menuWidget) {
-			menuWidget->showMenu();
+			//menuWidget->testText->SetVisibility(ESlateVisibility::Visible);
+			//menuWidget->AddToViewport(10);
 		}
 	}
 }

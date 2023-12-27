@@ -98,6 +98,11 @@ void UEchoInterface::setRound()
 	}
 }
 
+void UEchoInterface::showEverything()
+{
+	healthBar->SetVisibility(ESlateVisibility::Hidden);
+}
+
 int UEchoInterface::getRound()
 {
 	return roundNumber;
