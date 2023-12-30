@@ -9,7 +9,6 @@
 /**
  * 
  */
-class UEchoInterfaceComp;
 class UWidgetMenu;
 UCLASS()
 class LEARNINGGAMEPLAY_API AEchoHUD : public AHUD

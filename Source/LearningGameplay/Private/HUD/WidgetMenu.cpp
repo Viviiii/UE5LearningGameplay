@@ -2,13 +2,14 @@
 
 #include "HUD/WidgetMenu.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "Components/Button.h"
-#include "Components/Image.h"
+
 #include "Kismet/GameplayStatics.h"
 
-void UWidgetMenu::showMenu()
+void UWidgetMenu::showHUD()
 {
-	leaveTheGame->SetVisibility(ESlateVisibility::Visible);
-	backToGame->SetVisibility(ESlateVisibility::Visible);
-	backGround->SetVisibility(ESlateVisibility::Visible);
+	if (canvasPanelMenu) {
+		GEngine->AddOnScreenDebugMessage(2, 1.5f, FColor::Red, FString("Menu"));
+		canvasPanelMenu->SetVisibility(ESlateVisibility::Visible);
+	}
+	
 }

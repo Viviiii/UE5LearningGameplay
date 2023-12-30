@@ -43,6 +43,11 @@ void UEchoInterface::getStamina(float addStamina)
 	}
 }
 
+void UEchoInterface::showHUD()
+{
+	canvasPanel->SetVisibility(ESlateVisibility::Visible);
+}
+
 //void UEchoInterface::addCoins(int amount)
 //{
 //	if (coins) {

@@ -93,15 +93,15 @@ void AEchoCharacter::InitOverlay(APlayerController* PlayerController)
 	if (echoHUD) {
 		echoInterface = echoHUD->GetEchoInterface();
 		if (echoInterface) {
-			echoInterface->setPercentHealth(1.f);
+			/*echoInterface->setPercentHealth(1.f);
 			echoInterface->setPercentStamina(1.f);
 			echoInterface->setKills();
-			echoInterface->showEverything();
+			echoInterface->showEverything();*/
+			//echoInterface->showHUD();
 		}
 		menuWidget = echoHUD->GetMenuWidget();
 		if (menuWidget) {
-			//menuWidget->testText->SetVisibility(ESlateVisibility::Visible);
-			//menuWidget->AddToViewport(10);
+			menuWidget->showHUD();
 		}
 	}
 }

@@ -11,5 +11,5 @@ void AEchoHUD::BeginPlay()
 
 	echoInterface = CreateWidget<UEchoInterface>(GetWorld()->GetFirstPlayerController(), echoInterfaceClass);
 	menuWidget = CreateWidget<UWidgetMenu>(GetWorld()->GetFirstPlayerController(), menuWidgetClass);
-	echoInterface->AddToViewport();
+	//echoInterface->AddToViewport();
 }
