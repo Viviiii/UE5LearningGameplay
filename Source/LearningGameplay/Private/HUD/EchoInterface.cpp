@@ -45,6 +45,7 @@ void UEchoInterface::getStamina(float addStamina)
 
 void UEchoInterface::showHUD()
 {
+	
 	canvasPanel->SetVisibility(ESlateVisibility::Visible);
 }
 
@@ -96,6 +97,7 @@ void UEchoInterface::setRound()
 	if (roundNbr) {
 		if (roundNbr->GetVisibility() == ESlateVisibility::Hidden) {
 			roundNbr->SetVisibility(ESlateVisibility::Visible);
+			roundNumber = -1;
 		}
 		roundNumber = 0;
 		roundNumber ++;

@@ -7,6 +7,7 @@
 #include "Components/TextBlock.h"
 #include "Components/CanvasPanel.h"
 #include "Components/ProgressBar.h"
+
 #include "WidgetMenu.generated.h"
 
 
@@ -26,19 +27,36 @@ class LEARNINGGAMEPLAY_API UWidgetMenu : public UUserWidget
 public:
 	void showHUD();
 
-	
+	UFUNCTION(BlueprintCallable)
+	void playGame();
+
+	UFUNCTION(BlueprintCallable)
+	void quitGame();
+
+	UFUNCTION(BlueprintCallable)
+	void settingsMenu();
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class UWidgetSettings> settingsWidgetClass;
+
+	UWidgetSettings* settingsWidget;
+
 
 private: 
 	
 	UPROPERTY(meta = (BindWidget))
-	UButton* leaveTheGame;
+	UButton* quitGameButton;
 
 
 	UPROPERTY(meta = (BindWidget))
 	UImage* backGround;
 
 	UPROPERTY(meta = (BindWidget))
-		UButton* backToGame;
+	UButton* playGameButton;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* settingsButton;
+
 
 	UPROPERTY(meta = (BindWidget))
 	UCanvasPanel* canvasPanelMenu;
