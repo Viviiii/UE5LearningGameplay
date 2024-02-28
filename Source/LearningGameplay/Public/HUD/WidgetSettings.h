@@ -18,12 +18,12 @@ class LEARNINGGAMEPLAY_API UWidgetSettings : public UUserWidget
 	GENERATED_BODY()
 	
 public :
-	UPROPERTY(meta = (BindWidget))
 	UCanvasPanel* canvasPanelSettings;
 
 	UFUNCTION(BlueprintCallable)
 	void backToMenuFunction();
 
+	UFUNCTION(BlueprintCallable)
 	void showHUD();
 private:
 

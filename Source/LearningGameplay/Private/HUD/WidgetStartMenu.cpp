@@ -1,12 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "HUD/WidgetMenu.h"
+#include "HUD/WidgetStartMenu.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "HUD/WidgetSettings.h"
-#include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Kismet/GameplayStatics.h"
 
-void UWidgetMenu::showHUD()
+void UWidgetStartMenu::showHUD()
 {
 
 	FInputModeUIOnly inputMode;
@@ -31,7 +30,7 @@ void UWidgetMenu::showHUD()
 	
 }
 
-void UWidgetMenu::playGame()
+void UWidgetStartMenu::playGame()
 {
 	APlayerController* playerController = Cast<APlayerController>(GEngine->GetFirstLocalPlayerController(GetWorld()));
 	FInputModeGameOnly inputMode;
@@ -45,21 +44,21 @@ void UWidgetMenu::playGame()
 
 }
 
-void UWidgetMenu::quitGame()
+void UWidgetStartMenu::quitGame()
 {
 	APlayerController* playerController = Cast<APlayerController>(GEngine->GetFirstLocalPlayerController(GetWorld()));
 	UKismetSystemLibrary::QuitGame(GetWorld(), playerController, EQuitPreference::Quit,true);
 }
 
-void UWidgetMenu::settingsMenu()
+void UWidgetStartMenu::settingsMenu()
 {
 	settingsWidget = CreateWidget<UWidgetSettings>(GetWorld()->GetFirstPlayerController(), settingsWidgetClass);
+
 	if (settingsWidget) {
-		GEngine->AddOnScreenDebugMessage(3, 1.5f, FColor::Red, FString("Settings"));
+		//GEngine->AddOnScreenDebugMessage(3, 1.5f, FColor::Red, FString("Second step"));
 		canvasPanelMenu->SetVisibility(ESlateVisibility::Hidden);
-		//settingsWidget->canvasPanelSettings->SetVisibility(ESlateVisibility::Visible);
-		settingsWidget->backToMenuFunction();
-		settingsWidget->showHUD();	
+
+		settingsWidget->showHUD();
 		
 	}
 	

@@ -101,7 +101,7 @@ void AEchoCharacter::InitOverlay(APlayerController* PlayerController)
 		}
 		menuWidget = echoHUD->GetMenuWidget();
 		if (menuWidget) {
-			menuWidget->showHUD();
+			//menuWidget->showHUD();
 		}
 	}
 }
