@@ -3,6 +3,13 @@
 
 #include "HUD/EchoInterface.h"
 
+void UEchoInterface::showHUDSurvival()
+{
+	//Death->SetVisibility(ESlateVisibility::Visible);
+	
+
+}
+
 void UEchoInterface::setPercentHealth(float HP)
 {
 
@@ -25,7 +32,9 @@ void UEchoInterface::setPercentStamina(float stamina)
 void UEchoInterface::displayDeath()
 {
 	if (Death) {
+		
 		Death->SetVisibility(ESlateVisibility::Visible);
+		//Crotte->SetText(FText::FromString("Coucou caca "));
 	}
 }
 
@@ -43,74 +52,27 @@ void UEchoInterface::getStamina(float addStamina)
 	}
 }
 
-void UEchoInterface::showHUD()
+
+void UEchoInterface::addKills()
 {
+	killNbr++;
 	
-	canvasPanel->SetVisibility(ESlateVisibility::Visible);
 }
 
-//void UEchoInterface::addCoins(int amount)
-//{
-//	if (coins) {
-//		coinNbr = coinNbr + amount;
-//		coins->SetText(FText::AsNumber(coinNbr));
-//
-//	}
-//}
-
-//void UEchoInterface::addKills()
-//{
-//	if (kills) {
-//		killNbr++;
-//		kills->SetText(FText::AsNumber(killNbr));
-//
-//	}
-//}
-
-void UEchoInterface::setFGKills()
+void  UEchoInterface::setKills()
 {
-	if (FGkills) {
-		if (FGkills->GetVisibility() == ESlateVisibility::Hidden) {
-			FGkills->SetVisibility(ESlateVisibility::Visible);
-			FGkillNbr = -1;
-		}
-		FGkillNbr++;
-		FGkills->SetText(FText::AsNumber(FGkillNbr));
-
-	}
-}
-
-void UEchoInterface::setKills()
-{
-	if (kills) {
-		if (kills->GetVisibility() == ESlateVisibility::Hidden) {
-			kills->SetVisibility(ESlateVisibility::Visible);
-			killNbr = -1;
-		}
+	/*if (killsTxt) {
+		
 		killNbr++;
-		kills->SetText(FText::AsNumber(killNbr));
+		killsTxt->SetText(FText::AsNumber(killNbr));
+		
+	}*/
+}
+
+void UEchoInterface::setKillsLogo()
+{
+	if (killsLogo) {
+		killsLogo->SetVisibility(ESlateVisibility::Visible);
 	}
-}
-
-void UEchoInterface::setRound()
-{
-	if (roundNbr) {
-		if (roundNbr->GetVisibility() == ESlateVisibility::Hidden) {
-			roundNbr->SetVisibility(ESlateVisibility::Visible);
-			roundNumber = -1;
-		}
-		roundNumber = 0;
-		roundNumber ++;
-		roundNbr->SetText(FText::AsNumber(roundNumber));
-	}
-}
-
-void UEchoInterface::showEverything()
-{
-	healthBar->SetVisibility(ESlateVisibility::Hidden);
-}
-
-int UEchoInterface::getRound()
-{
-	return roundNumber;
+	
 }

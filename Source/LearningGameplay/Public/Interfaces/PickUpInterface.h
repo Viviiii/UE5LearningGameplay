@@ -28,6 +28,5 @@ public:
 	virtual void addCoins(class ATreasure* treasure);
 	virtual void getHeal(class APotions* potion);
 	virtual void addKills(class ASkulls* skull);
-	virtual void addFGKills(class ASkulls* FG);
 	virtual void getStamina(class APotions* potion);
 };

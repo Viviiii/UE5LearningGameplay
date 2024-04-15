@@ -21,9 +21,6 @@ void IPickUpInterface::addKills(ASkulls* skull)
 {
 }
 
-void IPickUpInterface::addFGKills(class ASkulls* FG)
-{
-}
 
 void IPickUpInterface::getStamina(APotions* potion)
 {

@@ -52,5 +52,4 @@ UENUM(BlueprintType)
 enum EEnemyIdleState{
 	EEIS_Idle1 UMETA(DisplayName = "Idle1"),
 	EEIS_Idle2 UMETA(DisplayName = "Idle2"),
-	EEIS_Idle3 UMETA(DisplayName = "Idle3"),
 };

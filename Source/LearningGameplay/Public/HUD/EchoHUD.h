@@ -10,6 +10,8 @@
  * 
  */
 class UWidgetMenu;
+class UEchoInterface;
+
 UCLASS()
 class LEARNINGGAMEPLAY_API AEchoHUD : public AHUD
 {
@@ -23,18 +25,21 @@ private:
 		TSubclassOf<class UEchoInterface> echoInterfaceClass;
 
 	UPROPERTY(EditDefaultsOnly)
-		TSubclassOf<class UWidgetMenu> menuWidgetClass;
+		TSubclassOf<class UWidgetMenu> menuStartWidgetClass;
 
 	UPROPERTY()
 		UEchoInterface* echoInterface;
 
 	UPROPERTY()
-		UWidgetMenu* menuWidget;
+		UWidgetMenu* menuStartWidget;
 
 public :
+
+	
+
 	FORCEINLINE UEchoInterface* GetEchoInterface() const { return echoInterface; }
 
-	FORCEINLINE UWidgetMenu* GetMenuWidget() const { return menuWidget; }
+	FORCEINLINE UWidgetMenu* GetStartMenuWidget() const { return menuStartWidget; }
 
 
 

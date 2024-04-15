@@ -52,15 +52,4 @@ void UWidgetStartMenu::quitGame()
 
 void UWidgetStartMenu::settingsMenu()
 {
-	settingsWidget = CreateWidget<UWidgetSettings>(GetWorld()->GetFirstPlayerController(), settingsWidgetClass);
-
-	if (settingsWidget) {
-		//GEngine->AddOnScreenDebugMessage(3, 1.5f, FColor::Red, FString("Second step"));
-		canvasPanelMenu->SetVisibility(ESlateVisibility::Hidden);
-
-		settingsWidget->showHUD();
-		
-	}
-	
-
 }

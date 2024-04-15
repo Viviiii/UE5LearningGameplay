@@ -7,6 +7,7 @@
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "Components/CanvasPanel.h"
+#include "Components/Image.h"
 #include "EchoInterface.generated.h"
 
 
@@ -16,6 +17,7 @@
  */
 
 class UProgressBar;
+class UImage;
 class STextBlock;
 class UCanvasPanel;
 UCLASS()
@@ -24,6 +26,10 @@ class LEARNINGGAMEPLAY_API UEchoInterface : public UUserWidget
 	GENERATED_BODY()
 
 public : 
+
+	UFUNCTION(BlueprintCallable)
+	void showHUDSurvival();
+
 	void setPercentHealth(float HP);
 
 	void setPercentStamina(float stamina);
@@ -34,36 +40,20 @@ public :
 
 	void getStamina(float addStamina);
 
-	void showHUD();
 
-	//void addCoins(int amount);
+	void addKills();
 
-	//void addKills();
-
-	void setFGKills();
-
+	UFUNCTION(BlueprintCallable)
 	void setKills();
 
-	void setRound();
-
-	void showEverything();
+	UFUNCTION(BlueprintCallable)
+	void setKillsLogo();
 
 	int getRound();
 
-	/*UPROPERTY(BlueprintReadWrite)
-		int potionsNbr;
-
-	UPROPERTY(BlueprintReadWrite)
-		int coinNbr;*/
 
 	UPROPERTY(BlueprintReadWrite)
 		int killNbr;
-
-	UPROPERTY(BlueprintReadWrite)
-		int FGkillNbr;
-
-	UPROPERTY(BlueprintReadWrite)
-		int roundNumber;
 
 
 private :
@@ -73,25 +63,16 @@ private :
 	UPROPERTY(meta = (BindWidget))
 		UProgressBar* staminaBar;
 
-	/*UPROPERTY(meta = (BindWidget))
-		UTextBlock* potions;
-
-	UPROPERTY(meta = (BindWidget))
-		UTextBlock* coins;*/
-
 	UPROPERTY(meta = (BindWidget))
 		UTextBlock* Death;
 
-	UPROPERTY(meta = (BindWidget))
-		UTextBlock* kills;
+		UTextBlock* Crotte;
 
-	UPROPERTY(meta = (BindWidget))
-		UTextBlock* FGkills;
+	//UPROPERTY(meta = (BindWidget))
+	UImage* killsLogo;
 
-	UPROPERTY(meta = (BindWidget))
-		UTextBlock* roundNbr;
 
-	UPROPERTY(meta = (BindWidget))
+	//UPROPERTY(meta = (BindWidget))
 		UCanvasPanel* canvasPanel;
 	
 	

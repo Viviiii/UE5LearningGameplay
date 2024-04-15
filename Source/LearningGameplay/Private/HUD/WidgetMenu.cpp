@@ -14,7 +14,7 @@ void UWidgetMenu::showHUD()
 	APlayerController* playerController = Cast<APlayerController>(GEngine->GetFirstLocalPlayerController(GetWorld()));
 	if (canvasPanelMenu) {
 		if (canvasPanelMenu->GetVisibility() == ESlateVisibility::Hidden) {
-			canvasPanelMenu->SetVisibility(ESlateVisibility::Visible);
+			//canvasPanelMenu->SetVisibility(ESlateVisibility::Visible);
 			playerController->bShowMouseCursor = true;
 			playerController->SetPause(true);
 			inputMode.SetWidgetToFocus(this->TakeWidget());
@@ -55,11 +55,8 @@ void UWidgetMenu::settingsMenu()
 {
 	settingsWidget = CreateWidget<UWidgetSettings>(GetWorld()->GetFirstPlayerController(), settingsWidgetClass);
 	if (settingsWidget) {
-		GEngine->AddOnScreenDebugMessage(3, 1.5f, FColor::Red, FString("Settings"));
+		
 		canvasPanelMenu->SetVisibility(ESlateVisibility::Hidden);
-		//settingsWidget->canvasPanelSettings->SetVisibility(ESlateVisibility::Visible);
-		settingsWidget->backToMenuFunction();
-		settingsWidget->showHUD();	
 		
 	}
 	

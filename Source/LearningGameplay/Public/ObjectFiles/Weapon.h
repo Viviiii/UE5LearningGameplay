@@ -38,7 +38,7 @@ protected :
 
 	void ExecuteHit(AActor* OtherActor, FHitResult& boxHit, AActor* hitter);
 
-	void BoxTraceWeapon(FHitResult& boxHit);
+	bool BoxTraceWeapon(FHitResult& boxHit);
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void createField(const FVector& location);
