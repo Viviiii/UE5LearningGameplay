@@ -234,11 +234,10 @@ void AEchoCharacter::Interact()
 		weaponEquipped = overlappedWeapon;
 	}
 
-	AEnemy* princess = Cast<AEnemy>(overlappedObjects);
+	AActor* princess = Cast<AActor>(overlappedObjects);
 	if (princess) {
 		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString("You saved her"));
 	}
-
 }
 
 void AEchoCharacter::Ability1()
