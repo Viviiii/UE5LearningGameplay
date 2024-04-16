@@ -117,6 +117,8 @@ protected :
 
 	void startAttackTimer();
 
+	void startPatrolTimer();
+
 	void patrolTimerFinished();
 
 	void respawnEnemyTimer();

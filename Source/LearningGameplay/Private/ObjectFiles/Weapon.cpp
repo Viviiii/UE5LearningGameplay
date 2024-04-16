@@ -23,22 +23,20 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 {
 	FHitResult boxHit;
 	if (OtherActor->ActorHasTag(TEXT("EchoCharacter"))) {
-		//GEngine->AddOnScreenDebugMessage(1, 1.5f, FColor::Red, FString(OtherActor->GetName()));
+		
 	}	
 	
 	/* Echo hitted and the enemy or breakable is target, or enemy hitted and echo is target*/
 	if (GetOwner()->ActorHasTag(TEXT("Enemy")) && OtherActor->ActorHasTag(TEXT("Enemy"))) return;
 
+	const FVector endTrace = BoxTraceEnd->GetComponentLocation();
+	const FVector startTrace = BoxTraceStart->GetComponentLocation();
 	BoxTraceWeapon(boxHit);
 	if (boxHit.GetActor()) {
-		
+			
 		
 		if (GetOwner()->ActorHasTag(TEXT("Enemy")) && boxHit.GetActor()->ActorHasTag(TEXT("Enemy"))) return;
 
-		if (boxHit.GetActor()->ActorHasTag(TEXT("EchoCharacter"))) {
-			GEngine->AddOnScreenDebugMessage(1, 1.5f, FColor::Red, FString(boxHit.GetActor()->GetName()));
-		}
-		
 		UGameplayStatics::ApplyDamage(boxHit.GetActor(), Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
 		ExecuteHit(boxHit.GetActor(), boxHit, GetOwner());
 		/* Enemy hit the player*/
@@ -49,7 +47,7 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 		
 		/* Player hit the enemy*/
 		/*if (GetOwner()->ActorHasTag("EchoCharacter") && OtherActor->ActorHasTag("Enemy")) {
-			GEngine->AddOnScreenDebugMessage(2, 1.5f, FColor::Red, FString("CEST BOOOOOON"));
+
 		
 			UGameplayStatics::ApplyDamage(boxHit.GetActor(), Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
 			ExecuteHit(boxHit.GetActor(), boxHit, GetOwner());
@@ -75,7 +73,7 @@ void AWeapon::ExecuteHit(AActor* OtherActor, FHitResult& boxHit, AActor* hitter)
 }
 
 
-void AWeapon::BoxTraceWeapon(FHitResult& boxHit)
+bool AWeapon::BoxTraceWeapon(FHitResult& boxHit)
 {
 	const FVector endTrace = BoxTraceEnd->GetComponentLocation();
 	const FVector startTrace = BoxTraceStart->GetComponentLocation();
@@ -88,26 +86,34 @@ void AWeapon::BoxTraceWeapon(FHitResult& boxHit)
 	{
 		ActorsToIgnore.AddUnique(Actor);
 	}
-	//GEngine->AddOnScreenDebugMessage(4, 3.f, FColor::Red, FString::Printf(TEXT("Size : %d"), ActorsToIgnore.Num()));
 
 	/*It should only be working when the player is attacking*/
-	UKismetSystemLibrary::BoxTraceSingle(this,
-		startTrace, 
+	if (UKismetSystemLibrary::BoxTraceSingle(this,
+		startTrace,
 		endTrace,
-		FVector(15.5f, 15.5f, 15.5f),
+		FVector(20.5f, 20.5f, 20.5f),
 		BoxTraceStart->GetComponentRotation(),
 		ETraceTypeQuery::TraceTypeQuery1,
 		false,
 		ActorsToIgnore,
 		EDrawDebugTrace::None,
 		boxHit,
-		true);
+		true/*,
+		FLinearColor::Black,
+		FLinearColor::Blue*/)) {
+
+		IgnoreActors.AddUnique(boxHit.GetActor());
+		return true;
+	}
+	else {
+		return false;
+	}
+
 	
 	
-	IgnoreActors.AddUnique(boxHit.GetActor());
 	/*if (boxHit.GetActor()) {
 		if (!boxHit.GetActor()->ActorHasTag("EchoCharacter")) {
-			GEngine->AddOnScreenDebugMessage(4, 3.f, FColor::Red, FString(boxHit.GetActor()->GetName()));
+			
 
 			ActorsToIgnore.AddUnique(boxHit.GetActor());
 		}
@@ -151,7 +157,7 @@ void AWeapon::equip(USceneComponent* weap, FName socketName, AActor* NewOwner, A
 	SetOwner(NewOwner);
 	SetInstigator(instigator);
 	weaponState = EWeaponState::EWS_Equipped;
-	if (equipSound) {
+	if (equipSound && NewOwner->ActorHasTag("EchoCharacter")) {
 		UGameplayStatics::PlaySoundAtLocation(this, equipSound, GetActorLocation());
 	}
 	if (VFX) {

@@ -8,7 +8,6 @@
 #include "InputActionValue.h"
 #include "CharacterStateEnum.h"
 #include "Interfaces/PickUpInterface.h"
-#include "HUD/EchoInterfaceComp.h"
 #include "ObjectFiles/Treasure.h"
 #include "ObjectFiles/Potions.h"
 #include "EchoCharacter.generated.h"
@@ -52,12 +51,11 @@ public:
 		return deathPose;
 	}
 
-
-	UPROPERTY(VisibleAnywhere)
-		UEchoInterfaceComp* echoWidget;
-
 	UPROPERTY(VisibleAnywhere)
 		UWidgetMenu* menuWidget;
+
+	UPROPERTY(EditDefaultsOnly)
+		TSubclassOf<class UEchoInterface> echoInterfaceClass;
 
 	virtual void setKillNumber() override;
 
@@ -235,9 +233,15 @@ public:
 	virtual void getHeal(APotions* potion) override;
 	virtual void getStamina(APotions* potion) override;
 	virtual void addKills(ASkulls* skull) override;
-	virtual void addFGKills(ASkulls* FG) override;
 
+	UFUNCTION(BlueprintCallable)
 	int getKillNumber();
+
+	UFUNCTION(BlueprintCallable)
+	float getHeal();
+
+	UFUNCTION(BlueprintCallable)
+	float getStamina();
 
 	/*Sounds*/
 	UPROPERTY(EditAnywhere, Category = "Game Music")

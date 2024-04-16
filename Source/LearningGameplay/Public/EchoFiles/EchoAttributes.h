@@ -37,9 +37,9 @@ public:
 
 	int getKillNumber();
 
-	void setKillFG();
+	void setKills();
 
-	int getKillFG();
+	int getKills();
 
 	FName getName();
 
@@ -55,12 +55,6 @@ private :
 		float maxHealth=500.f;
 
 	UPROPERTY(EditAnywhere, Category = "Echo Attributes")
-		int gold;
-
-	UPROPERTY(EditAnywhere, Category = "Echo Attributes")
-		int level;
-
-	UPROPERTY(EditAnywhere, Category = "Echo Attributes")
 		float stamina;
 
 	UPROPERTY(EditAnywhere, Category = "Echo Attributes")
@@ -70,7 +64,7 @@ private :
 		int killNumber;
 
 	UPROPERTY(EditAnywhere, Category = "Echo Attributes")
-		float killFG;
+		float kills;
 
 	UPROPERTY(EditAnywhere, Category = "Echo Attributes")
 		FName name;

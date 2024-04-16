@@ -23,8 +23,8 @@ public :
 	UFUNCTION(BlueprintCallable)
 	void backToMenuFunction();
 
-	UFUNCTION(BlueprintCallable)
-	void showHUD();
+	//UFUNCTION(BlueprintCallable)
+	//void showHUD();
 private:
 
 	UWidget* widgetMenu;

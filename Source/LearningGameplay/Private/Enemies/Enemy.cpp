@@ -66,14 +66,9 @@ void AEnemy::BeginPlay()
 	SpawnDefaultWeapon();
 	echo = Cast<AEchoCharacter>(GetWorld()->GetFirstPlayerController()->GetCharacter());
 	if (targetPatrol && AIenemy) {	
-		GetWorld()->GetTimerManager().SetTimer(patrolTimer, this, &AEnemy::patrolTimerFinished, FMath::RandRange(5.f, 10.5f), true);
+		GetWorld()->GetTimerManager().SetTimer(patrolTimer, this, &AEnemy::patrolTimerFinished, FMath::RandRange(3.f, 8.5f), true, 0.1f);
 	}
-	else if(AIenemy){
-		
-		combatRadius = 10000.f;
-		combatTarget = echo;
-		ChaseTarget();
-	}
+	
 	if (spawnMontage) {
 		GetCharacterMovement()->MaxWalkSpeed = 0.f;
 		PlaySpawnMontage();
@@ -101,11 +96,42 @@ void AEnemy::SpawnDefaultWeapon()
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
+	double  distance = FVector::Distance(echo->GetActorLocation(), GetActorLocation());
+	const double distanceTarget = (echo->GetActorLocation() - GetActorLocation()).Size();
+
 	/*IA Attack*/
 	if (enemyState > EEnemyState::EES_Patrol && AIenemy ) {
 
 		CheckCombatTarget();
+	}
+
+}
+
+void AEnemy::CheckCombatTarget()
+{
+	
+	/*Ennemies lose interest, go back to patrolling*/
+	if (/*IsOutsideCombatRadius*/FVector::Distance(echo->GetActorLocation(), GetActorLocation()) > 800.f) {
+
+		LoseInterest();
+		StartPatrolling();
+
+	}
+	/* Enemies too far to attack so goes back to chasing*/
+	else if (/*IsOutsideAttackRadius()*/  FVector::Distance(echo->GetActorLocation(), GetActorLocation()) > 400.f && !IsChasing()) {
+		if (IsAttacking()) {
+			StopAttackMontage();
+		}
+
+		ChaseTarget();
+		
+	}
+	/* Enemies ATTAAAAAAAAAAAAACK*/
+	else if (/*!IsOutsideAttackRadius() && !IsAttacking()*/ FVector::Distance(echo->GetActorLocation(), GetActorLocation()) < 300.f && bCanAttack()) {
+		/* If during attack, player too far, he misses, or stop attacking*/
+		startAttackTimer();
+	
+
 	}
 
 }
@@ -121,8 +147,9 @@ void AEnemy::getHit_Implementation(const FVector& impactPoint, AActor* hitter)
 	PlayVFX(impactPoint, bloodEffect);
 	if (IsAlive()) {
 		DirectionalHit(impactPoint); 
+
 		if (!IsOutsideAttackRadius() && !IsAttacking()) {
-			Attack();
+			startAttackTimer();
 		}
 		if (hurtSound) {
 			UGameplayStatics::PlaySoundAtLocation(this, hurtSound, GetActorLocation());
@@ -176,6 +203,7 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 	MoveToTarget(combatTarget);*/
 	return DamageAmount;
 }
+
 
 
 void AEnemy::Destroyed()
@@ -288,7 +316,7 @@ bool AEnemy::IsOutsideAttackRadius()
 
 bool AEnemy::IsOutsideCombatRadius()
 {
-		return !isTargetInRange(combatTarget, combatRadius);
+	return !isTargetInRange(combatTarget, combatRadius);
 }
 
 bool AEnemy::bCanAttack()
@@ -299,8 +327,8 @@ bool AEnemy::bCanAttack()
 /* IA Navigation */
 void AEnemy::ChaseTarget()
 {
-	
 	GetWorld()->GetTimerManager().ClearTimer(attackTimer);
+	GetWorld()->GetTimerManager().ClearTimer(patrolTimer);
 	actionState = EActionState::EAS_Unoccupied;
 	enemyState = EEnemyState::EES_Chasing;
 	GetCharacterMovement()->MaxWalkSpeed = maxSpeed;
@@ -311,6 +339,7 @@ void AEnemy::ChaseTarget()
 void AEnemy::StartPatrolling()
 {
 	enemyState = EEnemyState::EES_Patrol;
+	targetPatrol = choosingTarget();
 	GetCharacterMovement()->MaxWalkSpeed = 250.f;
 	if (!targetPatrol) {
 		MoveToRandomLocation();
@@ -332,29 +361,7 @@ void AEnemy::LoseInterest()
 	}
 }
 
-void AEnemy::CheckCombatTarget()	
-{
-	/*Ennemies lose interest, go back to patrolling*/
-	if (IsOutsideCombatRadius()) {
-		LoseInterest();
-		StartPatrolling();
 
-	}
-	/* Enemies too far to attack so goes back to chasing*/
-	else if (IsOutsideAttackRadius() && !IsChasing()) {
-		
-		if (IsAttacking()) {
-			StopAttackMontage();
-		}
-		ChaseTarget();
-	}
-	/* Enemies ATTAAAAAAAAAAAAACK*/
-	else if (!IsOutsideAttackRadius() /*&& !IsAttacking()*/ && bCanAttack()) {
-		/* If during attack, player too far, he misses, or stop attacking*/
-		startAttackTimer();
-	}
-	
-}
 
 void AEnemy::Attack() {
 	//Super::Attack();
@@ -379,7 +386,12 @@ void AEnemy::startAttackTimer()
 {
 
 	enemyState = EEnemyState::EES_Attacking;
-	GetWorld()->GetTimerManager().SetTimer(attackTimer, this, &AEnemy::Attack, FMath::RandRange(attackIntMin, attackIntMax), true, 1.5f);
+	GetWorld()->GetTimerManager().SetTimer(attackTimer, this, &AEnemy::Attack, FMath::RandRange(attackIntMin, attackIntMax), true, 0.2f);
+}
+
+void AEnemy::startPatrolTimer()
+{
+	GetWorld()->GetTimerManager().SetTimer(patrolTimer, this, &AEnemy::patrolTimerFinished, FMath::RandRange(3.f, 8.5f), true, 0.1f);
 }
 
 bool AEnemy::isTargetInRange(AActor* target, double radius)
@@ -397,7 +409,6 @@ bool AEnemy::isTargetInRange(AActor* target, double radius)
 void AEnemy::MoveToTarget(AActor* target)
 {
 	if (target != nullptr) {
-		
 		FAIMoveRequest moveReq;
 		
 		moveReq.SetGoalActor(target);
@@ -432,9 +443,10 @@ void AEnemy::MoveToRandomLocation()
 
 void AEnemy::patrolTimerFinished()
 {
-	PlayIdleMontage();
-	targetPatrol = choosingTarget();
-	StopIdleMontage();
+	StartPatrolling();
+	//PlayIdleMontage();
+	/*targetPatrol = choosingTarget();
+	//StopIdleMontage();
 	
 	if (!targetPatrol) {
 		MoveToRandomLocation();
@@ -443,7 +455,7 @@ void AEnemy::patrolTimerFinished()
 		
 		MoveToTarget(targetPatrol);
 	}
-	
+	*/
 }
 
 //void AEnemy::respawnEnemyTimer()
@@ -456,6 +468,7 @@ void AEnemy::patrolTimerFinished()
 AActor* AEnemy::choosingTarget()
 {
 	TArray<AActor*> validActors;
+	
 	for (AActor* target : targetsPatrol) {
 		if (target != targetPatrol) {
 			validActors.AddUnique(target);
@@ -498,6 +511,7 @@ int32 AEnemy::PlayIdleMontage()
 	
 	const int32 selection = Super::PlayIdleMontage();
 	TEnumAsByte<EEnemyIdleState> Pose(selection);
+	
 	idlePose = Pose;
 	return selection;
 }
@@ -506,7 +520,7 @@ int32 AEnemy::PlayIdleMontage()
 void AEnemy::EnemyDeath()
 {
 	Super::Die();
-
+	
 	/*nt32 random = FMath::RandRange(0, 3);
 	TEnumAsByte<EDeathState> Pose(random);
 	
@@ -520,8 +534,9 @@ void AEnemy::EnemyDeath()
 	//disableSwordCollision(ECollisionEnabled::NoCollision);
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetWorld()->SpawnActor<AObjects>(skullClass, GetActorLocation(), GetActorRotation());
 	if (!targetPatrol) {
 		//setEnemyNbr(-1);        
-		GetWorld()->SpawnActor<AObjects>(skullClass, GetActorLocation(), GetActorRotation());
+		
 	}
 }

@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "EchoFiles/EchoCharacter.h"
+#include "Enemies/Enemy.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GroomComponent.h"
@@ -58,13 +59,11 @@ AEchoCharacter::AEchoCharacter()
 	Eyesbrows->AttachmentName = FString("head");
 
 	Attributes = CreateDefaultSubobject<UEchoAttributes>(TEXT("EchoAttributes"));
-	/*echoWidget = CreateDefaultSubobject<UEchoInterfaceComp>(TEXT("HealthBar"));
-	echoWidget->SetupAttachment(GetRootComponent());*/
 
 
 
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
-
+	
 }
 
 // Called when the game starts or when spawned
@@ -78,8 +77,13 @@ void AEchoCharacter::BeginPlay()
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
-		InitOverlay(PlayerController);
+		//echoInterface = CreateWidget<UEchoInterface>(GetWorld()->GetFirstPlayerController(), echoInterfaceClass);
+		//echoInterface->displayDeath();
+		//echoInterface->setKills();
+		//Attributes->setKills();
 	}
+	
+	
 	maxSpeed = GetCharacterMovement()->GetMaxSpeed();
 	/*if (musicGame) {
 		UGameplayStatics::PlaySoundAtLocation(this, musicGame, GetActorLocation());
@@ -87,19 +91,24 @@ void AEchoCharacter::BeginPlay()
 	Tags.Add(FName("EchoCharacter"));
 }
 
-void AEchoCharacter::InitOverlay(APlayerController* PlayerController)
+/*void AEchoCharacter::InitOverlay(APlayerController* PlayerController)
 {
+	
+	echoInterface->setKills();
 	AEchoHUD* echoHUD = Cast<AEchoHUD>(PlayerController->GetHUD());
 	if (echoHUD) {
 		echoInterface = echoHUD->GetEchoInterface();
 		if (echoInterface) {
-			/*echoInterface->setPercentHealth(1.f);
-			echoInterface->setPercentStamina(1.f);
+
+			//echoInterface->setPercentHealth(1.f);
+			//echoInterface->setPercentStamina(1.f);
+			//echoInterface->displayDeath();
 			echoInterface->setKills();
-			echoInterface->showEverything();*/
+			//echoInterface->setKillsLogo();
+			//echoInterface->showEverything();
 			//echoInterface->showHUD();
 		}
-		menuWidget = echoHUD->GetMenuWidget();
+		menuWidget = echoHUD->GetStartMenuWidget();
 		if (menuWidget) {
 			//menuWidget->showHUD();
 		}
@@ -116,6 +125,8 @@ void AEchoCharacter::InitOverlayRound(APlayerController* PlayerController)
 		}
 	}
 }
+*/
+
 
 // Called every frame
 void AEchoCharacter::Tick(float DeltaTime)
@@ -223,9 +234,9 @@ void AEchoCharacter::Interact()
 		weaponEquipped = overlappedWeapon;
 	}
 
-	ADoor* door = Cast<ADoor>(overlappedObjects);
-	if (door) {
-		door->doorOpening();
+	AEnemy* princess = Cast<AEnemy>(overlappedObjects);
+	if (princess) {
+		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString("You saved her"));
 	}
 
 }
@@ -244,16 +255,12 @@ void AEchoCharacter::Ability1()
 void AEchoCharacter::Dodge()
 {
 	if (actionState != EActionState::EAS_Unoccupied || Attributes->getStamina() < 0.15) {
-		
 		return;
 	}
 		GetCharacterMovement()->MaxWalkSpeed = maxSpeed + 50;
 		PlayDodgeMontage();
 		actionState = EActionState::EAS_Dodge;
-		if (Attributes && echoInterface) {
-			Attributes->useStamina(5);
-			echoInterface->setPercentStamina(Attributes->getStamina());
-		}
+		Attributes->useStamina(5);
 }
 
 void AEchoCharacter::PlayDodgeMontage()
@@ -292,7 +299,7 @@ void AEchoCharacter::Attack()
 		PlayAttackMontage();
 		actionState = EActionState::EAS_Attacking;
 		if (Attributes) {
-			Attributes->useStamina(10);
+			//Attributes->useStamina(10);
 		}
 		if (echoInterface) {
 			echoInterface->setPercentStamina(Attributes->getStamina());
@@ -316,7 +323,7 @@ void AEchoCharacter::disarmSword()
 void AEchoCharacter::Menu()
 {
 	if (menuWidget) {
-		GEngine->AddOnScreenDebugMessage(2, 1.f, FColor::Red, FString("Okay"));
+		
 	}
 	
 	//menuWidget->Get
@@ -366,10 +373,6 @@ float AEchoCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageE
 	Super::ReduceHealth(DamageAmount);
 	
 
-	if (echoInterface) {
-		echoInterface->setPercentHealth(Attributes->getHealth());
-		
-	}
 	return DamageAmount;
 }
 
@@ -378,40 +381,35 @@ void AEchoCharacter::setOverlappingItem(AObjects* item)
 	overlappedObjects = item;
 }
 
-//void AEchoCharacter::addCoins(ATreasure* treasure)
-//{
-//	echoInterface->addCoins(treasure->coin);
-//}
+float AEchoCharacter::getHeal()
+{
+	return Attributes->getHealth();
+}
+
+float AEchoCharacter::getStamina()
+{
+	return Attributes->getStamina();
+}
 
 void AEchoCharacter::getHeal(APotions* potion)
 {
-	
-	if (echoInterface) {
-		Attributes->setHealth(200);
-		//GEngine->AddOnScreenDebugMessage(3, 1.f, FColor::Red, FString::Printf(TEXT("Health : %f"), Attributes->getHealth()));
-		echoInterface->setPercentHealth(Attributes->getHealth());
-
-	}
+	Attributes->setHealth(0.5);
 }
 
 void AEchoCharacter::getStamina(APotions* potion)
 {
-	echoInterface->getStamina(Attributes->getStamina() + 0.25);
+	Attributes->setStamina(0.5);
 }
 
 void AEchoCharacter::addKills(ASkulls* skull)
 {
-	echoInterface->setKills();
-	killNumber++;
-
+	Attributes->setKills();
+	if (echoInterface) {
+		//echoInterface->setKills();
+		Attributes->setKills();
+	}	
 }
 
-void AEchoCharacter::addFGKills(ASkulls* FG)
-{
-	echoInterface->setFGKills();
-	Attributes->setKillFG();
-	FGKillNumber++;
-}
 
 void AEchoCharacter::echoDeath()
 {
@@ -440,7 +438,7 @@ bool AEchoCharacter::canSheathe() {
 
 int AEchoCharacter::getKillNumber()
 {
-	return killNumber;
+	return Attributes->getKills();
 }
 
 void AEchoCharacter::setKillNumber()
@@ -451,22 +449,31 @@ void AEchoCharacter::setKillNumber()
 void AEchoCharacter::getHit_Implementation(const FVector& impactPoint, AActor* hitter)
 {
 	/* Simplify the function*/
-	PlaySound(impactPoint, hitSound);
-	PlayVFX(impactPoint, bloodEffect);
-	StopAttackMontage();
-	StopDodgeMontage();	
-	if (hurtSound) {
-		UGameplayStatics::PlaySoundAtLocation(this, hurtSound, GetActorLocation());
-	}
-	if (IsAlive() && hitter) {
-		DirectionalHit(impactPoint);
-		disableSwordCollision(ECollisionEnabled::NoCollision);
-		
-		actionState = EActionState::EAS_HitReaction;
+	if (actionState != EActionState::EAS_Dodge) {
+		/*VFX/SFX part*/
+		if (hurtSound && hitSound && bloodEffect) {
+
+			PlaySound(GetActorLocation(), hurtSound);
+			PlaySound(impactPoint, hitSound);
+			PlayVFX(impactPoint, bloodEffect);
+		}
+		StopAttackMontage();
+		//StopDodgeMontage();
+
+		if (IsAlive() && hitter) {
+			DirectionalHit(impactPoint);
+			disableSwordCollision(ECollisionEnabled::NoCollision);
+
+			actionState = EActionState::EAS_HitReaction;
+		}
+		else {
+			echoDeath();
+		}
 	}
 	else {
-		echoDeath();
+		Attributes->setHealth(50);
 	}
+	
 	
 }
 

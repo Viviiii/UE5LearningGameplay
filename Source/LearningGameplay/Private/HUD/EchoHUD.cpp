@@ -2,6 +2,7 @@
 
 
 #include "HUD/EchoHUD.h"
+#include "HUD/EchoInterface.h"
 #include "HUD/EchoInterfaceComp.h"
 #include "HUD/WidgetMenu.h"
 
@@ -10,7 +11,8 @@ void AEchoHUD::BeginPlay()
 	Super::BeginPlay();
 
 	echoInterface = CreateWidget<UEchoInterface>(GetWorld()->GetFirstPlayerController(), echoInterfaceClass);
-	menuWidget = CreateWidget<UWidgetMenu>(GetWorld()->GetFirstPlayerController(), menuWidgetClass);
-	echoInterface->AddToViewport();
-	menuWidget->AddToViewport(1);
+	menuStartWidget = CreateWidget<UWidgetMenu>(GetWorld()->GetFirstPlayerController(), menuStartWidgetClass);
+	//echoInterface->setKills();
+	//echoInterface->AddToViewport();
+	//menuStartWidget->AddToViewport(1);
 }
