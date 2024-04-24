@@ -437,6 +437,7 @@ bool AEchoCharacter::canSheathe() {
 
 int AEchoCharacter::getKillNumber()
 {
+
 	return Attributes->getKills();
 }
 

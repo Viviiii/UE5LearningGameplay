@@ -69,4 +69,8 @@ private :
 	UPROPERTY(EditAnywhere, Category = "Echo Attributes")
 		FName name;
 
+	/* SFX */
+	UPROPERTY(EditAnywhere, Category = "Victory sound")
+		USoundBase* victorySound;
+
 };
