@@ -2,6 +2,7 @@
 
 
 #include "EchoFiles/EchoAttributes.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties
 UEchoAttributes::UEchoAttributes()
@@ -67,7 +68,11 @@ int UEchoAttributes::getKillNumber()
 
 void UEchoAttributes::setKills()
 {
-	kills++;
+	kills++;	
+	//Change to 10
+	if (kills == 2 && victorySound) {
+		UGameplayStatics::PlaySound2D(this, victorySound);
+	}
 }
 
 int UEchoAttributes::getKills()
