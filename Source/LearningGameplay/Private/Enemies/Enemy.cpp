@@ -111,18 +111,17 @@ void AEnemy::CheckCombatTarget()
 {
 	
 	/*Ennemies lose interest, go back to patrolling*/
-	if (/*IsOutsideCombatRadius*/FVector::Distance(echo->GetActorLocation(), GetActorLocation()) > 800.f) {
+	if (/*IsOutsideCombatRadius*/FVector::Distance(echo->GetActorLocation(), GetActorLocation()) >1200.f) {
 
 		LoseInterest();
 		StartPatrolling();
-
 	}
 	/* Enemies too far to attack so goes back to chasing*/
-	else if (/*IsOutsideAttackRadius()*/  FVector::Distance(echo->GetActorLocation(), GetActorLocation()) > 400.f && !IsChasing()) {
+	else if (/*IsOutsideAttackRadius()*/  FVector::Distance(echo->GetActorLocation(), GetActorLocation()) > 600.f && !IsChasing()) {
 		if (IsAttacking()) {
 			StopAttackMontage();
 		}
-
+		
 		ChaseTarget();
 		
 	}
@@ -220,7 +219,9 @@ void AEnemy::pawnSeen(APawn* pawn)
 		&& pawn->ActorHasTag(FName("EchoCharacter"))
 		&& enemyState != EEnemyState::EES_Dead;
 
+	
 	if (shouldChaseTarget) {
+		
 		combatTarget = pawn;
 		ChaseTarget();
 	}
@@ -327,6 +328,7 @@ bool AEnemy::bCanAttack()
 /* IA Navigation */
 void AEnemy::ChaseTarget()
 {
+	GEngine->AddOnScreenDebugMessage(2, 1.f, FColor::Red, FString("Chasiiiiing"));
 	GetWorld()->GetTimerManager().ClearTimer(attackTimer);
 	GetWorld()->GetTimerManager().ClearTimer(patrolTimer);
 	actionState = EActionState::EAS_Unoccupied;
